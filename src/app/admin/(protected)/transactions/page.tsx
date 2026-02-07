@@ -52,16 +52,29 @@ export default function AdminTransactionsPage() {
 
   const pageCount = useMemo(() => Math.max(1, Math.ceil(count / 20)), [count]);
 
-  const loadTransactions = async () => {
+  const loadTransactions = async (overrides?: {
+    page?: number;
+    status?: string;
+    type?: string;
+    userId?: string;
+    rideId?: string;
+    hostId?: string;
+  }) => {
     setLoading(true);
     setError(null);
     const params = new URLSearchParams();
-    params.set('page', String(page));
-    if (status !== 'all') params.set('status', status);
-    if (type !== 'all') params.set('type', type);
-    if (userId) params.set('user_id', userId);
-    if (rideId) params.set('ride_id', rideId);
-    if (hostId) params.set('host_id', hostId);
+    const nextPage = overrides?.page ?? page;
+    const nextStatus = overrides?.status ?? status;
+    const nextType = overrides?.type ?? type;
+    const nextUserId = overrides?.userId ?? userId;
+    const nextRideId = overrides?.rideId ?? rideId;
+    const nextHostId = overrides?.hostId ?? hostId;
+    params.set('page', String(nextPage));
+    if (nextStatus !== 'all') params.set('status', nextStatus);
+    if (nextType !== 'all') params.set('type', nextType);
+    if (nextUserId) params.set('user_id', nextUserId);
+    if (nextRideId) params.set('ride_id', nextRideId);
+    if (nextHostId) params.set('host_id', nextHostId);
 
     try {
       const [listResponse, pendingResponse, completedResponse, failedResponse] = await Promise.all([
@@ -148,19 +161,37 @@ export default function AdminTransactionsPage() {
             <Input value={hostId} onChange={(e) => setHostId(e.target.value)} />
           </div>
           <div className="md:col-span-5 flex flex-wrap items-center gap-3">
-            <Button onClick={() => { setPage(1); loadTransactions(); }} disabled={loading}>
+            <Button
+              onClick={() => {
+                setPage(1);
+                loadTransactions({ page: 1 });
+              }}
+              disabled={loading}
+            >
               {loading ? 'Loading...' : 'Apply filters'}
             </Button>
             <Button
               variant="outline"
               onClick={() => {
-                setStatus('all');
-                setType('all');
-                setUserId('');
-                setRideId('');
-                setHostId('');
+                const resetStatus = 'all';
+                const resetType = 'all';
+                const resetUserId = '';
+                const resetRideId = '';
+                const resetHostId = '';
+                setStatus(resetStatus);
+                setType(resetType);
+                setUserId(resetUserId);
+                setRideId(resetRideId);
+                setHostId(resetHostId);
                 setPage(1);
-                loadTransactions();
+                loadTransactions({
+                  page: 1,
+                  status: resetStatus,
+                  type: resetType,
+                  userId: resetUserId,
+                  rideId: resetRideId,
+                  hostId: resetHostId,
+                });
               }}
             >
               Reset
@@ -168,7 +199,7 @@ export default function AdminTransactionsPage() {
             {error ? (
               <div className="flex items-center gap-3 text-sm text-red-500">
                 <span>{error}</span>
-                <Button variant="outline" size="sm" onClick={loadTransactions} disabled={loading}>
+                <Button variant="outline" size="sm" onClick={() => loadTransactions()} disabled={loading}>
                   Retry
                 </Button>
               </div>
@@ -221,9 +252,9 @@ export default function AdminTransactionsPage() {
               {transactions.length === 0 && !loading ? (
                 <TableRow>
                   <TableCell colSpan={6}>
-                    <div className="flex flex-col items-center gap-3 py-8 text-center text-sm text-muted-foreground">
+                      <div className="flex flex-col items-center gap-3 py-8 text-center text-sm text-muted-foreground">
                       <span>No transactions found.</span>
-                      <Button variant="outline" size="sm" onClick={loadTransactions}>
+                      <Button variant="outline" size="sm" onClick={() => loadTransactions()}>
                         Retry
                       </Button>
                     </div>

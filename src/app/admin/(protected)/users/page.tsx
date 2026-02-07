@@ -53,16 +53,29 @@ export default function AdminUsersPage() {
 
   const pageCount = useMemo(() => Math.max(1, Math.ceil(count / 20)), [count]);
 
-  const loadUsers = async () => {
+  const loadUsers = async (overrides?: {
+    page?: number;
+    query?: string;
+    userType?: string;
+    verified?: string;
+    active?: string;
+    staff?: string;
+  }) => {
     setLoading(true);
     setError(null);
     const params = new URLSearchParams();
-    params.set('page', String(page));
-    if (query) params.set('q', query);
-    if (userType !== 'all') params.set('user_type', userType);
-    if (verified !== 'all') params.set('is_verified', verified);
-    if (active !== 'all') params.set('is_active', active);
-    if (staff !== 'all') params.set('is_staff', staff);
+    const nextPage = overrides?.page ?? page;
+    const nextQuery = overrides?.query ?? query;
+    const nextUserType = overrides?.userType ?? userType;
+    const nextVerified = overrides?.verified ?? verified;
+    const nextActive = overrides?.active ?? active;
+    const nextStaff = overrides?.staff ?? staff;
+    params.set('page', String(nextPage));
+    if (nextQuery) params.set('q', nextQuery);
+    if (nextUserType !== 'all') params.set('user_type', nextUserType);
+    if (nextVerified !== 'all') params.set('is_verified', nextVerified);
+    if (nextActive !== 'all') params.set('is_active', nextActive);
+    if (nextStaff !== 'all') params.set('is_staff', nextStaff);
 
     try {
       const response = await authFetch(`/accounts/admin/users/?${params.toString()}`);
@@ -89,12 +102,13 @@ export default function AdminUsersPage() {
     if (q && q !== query) {
       setQuery(q);
       setPage(1);
+      loadUsers({ page: 1, query: q });
     }
   }, [searchParams, query]);
 
   const applyFilters = () => {
     setPage(1);
-    loadUsers();
+    loadUsers({ page: 1 });
   };
 
   const updateUser = async () => {
@@ -219,13 +233,25 @@ export default function AdminUsersPage() {
             <Button
               variant="outline"
               onClick={() => {
-                setQuery('');
-                setUserType('all');
-                setVerified('all');
-                setActive('all');
-                setStaff('all');
+                const resetQuery = '';
+                const resetUserType = 'all';
+                const resetVerified = 'all';
+                const resetActive = 'all';
+                const resetStaff = 'all';
+                setQuery(resetQuery);
+                setUserType(resetUserType);
+                setVerified(resetVerified);
+                setActive(resetActive);
+                setStaff(resetStaff);
                 setPage(1);
-                loadUsers();
+                loadUsers({
+                  page: 1,
+                  query: resetQuery,
+                  userType: resetUserType,
+                  verified: resetVerified,
+                  active: resetActive,
+                  staff: resetStaff,
+                });
               }}
             >
               Reset
@@ -233,7 +259,7 @@ export default function AdminUsersPage() {
             {error ? (
               <div className="flex items-center gap-3 text-sm text-red-500">
                 <span>{error}</span>
-                <Button variant="outline" size="sm" onClick={loadUsers} disabled={loading}>
+                <Button variant="outline" size="sm" onClick={() => loadUsers()} disabled={loading}>
                   Retry
                 </Button>
               </div>
@@ -265,7 +291,7 @@ export default function AdminUsersPage() {
                     <TableCell colSpan={5}>
                       <div className="flex flex-col items-center gap-3 py-8 text-center text-sm text-muted-foreground">
                         <span>No users found.</span>
-                        <Button variant="outline" size="sm" onClick={loadUsers}>
+                        <Button variant="outline" size="sm" onClick={() => loadUsers()}>
                           Retry
                         </Button>
                       </div>
