@@ -17,6 +17,10 @@ const fraunces = Fraunces({
 export const metadata: Metadata = {
   title: "Leet — Commute smarter",
   description: "Leet connects riders and hosts on reliable routes for safer, cheaper commuting.",
+  icons: {
+    icon: "/leet_logo.png",
+    apple: "/leet_logo.png",
+  },
 };
 
 export default function RootLayout({

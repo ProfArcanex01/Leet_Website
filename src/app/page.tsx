@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Image from 'next/image';
 
 const steps = [
   {
@@ -71,8 +72,15 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-6 pb-16 pt-14 md:pt-20">
         <nav className="flex items-center justify-between">
           <div className="flex items-center gap-3 text-lg font-semibold">
-            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-[color:var(--card)] shadow-[var(--shadow)]">
-              L
+            <span className="grid h-10 w-10 place-items-center overflow-hidden rounded-2xl bg-[color:var(--card)] shadow-[var(--shadow)]">
+              <Image
+                src="/leet_logo.png"
+                alt="LeetGH"
+                width={40}
+                height={40}
+                priority
+                className="h-10 w-10 object-contain"
+              />
             </span>
             <span>Leet</span>
           </div>
