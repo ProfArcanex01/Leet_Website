@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { setAdminToken, adminLogin, authFetch } from '@/lib/api';
+import { clearAdminToken, setAdminToken, adminLogin, authFetch } from '@/lib/api';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
       }
       router.replace('/admin');
     } catch (err) {
-      setAdminToken('');
+      clearAdminToken();
       const message = err instanceof Error ? err.message : 'Unable to sign in.';
       setError(message);
     } finally {

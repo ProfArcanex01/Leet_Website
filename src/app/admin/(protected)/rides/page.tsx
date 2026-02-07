@@ -45,14 +45,18 @@ export default function AdminRidesPage() {
 
   const pageCount = useMemo(() => Math.max(1, Math.ceil(count / 20)), [count]);
 
-  const loadRides = async () => {
+  const loadRides = async (overrides?: { page?: number; status?: string; hostId?: string; riderId?: string }) => {
     setLoading(true);
     setError(null);
     const params = new URLSearchParams();
-    params.set('page', String(page));
-    if (status !== 'all') params.set('status', status);
-    if (hostId) params.set('host_id', hostId);
-    if (riderId) params.set('rider_id', riderId);
+    const nextPage = overrides?.page ?? page;
+    const nextStatus = overrides?.status ?? status;
+    const nextHostId = overrides?.hostId ?? hostId;
+    const nextRiderId = overrides?.riderId ?? riderId;
+    params.set('page', String(nextPage));
+    if (nextStatus !== 'all') params.set('status', nextStatus);
+    if (nextHostId) params.set('host_id', nextHostId);
+    if (nextRiderId) params.set('rider_id', nextRiderId);
 
     try {
       const response = await authFetch(`/rides/admin/rides/?${params.toString()}`);
@@ -109,17 +113,26 @@ export default function AdminRidesPage() {
             <Input value={riderId} onChange={(e) => setRiderId(e.target.value)} />
           </div>
           <div className="flex items-end gap-3">
-            <Button onClick={() => { setPage(1); loadRides(); }} disabled={loading}>
+            <Button
+              onClick={() => {
+                setPage(1);
+                loadRides({ page: 1 });
+              }}
+              disabled={loading}
+            >
               {loading ? 'Loading...' : 'Apply filters'}
             </Button>
             <Button
               variant="outline"
               onClick={() => {
-                setStatus('all');
-                setHostId('');
-                setRiderId('');
+                const resetStatus = 'all';
+                const resetHostId = '';
+                const resetRiderId = '';
+                setStatus(resetStatus);
+                setHostId(resetHostId);
+                setRiderId(resetRiderId);
                 setPage(1);
-                loadRides();
+                loadRides({ page: 1, status: resetStatus, hostId: resetHostId, riderId: resetRiderId });
               }}
             >
               Reset
@@ -128,7 +141,7 @@ export default function AdminRidesPage() {
           {error ? (
             <div className="flex items-center gap-3 text-sm text-red-500">
               <span>{error}</span>
-              <Button variant="outline" size="sm" onClick={loadRides} disabled={loading}>
+              <Button variant="outline" size="sm" onClick={() => loadRides()} disabled={loading}>
                 Retry
               </Button>
             </div>
@@ -163,7 +176,7 @@ export default function AdminRidesPage() {
                   <TableCell colSpan={7}>
                     <div className="flex flex-col items-center gap-3 py-8 text-center text-sm text-muted-foreground">
                       <span>No rides found.</span>
-                      <Button variant="outline" size="sm" onClick={loadRides}>
+                      <Button variant="outline" size="sm" onClick={() => loadRides()}>
                         Retry
                       </Button>
                     </div>
