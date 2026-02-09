@@ -61,7 +61,7 @@ export default function AdminLoginPage() {
               id="phone"
               value={phoneNumber}
               onChange={(event) => setPhoneNumber(event.target.value)}
-              placeholder="+233249959950"
+              placeholder="+233XXXXXXXXX"
             />
           </div>
           <div className="space-y-2">
