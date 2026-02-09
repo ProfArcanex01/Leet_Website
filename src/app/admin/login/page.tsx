@@ -51,8 +51,8 @@ export default function AdminLoginPage() {
     <div className="flex min-h-screen items-center justify-center px-6">
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle>Superadmin access</CardTitle>
-          <CardDescription>Sign in with your superadmin credentials.</CardDescription>
+          <CardTitle>Big access</CardTitle>
+          <CardDescription>Sign in with your Big credentials.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
