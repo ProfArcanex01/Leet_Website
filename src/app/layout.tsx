@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Fraunces, Sora } from "next/font/google";
+import { DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const sora = Sora({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-sora",
+  variable: "--font-sans",
   display: "swap",
 });
 
-const fraunces = Fraunces({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -30,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${sora.variable} ${fraunces.variable}`}>
+      <body className={`${dmSans.variable} ${playfair.variable}`}>
         {children}
       </body>
     </html>

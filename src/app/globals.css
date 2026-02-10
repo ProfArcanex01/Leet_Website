@@ -53,15 +53,50 @@ body {
     radial-gradient(700px 420px at 92% 12%, rgba(18, 185, 129, 0.16), transparent 55%),
     radial-gradient(800px 480px at 30% 95%, rgba(47, 91, 255, 0.12), transparent 60%),
     var(--paper);
-  font-family: var(--font-sora), system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  letter-spacing: -0.004em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  font-family: var(--font-fraunces), serif;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display), Georgia, serif;
+  letter-spacing: -0.018em;
+  line-height: 1.15;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+h1 {
+  font-weight: 700;
+}
+
+h2 {
+  font-weight: 650;
+}
+
+h3,
+h4 {
+  font-weight: 600;
+}
+
+p {
+  line-height: 1.72;
+  max-width: 72ch;
+}
+
+small {
+  letter-spacing: 0.01em;
+}
+
+strong {
+  font-weight: 650;
 }
 
 @layer utilities {
