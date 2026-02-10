@@ -143,6 +143,15 @@ section {
   }
 }
 
+@keyframes shimmer {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
 /* Image optimization */
 img {
   image-rendering: -webkit-optimize-contrast;

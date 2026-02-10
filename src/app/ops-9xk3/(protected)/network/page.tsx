@@ -331,7 +331,7 @@ export default function AdminNetworkPage() {
           const nextId = Number(event.target.id());
           if (!Number.isNaN(nextId)) {
             setSelectedUserId(nextId);
-            router.replace(`/admin/network?user=${nextId}`);
+            router.replace(`/ops-9xk3/network?user=${nextId}`);
           }
         });
       })
@@ -377,7 +377,7 @@ export default function AdminNetworkPage() {
                 const nextId = Number(value);
                 if (!Number.isNaN(nextId)) {
                   setSelectedUserId(nextId);
-                  router.replace(`/admin/network?user=${nextId}`);
+                  router.replace(`/ops-9xk3/network?user=${nextId}`);
                 }
               }}
             >
@@ -416,7 +416,7 @@ export default function AdminNetworkPage() {
                 Focus: {displayName(selectedUser)} (#{selectedUser.id})
               </Badge>
             ) : null}
-            <Button variant="outline" onClick={() => router.push('/admin/users')}>
+            <Button variant="outline" onClick={() => router.push('/ops-9xk3/users')}>
               Back to users
             </Button>
           </div>

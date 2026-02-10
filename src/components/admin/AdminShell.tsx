@@ -15,12 +15,12 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/admin', description: 'Overview & quick links' },
-  { label: 'Users', href: '/admin/users', description: 'Hosts, riders, and staff' },
-  { label: 'Network', href: '/admin/network', description: 'Invite relationship graph' },
-  { label: 'Transactions', href: '/admin/transactions', description: 'Payments & settlements' },
-  { label: 'Rides', href: '/admin/rides', description: 'Ride history & status' },
-  { label: 'System', href: '/admin/system', description: 'Pricing & configuration' },
+  { label: 'Dashboard', href: '/ops-9xk3', description: 'Overview & quick links' },
+  { label: 'Users', href: '/ops-9xk3/users', description: 'Hosts, riders, and staff' },
+  { label: 'Network', href: '/ops-9xk3/network', description: 'Invite relationship graph' },
+  { label: 'Transactions', href: '/ops-9xk3/transactions', description: 'Payments & settlements' },
+  { label: 'Rides', href: '/ops-9xk3/rides', description: 'Ride history & status' },
+  { label: 'System', href: '/ops-9xk3/system', description: 'Pricing & configuration' },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
@@ -32,7 +32,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const token = getAdminToken();
     if (!token) {
-      router.replace('/admin/login');
+      router.replace('/ops-9xk3/login');
       return;
     }
     setReady(true);
@@ -96,7 +96,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   onSubmit={(event) => {
                     event.preventDefault();
                     if (!searchTerm.trim()) return;
-                    router.push(`/admin/users?q=${encodeURIComponent(searchTerm.trim())}`);
+                    router.push(`/ops-9xk3/users?q=${encodeURIComponent(searchTerm.trim())}`);
                   }}
                 >
                   <Input
@@ -109,23 +109,23 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   </Button>
                 </form>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Button variant="outline" onClick={() => router.push('/admin/users')}>
+                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/users')}>
                     Users
                   </Button>
-                  <Button variant="outline" onClick={() => router.push('/admin/network')}>
+                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/network')}>
                     Network
                   </Button>
-                  <Button variant="outline" onClick={() => router.push('/admin/transactions')}>
+                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/transactions')}>
                     Transactions
                   </Button>
-                  <Button variant="outline" onClick={() => router.push('/admin/rides')}>
+                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/rides')}>
                     Rides
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => {
                       clearAdminToken();
-                      router.replace('/admin/login');
+                      router.replace('/ops-9xk3/login');
                     }}
                   >
                     Sign out

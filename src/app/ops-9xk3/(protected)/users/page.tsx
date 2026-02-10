@@ -50,6 +50,9 @@ export default function AdminUsersPage() {
   const [staff, setStaff] = useState('all');
   const [selected, setSelected] = useState<AdminUser | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [suspensionPeriod, setSuspensionPeriod] = useState<'none' | 'clear' | 'day' | 'week' | 'month' | 'custom'>('none');
   const [customSuspension, setCustomSuspension] = useState('');
 
@@ -156,6 +159,38 @@ export default function AdminUsersPage() {
       setError(message);
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const closeDeleteModal = () => {
+    setConfirmDeleteOpen(false);
+    setDeleteConfirmText('');
+  };
+
+  const deleteSelectedUser = async () => {
+    if (!selected) return;
+    if (deleteConfirmText.trim().toLowerCase() !== 'delete') return;
+
+    setDeleting(true);
+    setError(null);
+    try {
+      const response = await authFetch(`/accounts/admin/users/${selected.id}/`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        const payload = await response.json().catch(() => ({}));
+        throw new Error(payload?.detail || payload?.error || 'Unable to delete user.');
+      }
+
+      setUsers((current) => current.filter((user) => user.id !== selected.id));
+      setCount((current) => Math.max(0, current - 1));
+      setSelected(null);
+      closeDeleteModal();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unable to delete user.';
+      setError(message);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -401,7 +436,7 @@ export default function AdminUsersPage() {
                 <div className="flex flex-wrap gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => router.push(`/admin/network?user=${selected.id}`)}
+                    onClick={() => router.push(`/ops-9xk3/network?user=${selected.id}`)}
                   >
                     View invite network
                   </Button>
@@ -484,11 +519,55 @@ export default function AdminUsersPage() {
                 <Button onClick={updateUser} disabled={updating}>
                   {updating ? 'Saving...' : 'Save changes'}
                 </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => setConfirmDeleteOpen(true)}
+                  disabled={updating || deleting}
+                >
+                  Delete user
+                </Button>
               </>
             )}
           </CardContent>
         </Card>
       </div>
+      {confirmDeleteOpen && selected ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader className="space-y-1">
+              <CardTitle>Delete user</CardTitle>
+              <CardDescription>
+                This action is permanent. Type <span className="font-semibold">delete</span> to confirm deleting{' '}
+                {[selected.first_name, selected.last_name].filter(Boolean).join(' ') || selected.email || selected.phone_number}.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="delete-confirm">Confirmation</Label>
+                <Input
+                  id="delete-confirm"
+                  value={deleteConfirmText}
+                  onChange={(event) => setDeleteConfirmText(event.target.value)}
+                  placeholder="Type delete"
+                  autoFocus
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={closeDeleteModal} disabled={deleting}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={deleteSelectedUser}
+                  disabled={deleting || deleteConfirmText.trim().toLowerCase() !== 'delete'}
+                >
+                  {deleting ? 'Deleting...' : 'Confirm delete'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
     </div>
   );
 }
