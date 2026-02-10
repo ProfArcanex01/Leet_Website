@@ -33,11 +33,23 @@ export async function authFetch(path: string, options: RequestInit = {}) {
   return response;
 }
 
-export async function adminLogin(phoneNumber: string, password: string) {
+export async function adminLogin(identifier: string, password: string) {
   const response = await fetch(`${getApiBase()}/accounts/admin/login/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phone_number: phoneNumber, password }),
+    body: JSON.stringify({ identifier, password }),
+  });
+  return response;
+}
+
+export async function adminVerifyLoginOtp(challengeToken: string, verificationCode: string) {
+  const response = await fetch(`${getApiBase()}/accounts/admin/login/verify-otp/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      challenge_token: challengeToken,
+      verification_code: verificationCode,
+    }),
   });
   return response;
 }
