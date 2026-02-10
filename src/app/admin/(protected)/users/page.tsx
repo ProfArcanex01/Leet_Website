@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,7 @@ type AdminUser = {
   email: string | null;
   first_name: string | null;
   last_name: string | null;
+  invited_by?: number | null;
   user_type: 'HOST' | 'RIDER' | null;
   is_verified: boolean;
   is_active: boolean;
@@ -35,6 +36,7 @@ type Paginated<T> = {
 };
 
 export default function AdminUsersPage() {
+  const router = useRouter();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
@@ -395,6 +397,14 @@ export default function AdminUsersPage() {
                 <div>
                   <Label>Name</Label>
                   <Input value={[selected.first_name, selected.last_name].filter(Boolean).join(' ') || 'Unnamed'} readOnly />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/admin/network?user=${selected.id}`)}
+                  >
+                    View invite network
+                  </Button>
                 </div>
                 <div>
                   <Label>Suspension status</Label>

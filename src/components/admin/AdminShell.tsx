@@ -17,6 +17,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/admin', description: 'Overview & quick links' },
   { label: 'Users', href: '/admin/users', description: 'Hosts, riders, and staff' },
+  { label: 'Network', href: '/admin/network', description: 'Invite relationship graph' },
   { label: 'Transactions', href: '/admin/transactions', description: 'Payments & settlements' },
   { label: 'Rides', href: '/admin/rides', description: 'Ride history & status' },
   { label: 'System', href: '/admin/system', description: 'Pricing & configuration' },
@@ -110,6 +111,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <div className="flex flex-wrap items-center gap-2">
                   <Button variant="outline" onClick={() => router.push('/admin/users')}>
                     Users
+                  </Button>
+                  <Button variant="outline" onClick={() => router.push('/admin/network')}>
+                    Network
                   </Button>
                   <Button variant="outline" onClick={() => router.push('/admin/transactions')}>
                     Transactions
