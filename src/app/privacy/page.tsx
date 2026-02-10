@@ -41,6 +41,11 @@ export default function PrivacyPage() {
               We use your data to operate the platform, keep users safe, improve matching, and communicate
               important updates. We do not sell personal data.
             </p>
+            <p className="mt-3">
+              This includes using invitation and referral data (such as who invited whom, activation status,
+              and related timestamps) for trust onboarding, fraud prevention, abuse detection, and account
+              safety monitoring.
+            </p>
           </section>
 
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
@@ -56,6 +61,10 @@ export default function PrivacyPage() {
             <p className="mt-3">
               We keep data as long as your account is active or as needed to comply with legal obligations.
               You can request deletion by contacting support.
+            </p>
+            <p className="mt-3">
+              Referral and invite records may be retained for a reasonable period where necessary for security,
+              fraud investigation, dispute handling, and legal compliance.
             </p>
           </section>
 

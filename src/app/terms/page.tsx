@@ -34,6 +34,11 @@ export default function TermsPage() {
               You must be at least 18 years old, provide accurate information, and keep your account secure.
               Hosts must maintain valid driving documents and comply with applicable local laws.
             </p>
+            <p className="mt-3">
+              Leet may require an invitation or referral code for account activation. Referral tools are
+              provided for trust onboarding and anti-abuse controls, and may not be used for spam, fraud,
+              or other prohibited activity.
+            </p>
           </section>
 
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
@@ -58,6 +63,18 @@ export default function TermsPage() {
               Fares are set and displayed before you ride. Payment is processed through in-app methods.
               Leet may charge a service fee to support platform operations.
             </p>
+            <p className="mt-3">
+              For hosts, Leet applies a platform fee as a percentage of weekly completed-ride revenue.
+              The applicable percentage is determined by Leet and may be updated with notice.
+            </p>
+            <p className="mt-3">
+              Weekly earnings are calculated as gross completed-ride revenue minus platform fees, refunds,
+              and other applicable adjustments. Net payout amounts and breakdowns are shown in-app.
+            </p>
+            <p className="mt-3">
+              Payout timing and available payout methods may vary by location and payment provider.
+              Users are responsible for any taxes or duties required under applicable law.
+            </p>
           </section>
 
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
@@ -66,6 +83,10 @@ export default function TermsPage() {
               Riders and hosts should avoid last-minute cancellations. Repeated cancellations may result in
               account limits. Specific timing rules are shown in-app.
             </p>
+            <p className="mt-3">
+              Where applicable, cancellation, no-show, refund, and dispute outcomes may affect final fare,
+              host earnings, and platform fees.
+            </p>
           </section>
 
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
@@ -73,6 +94,10 @@ export default function TermsPage() {
             <p className="mt-3">
               Leet expects respectful behavior, accurate identity details, and adherence to safety guidelines.
               We may remove users who violate these standards.
+            </p>
+            <p className="mt-3">
+              Referral and invite activity may be reviewed as part of fraud detection, account safety checks,
+              and enforcement actions. Misuse of referral systems may result in limits, suspension, or removal.
             </p>
           </section>
 
