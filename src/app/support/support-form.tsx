@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -16,8 +16,15 @@ const topics = [
 
 export function SupportForm() {
   const [form, setForm] = useState({ email: '', topic: '', message: '' });
+  const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const loadedAt = useRef(0);
+
+  // Record when the form was first rendered
+  useEffect(() => {
+    loadedAt.current = Math.floor(Date.now() / 1000);
+  }, []);
 
   function update(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -27,6 +34,12 @@ export function SupportForm() {
     e.preventDefault();
     if (!form.email || !form.topic || !form.message || !API_URL) return;
 
+    if (form.message.trim().length < 10) {
+      setErrorMsg('Please provide more detail so we can help you (at least 10 characters).');
+      setStatus('error');
+      return;
+    }
+
     setStatus('loading');
     setErrorMsg('');
 
@@ -34,7 +47,11 @@ export function SupportForm() {
       const res = await fetch(`${API_URL}/waitlist/support/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          website: honeypot,       // honeypot — should be empty
+          _t: loadedAt.current,    // timestamp for timing check
+        }),
       });
 
       if (res.ok) {
@@ -63,6 +80,19 @@ export function SupportForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Honeypot — hidden from real users, bots will fill it */}
+      <div aria-hidden="true" className="absolute -left-[9999px] -top-[9999px] h-0 w-0 overflow-hidden">
+        <label htmlFor="website">Website</label>
+        <input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
+      </div>
       <div>
         <label className="mb-1 block text-sm font-medium text-[color:var(--ink)]">Email</label>
         <input

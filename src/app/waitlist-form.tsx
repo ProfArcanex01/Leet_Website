@@ -1,14 +1,20 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export function WaitlistForm() {
   const [email, setEmail] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const loadedAt = useRef(0);
+
+  useEffect(() => {
+    loadedAt.current = Math.floor(Date.now() / 1000);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,7 +27,11 @@ export function WaitlistForm() {
       const res = await fetch(`${API_URL}/waitlist/join/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({
+          email,
+          website: honeypot,       // honeypot — should be empty
+          _t: loadedAt.current,    // timestamp for timing check
+        }),
       });
 
       if (res.ok) {
@@ -49,6 +59,19 @@ export function WaitlistForm() {
   return (
     <div className="mt-8">
       <form onSubmit={handleSubmit} className="mx-auto flex max-w-md gap-3">
+        {/* Honeypot — hidden from real users, bots will fill it */}
+        <div aria-hidden="true" className="absolute -left-[9999px] -top-[9999px] h-0 w-0 overflow-hidden">
+          <label htmlFor="wl-website">Website</label>
+          <input
+            id="wl-website"
+            name="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
+        </div>
         <input
           type="email"
           required
