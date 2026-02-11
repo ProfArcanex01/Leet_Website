@@ -21,6 +21,7 @@ const navItems: NavItem[] = [
   { label: 'Transactions', href: '/ops-9xk3/transactions', description: 'Payments & settlements' },
   { label: 'Rides', href: '/ops-9xk3/rides', description: 'Ride history & status' },
   { label: 'System', href: '/ops-9xk3/system', description: 'Pricing & configuration' },
+  { label: 'Waitlist', href: '/ops-9xk3/waitlist', description: 'Launch waitlist signups' },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

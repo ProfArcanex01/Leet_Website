@@ -1,7 +1,9 @@
-const DEFAULT_API_BASE = 'http://localhost:8000/api';
-
 export function getApiBase() {
-  return process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_BASE;
+  const url = process.env.NEXT_PUBLIC_API_URL;
+  if (!url) {
+    throw new Error('NEXT_PUBLIC_API_URL environment variable is not set');
+  }
+  return url;
 }
 
 export function getAdminToken() {
