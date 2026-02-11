@@ -33,7 +33,7 @@ export default function SupportPage() {
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">Email support</h2>
             <p className="mt-3 text-sm text-muted-foreground">
               For non-urgent questions, reach us at
-              <span className="font-semibold text-[color:var(--ink)]"> support@leet.app</span>.
+              <span className="font-semibold text-[color:var(--ink)]"> support@leetgh.com</span>.
               Include your phone number and ride details for faster help.
             </p>
           </section>
