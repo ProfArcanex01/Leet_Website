@@ -196,14 +196,13 @@ export default function Home() {
         </div>
         <Card className="mb-12 rounded-3xl border-[color:var(--stroke)] bg-gradient-to-br from-blue-50/50 to-emerald-50/50">
           <CardContent className="p-6 md:p-8">
-            <div className="grid items-center gap-4 md:grid-cols-[auto_1fr_auto]">
-              <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center justify-between gap-3 md:grid md:grid-cols-[auto_1fr_auto] md:gap-4">
+              <div className="flex min-w-14 flex-col items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-[color:var(--accent)]"></div>
                 <p className="text-xs font-medium text-[color:var(--ink)]">Start</p>
               </div>
-              <div className="hidden h-1 rounded-full bg-gradient-to-r from-[color:var(--accent)] via-[color:var(--accent-2)] to-[color:var(--accent)] md:block"></div>
-              <div className="h-1 w-full rounded-full bg-gradient-to-r from-[color:var(--accent)] to-[color:var(--accent-2)] md:hidden"></div>
-              <div className="flex flex-col items-center gap-2">
+              <div className="h-1 flex-1 rounded-full bg-gradient-to-r from-[color:var(--accent)] via-[color:var(--accent-2)] to-[color:var(--accent)]"></div>
+              <div className="flex min-w-14 flex-col items-center gap-2">
                 <div className="h-3 w-3 rounded-full bg-[color:var(--accent-2)]"></div>
                 <p className="text-xs font-medium text-[color:var(--ink)]">End</p>
               </div>
