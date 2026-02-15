@@ -74,6 +74,12 @@ export default function PrivacyPage() {
               You can update your profile details, manage notifications, and opt out of marketing messages
               in the app. Privacy requests can be sent to support.
             </p>
+            <p className="mt-3">
+              You can delete your account directly in the app at any time, or request deletion through
+              support. After deletion is requested and confirmed, we will delete or anonymize your account
+              data, except where retention is required for legal, safety, fraud prevention, or
+              dispute-resolution purposes.
+            </p>
           </section>
         </div>
       </section>

@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Image from 'next/image';
 import Link from 'next/link';
 import { WaitlistForm } from './waitlist-form';
+import { WaitlistStickyCta } from './waitlist-sticky-cta';
 
 const steps = [
   {
@@ -59,6 +60,7 @@ const faqs = [
 export default function Home() {
   return (
     <main className="min-h-screen">
+      <WaitlistStickyCta />
       <section className="mx-auto max-w-6xl px-6 pb-16 pt-14 md:pt-20">
         <nav className="flex items-center justify-between">
           <span className="text-2xl font-bold tracking-tight">Leet</span>
@@ -73,8 +75,8 @@ export default function Home() {
               FAQ
             </a>
           </div>
-          <Button variant="outline" className="pointer-events-none rounded-full border-[color:var(--stroke)] bg-[color:var(--card)] opacity-80">
-            Coming soon
+          <Button asChild className="rounded-full px-6 text-sm font-semibold shadow-[var(--shadow)]">
+            <a href="#waitlist">Join waitlist</a>
           </Button>
         </nav>
 
@@ -98,11 +100,13 @@ export default function Home() {
                 Split the fare
               </Badge>
             </div>
-            <div className="flex flex-wrap items-center gap-4">
-              <Button className="pointer-events-none rounded-full px-8 py-6 text-sm font-semibold shadow-[var(--shadow)]">
-                Launching soon
-              </Button>
-              <p className="text-sm text-muted-foreground">iOS & Android</p>
+            <div className="rounded-3xl border border-[color:var(--stroke)] bg-gradient-to-br from-blue-50/70 to-emerald-50/70 p-5">
+              <p className="text-sm font-semibold text-[color:var(--ink)]">Get early access before launch.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Join the waitlist now and we&apos;ll notify you as soon as onboarding opens.
+              </p>
+              <WaitlistForm idPrefix="hero" align="left" />
+              <p className="mt-2 text-xs text-muted-foreground">iOS & Android</p>
             </div>
           </div>
           <div className="relative">
@@ -220,6 +224,20 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <Card className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
+          <CardContent className="flex flex-col items-start justify-between gap-4 p-6 md:flex-row md:items-center">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[color:var(--accent-2)]">Early access</p>
+              <h3 className="mt-1 text-2xl font-semibold">Want first access when Leet goes live?</h3>
+            </div>
+            <Button asChild className="rounded-full px-7 py-5 text-sm font-semibold shadow-[var(--shadow)]">
+              <a href="#waitlist">Join waitlist</a>
+            </Button>
+          </CardContent>
+        </Card>
+      </section>
+
       <section className="bg-[#0b111a]">
         <div className="mx-auto max-w-6xl px-6 py-20 text-center">
           <Badge className="rounded-full bg-white/10 text-white">Coming soon</Badge>
@@ -308,7 +326,7 @@ export default function Home() {
               We&apos;re onboarding early riders and hosts in Ghana. Drop your email and we&apos;ll let you know when
               Leet is ready.
             </p>
-            <WaitlistForm />
+            <WaitlistForm idPrefix="main" />
           </CardContent>
         </Card>
       </section>

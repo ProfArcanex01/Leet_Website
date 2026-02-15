@@ -5,12 +5,19 @@ import { useEffect, useRef, useState } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export function WaitlistForm() {
+type WaitlistFormProps = {
+  idPrefix?: string;
+  align?: 'left' | 'center';
+};
+
+export function WaitlistForm({ idPrefix = 'wl', align = 'center' }: WaitlistFormProps) {
   const [email, setEmail] = useState('');
   const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
   const loadedAt = useRef(0);
+  const honeypotId = `${idPrefix}-website`;
+  const isCenter = align === 'center';
 
   useEffect(() => {
     loadedAt.current = Math.floor(Date.now() / 1000);
@@ -58,12 +65,12 @@ export function WaitlistForm() {
 
   return (
     <div className="mt-8">
-      <form onSubmit={handleSubmit} className="mx-auto flex max-w-md gap-3">
+      <form onSubmit={handleSubmit} className={`flex max-w-md gap-3 ${isCenter ? 'mx-auto' : ''} flex-col sm:flex-row`}>
         {/* Honeypot — hidden from real users, bots will fill it */}
         <div aria-hidden="true" className="absolute -left-[9999px] -top-[9999px] h-0 w-0 overflow-hidden">
-          <label htmlFor="wl-website">Website</label>
+          <label htmlFor={honeypotId}>Website</label>
           <input
-            id="wl-website"
+            id={honeypotId}
             name="website"
             type="text"
             tabIndex={-1}
