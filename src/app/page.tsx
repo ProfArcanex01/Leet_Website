@@ -44,8 +44,8 @@ const faqs = [
     copy: 'Leet is not ride-hailing. Hosts share routes they already drive — riders join those existing trips. It\'s carpooling, not on-demand taxi service.',
   },
   {
-    title: 'Is Leet available on Android?',
-    copy: 'Leet is currently available for iPhone users on the App Store. Android is in final testing and launching very soon! Join the waitlist above to be notified the moment it\'s ready on Google Play.',
+    title: 'What platforms is Leet available on?',
+    copy: 'Leet is available now on both iOS and Android. Download from the App Store or Google Play and start carpooling today.',
   },
   {
     title: 'Is Leet only for daily commutes?',
@@ -67,7 +67,7 @@ export default function Home() {
       <WaitlistStickyCta />
       <section className="mx-auto max-w-6xl px-6 pb-16 pt-14 md:pt-20">
         <nav className="flex items-center justify-between">
-          <span className="text-2xl font-bold tracking-tight">Leet</span>
+          <span className="rounded-xl bg-black px-4 py-2 text-2xl font-bold tracking-tight text-white">Leet</span>
           <div className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
             <a className="hover:text-[color:var(--ink)]" href="#how">
               How it works
@@ -80,11 +80,11 @@ export default function Home() {
             </a>
           </div>
           <Button asChild className="rounded-full px-6 text-sm font-semibold shadow-[var(--shadow)]">
-            <a href="https://apps.apple.com/app/leet-carpooling/id6758221255" target="_blank" rel="noopener noreferrer">Download iOS App</a>
+            <a href="#download">Download App</a>
           </Button>
         </nav>
 
-        <div className="mt-20 grid gap-16 md:grid-cols-[1.1fr_0.9fr] md:items-center">
+        <div id="download" className="mt-20 grid gap-16 md:grid-cols-[1.1fr_0.9fr] md:items-center">
           <div className="space-y-8">
             <h1 className="text-balance text-4xl font-semibold leading-tight md:text-6xl">
               Share your route. Ride together. Split the cost.
@@ -104,24 +104,34 @@ export default function Home() {
                 Split the fare
               </Badge>
             </div>
-            <div className="rounded-3xl border border-[color:var(--stroke)] bg-gradient-to-br from-blue-50/70 to-emerald-50/70 p-5">
-              <p className="text-sm font-semibold text-[color:var(--ink)]">🎉 Leet is now available on iPhone!</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Download now from the App Store or join the Android waitlist to be first when we launch.
-              </p>
-              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-                <Button asChild className="flex-1 rounded-full px-6 py-3 text-sm font-semibold shadow-[var(--shadow)]">
-                  <a href="https://apps.apple.com/app/leet-carpooling/id6758221255" target="_blank" rel="noopener noreferrer">
-                    Download on iOS
+            <div className="rounded-3xl border border-[color:var(--stroke)] bg-gradient-to-r from-blue-50/70 to-emerald-50/60 px-5 py-4">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">Now Live</p>
+                  <p className="mt-1 text-lg font-semibold text-[color:var(--ink)]">Now on iOS & Android</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Start carpooling today.</p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:flex-nowrap md:justify-end">
+                  <a
+                    href="https://apps.apple.com/app/leet-carpooling/id6758221255"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Download Leet on the App Store"
+                    className="transition hover:-translate-y-0.5"
+                  >
+                    <Image src="/app-store.svg" alt="Download on the App Store" width={190} height={56} className="h-11 w-auto" />
                   </a>
-                </Button>
-                <Button asChild variant="outline" className="flex-1 rounded-full border-2 border-[color:var(--accent)] px-6 py-3 text-sm font-semibold text-[color:var(--accent)] hover:bg-[color:var(--accent)] hover:text-white">
-                  <a href="#waitlist">
-                    Join Android Waitlist
+                  <a
+                    href="https://play.google.com/store/apps/details?id=com.leetgh.app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Get Leet on Google Play"
+                    className="transition hover:-translate-y-0.5"
+                  >
+                    <Image src="/play-store.svg" alt="Get it on Google Play" width={190} height={56} className="h-11 w-auto" />
                   </a>
-                </Button>
+                </div>
               </div>
-              <p className="mt-3 text-xs text-muted-foreground">Available now: iOS • Coming soon: Android</p>
             </div>
           </div>
           <div className="relative">
@@ -246,13 +256,25 @@ export default function Home() {
               <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[color:var(--accent-2)]">Now Available</p>
               <h3 className="mt-1 text-2xl font-semibold">Ready to start carpooling?</h3>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild className="rounded-full px-7 py-5 text-sm font-semibold shadow-[var(--shadow)]">
-                <a href="https://apps.apple.com/app/leet-carpooling/id6758221255" target="_blank" rel="noopener noreferrer">Download on iOS</a>
-              </Button>
-              <Button asChild variant="outline" className="rounded-full border-2 border-[color:var(--accent)] px-7 py-5 text-sm font-semibold text-[color:var(--accent)] hover:bg-[color:var(--accent)] hover:text-white">
-                <a href="#waitlist">Android Waitlist</a>
-              </Button>
+            <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
+              <a
+                href="https://apps.apple.com/app/leet-carpooling/id6758221255"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Download Leet on the App Store"
+                className="transition hover:-translate-y-0.5"
+              >
+                <Image src="/app-store.svg" alt="Download on the App Store" width={190} height={56} className="h-12 w-auto" />
+              </a>
+              <a
+                href="https://play.google.com/store/apps/details?id=com.leetgh.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Get Leet on Google Play"
+                className="transition hover:-translate-y-0.5"
+              >
+                <Image src="/play-store.svg" alt="Get it on Google Play" width={190} height={56} className="h-12 w-auto" />
+              </a>
             </div>
           </CardContent>
         </Card>
@@ -341,21 +363,11 @@ export default function Home() {
       <section id="waitlist" className="mx-auto max-w-6xl px-6 pb-20">
         <Card className="rounded-[36px] border-[color:var(--stroke)] bg-gradient-to-br from-blue-50/50 to-emerald-50/50 shadow-[var(--shadow)]">
           <CardContent className="p-8 text-center md:p-12">
-            <h2 className="text-3xl font-semibold md:text-4xl">Join the Android waitlist.</h2>
+            <h2 className="text-3xl font-semibold md:text-4xl">Stay in the loop.</h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              Leet is live on iPhone! Android is in final testing and launching very soon. Drop your email and
-              we&apos;ll notify you the moment it&apos;s ready on Google Play.
+              Get updates on new features, routes, and community events. Join our mailing list.
             </p>
-            <WaitlistForm idPrefix="main" platform="android" />
-            <div className="mx-auto mt-6 max-w-lg rounded-2xl border border-[color:var(--stroke)] bg-white/60 p-4">
-              <p className="text-sm font-medium text-[color:var(--ink)]">Have an iPhone?</p>
-              <p className="mt-1 text-sm text-muted-foreground">Download Leet now from the App Store and start carpooling today.</p>
-              <Button asChild className="mt-3 rounded-full px-6 py-2.5 text-sm font-semibold">
-                <a href="https://apps.apple.com/app/leet-carpooling/id6758221255" target="_blank" rel="noopener noreferrer">
-                  Download for iPhone →
-                </a>
-              </Button>
-            </div>
+            <WaitlistForm idPrefix="main" platform="all" />
           </CardContent>
         </Card>
       </section>

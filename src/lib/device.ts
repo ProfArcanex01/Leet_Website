@@ -44,4 +44,4 @@ export function isAndroid(): boolean {
  * App Store URLs
  */
 export const APP_STORE_URL = 'https://apps.apple.com/app/leet-carpooling/id6758221255';
-export const GOOGLE_PLAY_URL = ''; // TODO: Add when Android app is published
+export const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.leetgh.app';

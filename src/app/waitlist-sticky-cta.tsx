@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
-import { detectPlatform, APP_STORE_URL } from '@/lib/device';
+import { detectPlatform, APP_STORE_URL, GOOGLE_PLAY_URL } from '@/lib/device';
 
 export function WaitlistStickyCta() {
   const [visible, setVisible] = useState(false);
@@ -39,18 +39,18 @@ export function WaitlistStickyCta() {
     );
   }
 
-  // Android users get waitlist link
+  // Android users get Google Play link
   if (platform === 'android') {
     return (
-      <a href="#waitlist" className="fixed bottom-4 right-4 z-50">
-        <Button className="rounded-full px-5 py-3 text-sm font-semibold shadow-lg">Join Android Waitlist</Button>
+      <a href={GOOGLE_PLAY_URL} target="_blank" rel="noopener noreferrer" className="fixed bottom-4 right-4 z-50">
+        <Button className="rounded-full px-5 py-3 text-sm font-semibold shadow-lg">Download for Android</Button>
       </a>
     );
   }
 
-  // Unknown platform - show generic CTA
+  // Unknown platform - show generic CTA scrolling to download section
   return (
-    <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" className="fixed bottom-4 right-4 z-50">
+    <a href="#download" className="fixed bottom-4 right-4 z-50">
       <Button className="rounded-full px-5 py-3 text-sm font-semibold shadow-lg">Get Leet</Button>
     </a>
   );
