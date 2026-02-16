@@ -61,6 +61,24 @@ const faqs = [
   },
 ];
 
+const testimonials = [
+  {
+    quote: 'I cut my weekly transport cost by about 30% and finally have a reliable ride to work.',
+    name: 'Ama K.',
+    role: 'Verified Rider',
+  },
+  {
+    quote: 'I post my route before leaving home, and my seats fill fast without changing my normal commute.',
+    name: 'Kwesi A.',
+    role: 'Verified Host',
+  },
+  {
+    quote: 'Pickup times are clearer than other options. I know who I am riding with before I request.',
+    name: 'Efua M.',
+    role: 'Verified Rider',
+  },
+];
+
 export default function Home() {
   return (
     <main className="min-h-screen">
@@ -354,6 +372,29 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">{faq.copy}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-16">
+        <div className="mb-8 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">Community Feedback</p>
+          <h2 className="mt-3 text-3xl font-semibold md:text-4xl">What riders and hosts are saying</h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {testimonials.map((item) => (
+            <Card
+              key={item.name}
+              className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]"
+            >
+              <CardContent className="flex h-full flex-col p-6">
+                <p className="text-sm leading-relaxed text-muted-foreground">&ldquo;{item.quote}&rdquo;</p>
+                <div className="mt-5 border-t border-[color:var(--stroke)] pt-4">
+                  <p className="text-sm font-semibold text-[color:var(--ink)]">{item.name}</p>
+                  <p className="text-xs uppercase tracking-[0.08em] text-[color:var(--accent-2)]">{item.role}</p>
+                </div>
               </CardContent>
             </Card>
           ))}
