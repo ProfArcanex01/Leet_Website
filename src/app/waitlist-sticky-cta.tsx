@@ -13,6 +13,11 @@ export function WaitlistStickyCta() {
     setPlatform(detectPlatform());
 
     const onScroll = () => {
+      if (window.innerWidth < 768) {
+        setVisible(false);
+        return;
+      }
+
       const pastHero = window.scrollY > 220;
       const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 240;
       const waitlistEl = document.getElementById('waitlist');

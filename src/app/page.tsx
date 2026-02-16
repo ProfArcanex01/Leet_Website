@@ -249,22 +249,22 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-16">
+      <section className="mx-auto max-w-6xl px-6 pb-10 md:pb-16">
         <Card className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
-          <CardContent className="flex flex-col items-start justify-between gap-4 p-6 md:flex-row md:items-center">
-            <div>
+          <CardContent className="flex flex-col gap-5 p-5 text-center sm:p-6 md:flex-row md:items-center md:justify-between md:text-left">
+            <div className="mx-auto md:mx-0">
               <p className="text-sm font-semibold uppercase tracking-[0.12em] text-[color:var(--accent-2)]">Now Available</p>
-              <h3 className="mt-1 text-2xl font-semibold">Ready to start carpooling?</h3>
+              <h3 className="mt-1 font-sans text-2xl font-semibold leading-tight sm:text-3xl md:text-2xl">Ready to start carpooling?</h3>
             </div>
-            <div className="grid w-full gap-3 sm:w-auto sm:grid-cols-2">
+            <div className="mx-auto grid w-full max-w-[340px] grid-cols-2 gap-2 md:mx-0 md:gap-3">
               <a
                 href="https://apps.apple.com/app/leet-carpooling/id6758221255"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Download Leet on the App Store"
-                className="transition hover:-translate-y-0.5"
+                className="transition hover:-translate-y-0.5 md:justify-self-end"
               >
-                <Image src="/app-store.svg" alt="Download on the App Store" width={190} height={56} className="h-12 w-auto" />
+                <Image src="/app-store.svg" alt="Download on the App Store" width={170} height={50} className="h-10 w-auto md:h-11" />
               </a>
               <a
                 href="https://play.google.com/store/apps/details?id=com.leetgh.app"
@@ -273,7 +273,7 @@ export default function Home() {
                 aria-label="Get Leet on Google Play"
                 className="transition hover:-translate-y-0.5"
               >
-                <Image src="/play-store.svg" alt="Get it on Google Play" width={190} height={56} className="h-12 w-auto" />
+                <Image src="/play-store.svg" alt="Get it on Google Play" width={170} height={50} className="h-10 w-auto md:h-11" />
               </a>
             </div>
           </CardContent>
