@@ -8,9 +8,10 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 type WaitlistFormProps = {
   idPrefix?: string;
   align?: 'left' | 'center';
+  platform?: 'android' | 'all';
 };
 
-export function WaitlistForm({ idPrefix = 'wl', align = 'center' }: WaitlistFormProps) {
+export function WaitlistForm({ idPrefix = 'wl', align = 'center', platform = 'all' }: WaitlistFormProps) {
   const [email, setEmail] = useState('');
   const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -57,9 +58,26 @@ export function WaitlistForm({ idPrefix = 'wl', align = 'center' }: WaitlistForm
 
   if (status === 'success') {
     return (
-      <p className="mt-6 text-sm font-medium text-[color:var(--accent-2)]">
-        You&apos;re on the list! We&apos;ll be in touch.
-      </p>
+      <div className="mt-6">
+        <p className="text-sm font-medium text-[color:var(--accent-2)]">
+          {platform === 'android'
+            ? "You're on the Android waitlist! We'll email you as soon as it launches."
+            : "You're on the list! We'll be in touch."}
+        </p>
+        {platform === 'android' && (
+          <p className="mt-3 text-xs text-muted-foreground">
+            Have an iPhone?{' '}
+            <a
+              href="https://apps.apple.com/app/leet-carpooling/id6758221255"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-[color:var(--accent)] underline hover:no-underline"
+            >
+              Download Leet now →
+            </a>
+          </p>
+        )}
+      </div>
     );
   }
 
