@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { WaitlistForm } from './waitlist-form';
 import { WaitlistStickyCta } from './waitlist-sticky-cta';
+import { DollarSign, Navigation, Route, CheckCircle2, Star } from 'lucide-react';
 
 const steps = [
   {
@@ -21,14 +22,36 @@ const features = [
   {
     title: 'Transparent pricing',
     copy: 'Know the fare before you book. Costs are based on distance and seat count — no surge pricing.',
+    icon: DollarSign,
   },
   {
     title: 'Real-time tracking',
     copy: 'Live location sharing and clear pickup points so everyone stays on schedule.',
+    icon: Navigation,
   },
   {
     title: 'Route-first matching',
     copy: 'Riders join planned routes instead of requesting random pickups. Every trip is reliable and repeatable.',
+    icon: Route,
+  },
+];
+
+
+const comingSoonFeatures = [
+  {
+    title: 'Route intelligence',
+    copy: 'Detects overlapping routes in real time to connect the right riders with the right hosts.',
+    image: '/adaptiv-routing.png',
+  },
+  {
+    title: 'Smart pricing',
+    copy: 'Demand-based fare suggestions that help hosts earn more without guessing.',
+    image: '/ai-commute-2.svg',
+  },
+  {
+    title: 'Demand insights',
+    copy: 'Seat fill predictions so hosts can plan better and riders always find a spot.',
+    image: '/ai-commute-3.svg',
   },
 ];
 
@@ -122,33 +145,33 @@ export default function Home() {
                 Split the fare
               </Badge>
             </div>
-            <div className="rounded-3xl border border-[color:var(--stroke)] bg-gradient-to-r from-blue-50/70 to-emerald-50/60 px-5 py-4">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">Now Live</p>
-                  <p className="mt-1 text-lg font-semibold text-[color:var(--ink)]">Now on iOS & Android</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Start carpooling today.</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:flex-nowrap md:justify-end">
-                  <a
-                    href="https://apps.apple.com/app/leet-carpooling/id6758221255"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Download Leet on the App Store"
-                    className="transition hover:-translate-y-0.5"
-                  >
-                    <Image src="/app-store.svg" alt="Download on the App Store" width={190} height={56} className="h-11 w-auto" />
-                  </a>
-                  <a
-                    href="https://play.google.com/store/apps/details?id=com.leetgh.app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Get Leet on Google Play"
-                    className="transition hover:-translate-y-0.5"
-                  >
-                    <Image src="/play-store.svg" alt="Get it on Google Play" width={190} height={56} className="h-11 w-auto" />
-                  </a>
-                </div>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                </span>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-600">Now Live on iOS &amp; Android</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href="https://apps.apple.com/app/leet-carpooling/id6758221255"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Download Leet on the App Store"
+                  className="transition-transform hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <Image src="/app-store.svg" alt="Download on the App Store" width={190} height={56} className="h-10 w-auto" />
+                </a>
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.leetgh.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Get Leet on Google Play"
+                  className="transition-transform hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <Image src="/play-store.svg" alt="Get it on Google Play" width={190} height={56} className="h-10 w-auto" />
+                </a>
               </div>
             </div>
           </div>
@@ -187,7 +210,7 @@ export default function Home() {
 
       <section id="how" className="mx-auto max-w-6xl px-6 py-16">
         <div className="mb-12 text-center">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-2)]">
+          <p className="mx-auto mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent-2)]">
             How it works
           </p>
           <h2 className="text-3xl font-semibold md:text-4xl">Built around the routes you already take.</h2>
@@ -255,7 +278,7 @@ export default function Home() {
             >
               <CardHeader>
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)]/60">
-                  <div className="h-6 w-6 rounded-lg bg-white/70"></div>
+                  <feature.icon className="h-6 w-6 text-white" strokeWidth={1.75} />
                 </div>
                 <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
               </CardHeader>
@@ -299,20 +322,27 @@ export default function Home() {
       </section>
 
       <section className="bg-[#0b111a]">
-        <div className="mx-auto max-w-6xl px-6 py-20 text-center">
-          <Badge className="rounded-full bg-white/10 text-white">Coming soon</Badge>
-          <h2 className="mx-auto mt-6 max-w-2xl text-balance text-3xl font-semibold text-white md:text-4xl">
-            Smart features to make every trip better.
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm text-white/70">
-            Route overlap detection, demand-based pricing suggestions, and seat fill predictions — designed to help hosts
-            earn more and riders find seats faster.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            {['Route intelligence', 'Smart pricing', 'Demand insights'].map((item) => (
-              <Badge key={item} className="rounded-full bg-white/5 text-white/80">
-                {item}
-              </Badge>
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <div className="text-center">
+            <Badge className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-white/70">Coming soon</Badge>
+            <h2 className="mx-auto mt-6 max-w-2xl text-balance text-3xl font-semibold text-white md:text-4xl">
+              Smart features to make every trip better.
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-sm text-white/60">
+              We&apos;re building smarter tools to take the guesswork out of every commute.
+            </p>
+          </div>
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+            {comingSoonFeatures.map((item) => (
+              <div key={item.title} className="overflow-hidden rounded-2xl border border-white/8 bg-white/5 text-left backdrop-blur-sm">
+                <div className="h-44 w-full overflow-hidden">
+                  <Image src={item.image} alt={item.title} width={720} height={540} className="h-full w-full object-cover object-top" />
+                </div>
+                <div className="p-6">
+                  <p className="font-semibold text-white">{item.title}</p>
+                  <p className="mt-2 text-sm text-white/55">{item.copy}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -338,7 +368,10 @@ export default function Home() {
                   'In-app support',
                 ].map((item) => (
                   <Card key={item} className="rounded-2xl border-[color:var(--stroke)] bg-[color:var(--soft)]">
-                    <CardContent className="p-4">{item}</CardContent>
+                    <CardContent className="flex items-center gap-2.5 p-4">
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
+                      <span className="text-sm">{item}</span>
+                    </CardContent>
                   </Card>
                 ))}
               </div>
@@ -380,7 +413,7 @@ export default function Home() {
 
       <section className="mx-auto max-w-6xl px-6 pb-16">
         <div className="mb-8 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">Community Feedback</p>
+          <p className="mx-auto text-sm font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">Community Feedback</p>
           <h2 className="mt-3 text-3xl font-semibold md:text-4xl">What riders and hosts are saying</h2>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
@@ -390,10 +423,20 @@ export default function Home() {
               className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]"
             >
               <CardContent className="flex h-full flex-col p-6">
-                <p className="text-sm leading-relaxed text-muted-foreground">&ldquo;{item.quote}&rdquo;</p>
-                <div className="mt-5 border-t border-[color:var(--stroke)] pt-4">
-                  <p className="text-sm font-semibold text-[color:var(--ink)]">{item.name}</p>
-                  <p className="text-xs uppercase tracking-[0.08em] text-[color:var(--accent-2)]">{item.role}</p>
+                <div className="mb-3 flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="flex-1 text-sm leading-relaxed text-muted-foreground">&ldquo;{item.quote}&rdquo;</p>
+                <div className="mt-5 flex items-center gap-3 border-t border-[color:var(--stroke)] pt-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)] text-xs font-bold text-white">
+                    {item.name.split(' ').map((n) => n[0]).join('')}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[color:var(--ink)]">{item.name}</p>
+                    <p className="text-xs uppercase tracking-[0.08em] text-[color:var(--accent-2)]">{item.role}</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -404,9 +447,9 @@ export default function Home() {
       <section id="waitlist" className="mx-auto max-w-6xl px-6 pb-20">
         <Card className="rounded-[36px] border-[color:var(--stroke)] bg-gradient-to-br from-blue-50/50 to-emerald-50/50 shadow-[var(--shadow)]">
           <CardContent className="p-8 text-center md:p-12">
-            <h2 className="text-3xl font-semibold md:text-4xl">Stay in the loop.</h2>
+            <h2 className="text-3xl font-semibold md:text-4xl">Be the first to know.</h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              Get updates on new features, routes, and community events. Join our mailing list.
+              Get early access to new routes, features, and community updates — straight to your inbox.
             </p>
             <WaitlistForm idPrefix="main" platform="all" />
           </CardContent>
@@ -414,21 +457,49 @@ export default function Home() {
       </section>
 
       <footer className="border-t border-[color:var(--stroke)] bg-[color:var(--card)]">
-        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-lg font-semibold">Leet</p>
-            <p className="text-sm text-muted-foreground">Routes that respect your time.</p>
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+            <div className="space-y-3">
+              <p className="text-lg font-semibold">Leet</p>
+              <p className="text-sm text-muted-foreground">Routes that respect your time.</p>
+              <div className="flex items-center gap-3 pt-1">
+                <a
+                  href="https://apps.apple.com/app/leet-carpooling/id6758221255"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Download on the App Store"
+                  className="opacity-80 transition hover:opacity-100"
+                >
+                  <Image src="/app-store.svg" alt="Download on the App Store" width={110} height={32} className="h-8 w-auto" />
+                </a>
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.leetgh.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Get it on Google Play"
+                  className="opacity-80 transition hover:opacity-100"
+                >
+                  <Image src="/play-store.svg" alt="Get it on Google Play" width={110} height={32} className="h-8 w-auto" />
+                </a>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground md:pt-1">
+              <Link className="hover:text-[color:var(--ink)]" href="/terms">Terms</Link>
+              <Link className="hover:text-[color:var(--ink)]" href="/privacy">Privacy</Link>
+              <Link className="hover:text-[color:var(--ink)]" href="/support">Support</Link>
+              <a
+                href="https://twitter.com/LeetCarpooling"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[color:var(--ink)]"
+                aria-label="Leet on X (Twitter)"
+              >
+                X&nbsp;/&nbsp;Twitter
+              </a>
+            </div>
           </div>
-          <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
-            <Link className="hover:text-[color:var(--ink)]" href="/terms">
-              Terms
-            </Link>
-            <Link className="hover:text-[color:var(--ink)]" href="/privacy">
-              Privacy
-            </Link>
-            <Link className="hover:text-[color:var(--ink)]" href="/support">
-              Support
-            </Link>
+          <div className="mt-8 border-t border-[color:var(--stroke)] pt-6 text-center text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Leet. All rights reserved.
           </div>
         </div>
       </footer>
