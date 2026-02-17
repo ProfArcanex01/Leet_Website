@@ -131,12 +131,19 @@ export default function AdminNetworkPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const graphContainerRef = useRef<HTMLDivElement | null>(null);
+  const graphFrameRef = useRef<HTMLDivElement | null>(null);
+  const cyRef = useRef<any>(null);
 
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [graphLoading, setGraphLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  const [graphSearch, setGraphSearch] = useState('');
+  const [matchIds, setMatchIds] = useState<string[]>([]);
+  const [activeMatchIndex, setActiveMatchIndex] = useState(0);
+  const [layoutName, setLayoutName] = useState<'breadthfirst' | 'cose' | 'circle'>('breadthfirst');
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [depth, setDepth] = useState('2');
 
@@ -317,15 +324,41 @@ export default function AdminNetworkPage() {
                 'curve-style': 'bezier',
               },
             },
+            {
+              selector: '.is-dim',
+              style: {
+                opacity: 0.2,
+              },
+            },
+            {
+              selector: 'node.is-match',
+              style: {
+                'border-color': '#2563eb',
+                'border-width': 4,
+              },
+            },
+            {
+              selector: 'node.is-selected-match',
+              style: {
+                'overlay-color': '#93c5fd',
+                'overlay-opacity': 0.25,
+              },
+            },
           ],
-          layout: {
-            name: 'breadthfirst',
-            directed: true,
-            padding: 30,
-            spacingFactor: 1.25,
-            roots: [String(selectedUserId)],
-          },
+          layout:
+            layoutName === 'breadthfirst'
+              ? {
+                  name: 'breadthfirst',
+                  directed: true,
+                  padding: 30,
+                  spacingFactor: 1.25,
+                  roots: [String(selectedUserId)],
+                }
+              : layoutName === 'cose'
+                ? { name: 'cose', animate: false, padding: 30, fit: true }
+                : { name: 'circle', animate: false, padding: 35, fit: true },
         });
+        cyRef.current = cyInstance;
 
         cyInstance.on('tap', 'node', (event: any) => {
           const nextId = Number(event.target.id());
@@ -347,8 +380,145 @@ export default function AdminNetworkPage() {
       if (cyInstance) {
         cyInstance.destroy();
       }
+      cyRef.current = null;
     };
-  }, [graphElements, selectedUserId, router]);
+  }, [graphElements, selectedUserId, router, layoutName]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const onFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement === graphFrameRef.current);
+    };
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) return;
+
+    const normalized = graphSearch.trim().toLowerCase();
+    cy.elements().removeClass('is-dim is-match is-selected-match');
+
+    if (!normalized) {
+      setMatchIds([]);
+      setActiveMatchIndex(0);
+      return;
+    }
+
+    const matches = cy
+      .nodes()
+      .filter((node: any) => {
+        const label = String(node.data('label') || '').toLowerCase();
+        const id = String(node.id()).toLowerCase();
+        return label.includes(normalized) || id.includes(normalized);
+      })
+      .toArray();
+
+    const ids = matches.map((node: any) => String(node.id()));
+    setMatchIds(ids);
+    setActiveMatchIndex(0);
+
+    if (ids.length === 0) {
+      return;
+    }
+
+    cy.elements().addClass('is-dim');
+    matches.forEach((node: any) => {
+      node.removeClass('is-dim');
+      node.connectedEdges().removeClass('is-dim');
+      node.neighborhood().removeClass('is-dim');
+      node.addClass('is-match');
+    });
+
+    const first = matches[0];
+    first.addClass('is-selected-match');
+    cy.animate({ center: { eles: first }, duration: 220 });
+  }, [graphSearch, graphElements]);
+
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy || matchIds.length === 0) return;
+
+    cy.nodes().removeClass('is-selected-match');
+    const currentId = matchIds[((activeMatchIndex % matchIds.length) + matchIds.length) % matchIds.length];
+    const node = cy.getElementById(currentId);
+    if (!node || node.empty()) return;
+    node.addClass('is-selected-match');
+    cy.animate({ center: { eles: node }, duration: 180 });
+  }, [activeMatchIndex, matchIds]);
+
+  const zoomIn = () => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.zoom({ level: Math.min(2.5, cy.zoom() * 1.2), renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } });
+  };
+
+  const zoomOut = () => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.zoom({ level: Math.max(0.2, cy.zoom() / 1.2), renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } });
+  };
+
+  const fitGraph = () => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    cy.fit(cy.elements(), 30);
+  };
+
+  const centerOnSelected = () => {
+    const cy = cyRef.current;
+    if (!cy || !selectedUserId) return;
+    const node = cy.getElementById(String(selectedUserId));
+    if (!node || node.empty()) return;
+    cy.animate({ center: { eles: node }, duration: 200 });
+  };
+
+  const rerunLayout = () => {
+    const cy = cyRef.current;
+    if (!cy) return;
+    const layout =
+      layoutName === 'breadthfirst'
+        ? { name: 'breadthfirst', directed: true, padding: 30, spacingFactor: 1.25, roots: [String(selectedUserId)] }
+        : layoutName === 'cose'
+          ? { name: 'cose', animate: true, animationDuration: 250, padding: 30, fit: true }
+          : { name: 'circle', animate: true, animationDuration: 250, padding: 35, fit: true };
+    cy.layout(layout as any).run();
+  };
+
+  const toggleFullscreen = async () => {
+    if (!graphFrameRef.current || typeof document === 'undefined') return;
+    if (document.fullscreenElement === graphFrameRef.current) {
+      await document.exitFullscreen();
+      return;
+    }
+    await graphFrameRef.current.requestFullscreen();
+  };
+
+  const goToPrevMatch = () => {
+    setActiveMatchIndex((prev) => (prev - 1 + Math.max(matchIds.length, 1)) % Math.max(matchIds.length, 1));
+  };
+
+  const goToNextMatch = () => {
+    setActiveMatchIndex((prev) => (prev + 1) % Math.max(matchIds.length, 1));
+  };
+
+  const stepDepth = (direction: 'up' | 'down') => {
+    const current = Number(depth);
+    const safeCurrent = Number.isNaN(current) ? 2 : current;
+    const next = direction === 'up' ? Math.min(4, safeCurrent + 1) : Math.max(1, safeCurrent - 1);
+    setDepth(String(next));
+  };
+
+  const cycleLayout = () => {
+    setLayoutName((current) => {
+      if (current === 'breadthfirst') return 'cose';
+      if (current === 'cose') return 'circle';
+      return 'breadthfirst';
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -407,15 +577,81 @@ export default function AdminNetworkPage() {
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-2">
+            <Label>Layout</Label>
+            <Select value={layoutName} onValueChange={(value) => setLayoutName(value as 'breadthfirst' | 'cose' | 'circle')}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="breadthfirst">Tree</SelectItem>
+                <SelectItem value="cose">Force</SelectItem>
+                <SelectItem value="circle">Circle</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2 lg:col-span-2">
+            <Label htmlFor="network-node-search">Search in graph</Label>
+            <div className="flex gap-2">
+              <Input
+                id="network-node-search"
+                value={graphSearch}
+                onChange={(event) => setGraphSearch(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && matchIds.length > 0) {
+                    setActiveMatchIndex((prev) => (prev + 1) % matchIds.length);
+                  }
+                }}
+                placeholder="Highlight nodes by name or ID"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={goToPrevMatch}
+                disabled={matchIds.length === 0}
+              >
+                Prev
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={goToNextMatch}
+                disabled={matchIds.length === 0}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
 
           <div className="lg:col-span-3 flex flex-wrap items-center gap-2">
             <Badge variant="outline">Nodes: {graphElements.nodes.length}</Badge>
             <Badge variant="outline">Edges: {graphElements.edges.length}</Badge>
+            <Badge variant="outline">
+              Matches: {matchIds.length === 0 ? '0' : `${activeMatchIndex + 1}/${matchIds.length}`}
+            </Badge>
             {selectedUser ? (
               <Badge variant="outline">
                 Focus: {displayName(selectedUser)} (#{selectedUser.id})
               </Badge>
             ) : null}
+            <Button variant="outline" onClick={zoomOut} disabled={graphLoading}>
+              Zoom out
+            </Button>
+            <Button variant="outline" onClick={zoomIn} disabled={graphLoading}>
+              Zoom in
+            </Button>
+            <Button variant="outline" onClick={fitGraph} disabled={graphLoading}>
+              Fit
+            </Button>
+            <Button variant="outline" onClick={centerOnSelected} disabled={graphLoading}>
+              Center selected
+            </Button>
+            <Button variant="outline" onClick={rerunLayout} disabled={graphLoading}>
+              Re-layout
+            </Button>
+            <Button variant="outline" onClick={toggleFullscreen}>
+              {isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+            </Button>
             <Button variant="outline" onClick={() => router.push('/ops-9xk3/users')}>
               Back to users
             </Button>
@@ -425,8 +661,71 @@ export default function AdminNetworkPage() {
 
       <Card>
         <CardContent className="p-0">
-          <div className="relative h-[70vh] w-full rounded-b-2xl bg-white">
+          <div
+            ref={graphFrameRef}
+            className={`relative w-full bg-white ${isFullscreen ? 'h-screen rounded-none' : 'h-[70vh] rounded-b-2xl'}`}
+          >
             <div ref={graphContainerRef} className="h-full w-full" />
+            <div className="pointer-events-none absolute left-3 top-3 z-20 w-[min(640px,calc(100%-1.5rem))]">
+              <div className="pointer-events-auto rounded-xl border bg-white/95 p-3 shadow-sm backdrop-blur">
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <Badge variant="outline">Nodes: {graphElements.nodes.length}</Badge>
+                  <Badge variant="outline">Edges: {graphElements.edges.length}</Badge>
+                  <Badge variant="outline">
+                    Matches: {matchIds.length === 0 ? '0' : `${activeMatchIndex + 1}/${matchIds.length}`}
+                  </Badge>
+                  {selectedUser ? <Badge variant="outline">Focus #{selectedUser.id}</Badge> : null}
+                </div>
+                <div className="mb-2 flex flex-wrap items-center gap-2">
+                  <Input
+                    value={graphSearch}
+                    onChange={(event) => setGraphSearch(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' && matchIds.length > 0) {
+                        goToNextMatch();
+                      }
+                    }}
+                    placeholder="Search nodes..."
+                    className="max-w-xs bg-white"
+                  />
+                  <Button type="button" variant="outline" onClick={goToPrevMatch} disabled={matchIds.length === 0}>
+                    Prev
+                  </Button>
+                  <Button type="button" variant="outline" onClick={goToNextMatch} disabled={matchIds.length === 0}>
+                    Next
+                  </Button>
+                  <Button type="button" variant="outline" onClick={centerOnSelected} disabled={graphLoading}>
+                    Center
+                  </Button>
+                  <Button type="button" variant="outline" onClick={toggleFullscreen}>
+                    {isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
+                  </Button>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button type="button" variant="outline" onClick={zoomOut} disabled={graphLoading}>
+                    -
+                  </Button>
+                  <Button type="button" variant="outline" onClick={zoomIn} disabled={graphLoading}>
+                    +
+                  </Button>
+                  <Button type="button" variant="outline" onClick={fitGraph} disabled={graphLoading}>
+                    Fit
+                  </Button>
+                  <Button type="button" variant="outline" onClick={rerunLayout} disabled={graphLoading}>
+                    Re-layout
+                  </Button>
+                  <Button type="button" variant="outline" onClick={cycleLayout} disabled={graphLoading}>
+                    Layout: {layoutName === 'breadthfirst' ? 'Tree' : layoutName === 'cose' ? 'Force' : 'Circle'}
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => stepDepth('down')} disabled={graphLoading}>
+                    Depth -
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => stepDepth('up')} disabled={graphLoading}>
+                    Depth + ({depth})
+                  </Button>
+                </div>
+              </div>
+            </div>
             {loading || graphLoading ? (
               <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-sm text-muted-foreground">
                 Rendering network...
