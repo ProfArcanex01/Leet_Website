@@ -12,8 +12,20 @@ type CountState = {
   riders: number;
 };
 
+type AdminUser = {
+  is_invite_activated?: boolean;
+};
+
+type Paginated<T> = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+};
+
 export default function AdminDashboardPage() {
   const [counts, setCounts] = useState<CountState>({ total: 0, hosts: 0, riders: 0 });
+  const [pendingInvites, setPendingInvites] = useState(0);
   const [onlineHosts, setOnlineHosts] = useState(0);
   const [transactionCounts, setTransactionCounts] = useState({
     total: 0,
@@ -30,11 +42,28 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const loadPendingInvitationCount = async () => {
+    let page = 1;
+    let totalPending = 0;
+    while (true) {
+      const response = await authFetch(`/accounts/admin/users/?page=${page}&page_size=100`);
+      const payload = (await response.json().catch(() => ({}))) as Paginated<AdminUser>;
+      if (!response.ok) {
+        throw new Error((payload as any)?.detail || (payload as any)?.error || 'Unable to load users.');
+      }
+      const pendingOnPage = (payload.results || []).filter((user) => user.is_invite_activated === false).length;
+      totalPending += pendingOnPage;
+      if (!payload.next) break;
+      page += 1;
+    }
+    return totalPending;
+  };
+
   const loadCounts = async () => {
     setLoading(true);
     setError(null);
     try {
-      const [all, hosts, riders, pending, completed, failed, stats, cadence] = await Promise.all([
+      const [all, hosts, riders, pending, completed, failed, stats, cadence, pendingInvitationCount] = await Promise.all([
         authFetch('/accounts/admin/users/?page_size=1'),
         authFetch('/accounts/admin/users/?page_size=1&user_type=HOST'),
         authFetch('/accounts/admin/users/?page_size=1&user_type=RIDER'),
@@ -43,6 +72,7 @@ export default function AdminDashboardPage() {
         authFetch('/payments/admin/transactions/?page_size=1&status=FAILED'),
         authFetch('/accounts/admin/stats/'),
         authFetch('/payments/admin/transactions/stats/'),
+        loadPendingInvitationCount(),
       ]);
       const allPayload = await all.json().catch(() => ({}));
       const hostPayload = await hosts.json().catch(() => ({}));
@@ -60,6 +90,7 @@ export default function AdminDashboardPage() {
         hosts: hostPayload?.count ?? 0,
         riders: riderPayload?.count ?? 0,
       });
+      setPendingInvites(pendingInvitationCount);
       setTransactionCounts({
         total: (pendingPayload?.count ?? 0) + (completedPayload?.count ?? 0) + (failedPayload?.count ?? 0),
         pending: pendingPayload?.count ?? 0,
@@ -87,11 +118,12 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-5">
         {[
           { label: 'Total users', value: counts.total, tone: 'text-primary' },
           { label: 'Hosts', value: counts.hosts, tone: 'text-emerald-600' },
           { label: 'Riders', value: counts.riders, tone: 'text-slate-600' },
+          { label: 'Pending invitation', value: pendingInvites, tone: 'text-amber-600' },
           { label: 'Online hosts', value: onlineHosts, tone: 'text-emerald-500' },
         ].map((stat) => (
           <Card key={stat.label} className="relative overflow-hidden">
