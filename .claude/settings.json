@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/arcane/Documents/Programming_Projects/Leet_website /**)",
+      "Read(//Users/arcane/Documents/Programming_Projects/**)",
+      "Read(//Users/arcane/Documents/**)",
+      "Bash(npx next build:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/arcane/Documents/Programming_Projects/Leet_website /src/app/support",
+      "/Users/arcane/Documents/Programming_Projects/Leet_website /src/app/terms",
+      "/Users/arcane/Documents/Programming_Projects/Leet_website /src/app/privacy",
+      "/Users/arcane/Documents/Programming_Projects/Leet_website /src/app"
+    ]
+  }
+}

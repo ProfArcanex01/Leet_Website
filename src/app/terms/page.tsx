@@ -1,8 +1,10 @@
+import Link from 'next/link';
+
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-[color:var(--bg)]">
+    <main className="min-h-screen bg-background">
       <section className="mx-auto max-w-4xl px-6 pb-16 pt-16">
-        <div className="mb-10 flex items-center justify-between">
+        <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent)]">
               Leet Terms of Use
@@ -10,12 +12,12 @@ export default function TermsPage() {
             <h1 className="mt-3 text-3xl font-semibold md:text-4xl">Terms of Use</h1>
             <p className="mt-2 text-sm text-muted-foreground">Last updated: January 25, 2026</p>
           </div>
-          <a
+          <Link
             href="/"
-            className="rounded-full border border-[color:var(--stroke)] bg-[color:var(--card)] px-4 py-2 text-xs font-semibold text-[color:var(--ink)] hover:bg-[color:var(--soft)] transition-colors"
+            className="shrink-0 rounded-full border border-[color:var(--stroke)] bg-[color:var(--card)] px-4 py-2 text-xs font-semibold text-[color:var(--ink)] hover:bg-[color:var(--soft)] transition-colors"
           >
             Back to home
-          </a>
+          </Link>
         </div>
 
         <div className="space-y-8 text-sm text-muted-foreground">

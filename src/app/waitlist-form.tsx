@@ -111,7 +111,7 @@ export function WaitlistForm({ idPrefix = 'wl', align = 'center', platform = 'al
           disabled={status === 'loading'}
           className="rounded-full px-6 py-3 text-sm font-semibold shadow-[var(--shadow)] disabled:opacity-60"
         >
-          {status === 'loading' ? 'Joining...' : 'Mailing list'}
+          {status === 'loading' ? 'Joining...' : 'Join the list'}
         </Button>
       </form>
       {status === 'error' && (

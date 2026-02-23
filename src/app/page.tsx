@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { WaitlistForm } from './waitlist-form';
 import { WaitlistStickyCta } from './waitlist-sticky-cta';
+import { MobileNav } from './mobile-nav';
 import { DollarSign, Navigation, Route, CheckCircle2, Star } from 'lucide-react';
 
 const steps = [
@@ -120,14 +121,17 @@ export default function Home() {
               FAQ
             </a>
           </div>
-          <Button asChild className="rounded-full px-6 text-sm font-semibold shadow-[var(--shadow)]">
-            <a href="#download">Download App</a>
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button asChild className="hidden rounded-full px-6 text-sm font-semibold shadow-[var(--shadow)] md:inline-flex">
+              <a href="#download">Download App</a>
+            </Button>
+            <MobileNav />
+          </div>
         </nav>
 
         <div id="download" className="mt-20 grid gap-16 md:grid-cols-[1.1fr_0.9fr] md:items-center">
           <div className="space-y-8">
-            <h1 className="text-balance text-4xl font-semibold leading-tight md:text-6xl">
+            <h1 className="text-balance text-3xl font-semibold leading-tight sm:text-4xl md:text-6xl">
               Share your route. Ride together. Split the cost.
             </h1>
             <p className="max-w-xl text-lg text-muted-foreground">
@@ -335,8 +339,8 @@ export default function Home() {
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             {comingSoonFeatures.map((item) => (
               <div key={item.title} className="overflow-hidden rounded-2xl border border-white/8 bg-white/5 text-left backdrop-blur-sm">
-                <div className="h-44 w-full overflow-hidden">
-                  <Image src={item.image} alt={item.title} width={720} height={540} className="h-full w-full object-cover object-top" />
+                <div className="aspect-video w-full overflow-hidden">
+                  <Image src={item.image} alt={item.title} width={720} height={405} className="h-full w-full object-cover object-top" />
                 </div>
                 <div className="p-6">
                   <p className="font-semibold text-white">{item.title}</p>
@@ -378,7 +382,7 @@ export default function Home() {
             </div>
             <div className="flex items-center">
               <Card className="overflow-hidden rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
-                <div className="h-72 w-full">
+                <div className="h-48 w-full md:h-72">
                   <Image
                     src="/Ride-people-you-can-rely-on.png"
                     alt="Two people sharing a ride"
@@ -456,7 +460,7 @@ export default function Home() {
         </Card>
       </section>
 
-      <footer className="border-t border-[color:var(--stroke)] bg-[color:var(--card)]">
+      <footer className="border-t border-[color:var(--stroke)] bg-[color:var(--card)] pb-16 md:pb-0">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
             <div className="space-y-3">

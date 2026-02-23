@@ -13,11 +13,6 @@ export function WaitlistStickyCta() {
     setPlatform(detectPlatform());
 
     const onScroll = () => {
-      if (window.innerWidth < 768) {
-        setVisible(false);
-        return;
-      }
-
       const pastHero = window.scrollY > 220;
       const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 240;
       const waitlistEl = document.getElementById('waitlist');
@@ -35,28 +30,37 @@ export function WaitlistStickyCta() {
 
   if (!visible) return null;
 
-  // iOS users get direct App Store link
-  if (platform === 'ios') {
-    return (
-      <a href={APP_STORE_URL} target="_blank" rel="noopener noreferrer" className="fixed bottom-4 right-4 z-50">
-        <Button className="rounded-full px-5 py-3 text-sm font-semibold shadow-lg">Download for iPhone</Button>
-      </a>
-    );
-  }
+  const href =
+    platform === 'ios' ? APP_STORE_URL :
+    platform === 'android' ? GOOGLE_PLAY_URL :
+    '#download';
 
-  // Android users get Google Play link
-  if (platform === 'android') {
-    return (
-      <a href={GOOGLE_PLAY_URL} target="_blank" rel="noopener noreferrer" className="fixed bottom-4 right-4 z-50">
-        <Button className="rounded-full px-5 py-3 text-sm font-semibold shadow-lg">Download for Android</Button>
-      </a>
-    );
-  }
+  const label =
+    platform === 'ios' ? 'Download for iPhone' :
+    platform === 'android' ? 'Download for Android' :
+    'Get Leet';
 
-  // Unknown platform - show generic CTA scrolling to download section
+  const isExternal = platform !== 'unknown';
+
   return (
-    <a href="#download" className="fixed bottom-4 right-4 z-50">
-      <Button className="rounded-full px-5 py-3 text-sm font-semibold shadow-lg">Get Leet</Button>
-    </a>
+    <>
+      {/* Desktop: floating pill button */}
+      <a
+        href={href}
+        {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        className="fixed bottom-4 right-4 z-50 hidden md:block"
+      >
+        <Button className="rounded-full px-5 py-3 text-sm font-semibold shadow-lg">{label}</Button>
+      </a>
+      {/* Mobile: full-width bottom bar */}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[color:var(--stroke)] bg-white/95 px-4 py-3 backdrop-blur-sm md:hidden">
+        <a
+          href={href}
+          {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        >
+          <Button className="w-full rounded-full py-3 text-sm font-semibold shadow-lg">{label}</Button>
+        </a>
+      </div>
+    </>
   );
 }

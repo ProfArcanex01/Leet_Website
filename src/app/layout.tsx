@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Leet — Commute smarter",
     description:
       "Share your existing route. Ride together. Split the cost.",
