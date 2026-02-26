@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { WaitlistForm } from './waitlist-form';
 import { WaitlistStickyCta } from './waitlist-sticky-cta';
 import { MobileNav } from './mobile-nav';
-import { DollarSign, Navigation, Route, CheckCircle2, Star } from 'lucide-react';
+import { DollarSign, Navigation, Route, CheckCircle2, Star, UserRound, Car } from 'lucide-react';
 
 const steps = [
   {
@@ -87,17 +87,17 @@ const faqs = [
 
 const testimonials = [
   {
-    quote: 'I cut my weekly transport cost by about 30% and finally have a reliable ride to work.',
+    quote: 'I cut my weekly transport cost by about 30% and now have a consistent Kasoa → Accra ride every weekday.',
     name: 'Ama K.',
     role: 'Verified Rider',
   },
   {
-    quote: 'I post my route before leaving home, and my seats fill fast without changing my normal commute.',
+    quote: 'I share my usual Accra → Oyibi route after work, when traffic is packed and people are waiting for a lift, and my seats still fill without changing my normal commute.',
     name: 'Kwesi A.',
     role: 'Verified Host',
   },
   {
-    quote: 'Pickup times are clearer than other options. I know who I am riding with before I request.',
+    quote: 'Pickup times are clearer than other options, and I can see a host’s ratings and verified details before I request a seat.',
     name: 'Efua M.',
     role: 'Verified Rider',
   },
@@ -109,7 +109,7 @@ export default function Home() {
       <WaitlistStickyCta />
       <section className="mx-auto max-w-6xl px-6 pb-16 pt-14 md:pt-20">
         <nav className="flex items-center justify-between">
-          <span className="rounded-xl bg-black px-4 py-2 text-2xl font-bold tracking-tight text-white">Leet</span>
+          <span className="rounded-xl bg-[color:var(--ink)] px-4 py-2 text-2xl font-bold tracking-tight text-white">Leet</span>
           <div className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
             <a className="hover:text-[color:var(--ink)]" href="#how">
               How it works
@@ -152,10 +152,10 @@ export default function Home() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--accent-2)] opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--accent-2)]" />
                 </span>
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-600">Now Live on iOS &amp; Android</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">Now Live on iOS &amp; Android</p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <a
@@ -179,35 +179,37 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="relative">
-            <Card className="rounded-[32px] border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
-              <CardHeader className="space-y-4">
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Today&apos;s route</span>
-                  <Badge className="rounded-full bg-[color:var(--soft)] px-3 py-1 text-xs font-semibold text-[color:var(--accent-2)]">
-                    Active
-                  </Badge>
+          <div className="relative flex justify-center md:justify-end">
+            {/* Phone mockup with app screenshot */}
+            <div
+              className="relative w-[280px] flex-shrink-0 sm:w-[300px] md:w-[320px] phone-mockup"
+              aria-hidden
+            >
+              {/* Floating status tag */}
+              <div className="absolute -top-4 left-6 z-20">
+                <span className="phone-tag inline-flex items-center gap-1 rounded-full bg-[color:var(--soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-2)] shadow-sm">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--accent-2)] opacity-60" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--accent-2)]" />
+                  </span>
+                  Live route
+                </span>
+              </div>
+              <div className="relative overflow-hidden rounded-[2.75rem] border-[10px] border-[color:var(--ink)] bg-[color:var(--ink)] shadow-[0_40px_80px_rgba(21,19,15,0.25),0_0_0_1px_rgba(21,19,15,0.08)]">
+                {/* Dynamic Island */}
+                <div className="absolute left-1/2 top-5 z-10 h-7 w-24 -translate-x-1/2 rounded-full bg-[color:var(--ink)]" />
+                <div className="aspect-[9/19] w-full overflow-hidden rounded-[2rem] bg-[color:var(--ink)]">
+                  <Image
+                    src="/hero-app-screenshot.png"
+                    alt="Leet app — map and route view on iPhone"
+                    width={390}
+                    height={844}
+                    className="h-full w-full object-cover object-top"
+                    priority
+                  />
                 </div>
-                <CardTitle className="sr-only">Example route card</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-emerald-50 p-4">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Accra → Kasoa</span>
-                    <span>55 min</span>
-                  </div>
-                  <div className="mt-4 h-28 overflow-hidden rounded-xl border border-[color:var(--stroke)] bg-white/80 backdrop-blur-sm">
-                    <Image src="/cover.webp" alt="Map showing a shared route" width={400} height={112} className="h-full w-full object-cover" />
-                  </div>
-                  <div className="mt-4 flex items-center justify-between text-sm">
-                    <span className="font-semibold">3 seats left</span>
-                    <Badge className="rounded-full bg-[color:var(--accent)] px-3 py-1 text-xs font-semibold text-white">
-                      GHS 12
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -225,7 +227,7 @@ export default function Home() {
         </div>
 
         <div className="mb-12">
-          <Card className="rounded-3xl border-[color:var(--stroke)] bg-gradient-to-br from-blue-50/50 to-emerald-50/50">
+          <Card className="rounded-3xl border-[color:var(--stroke)] bg-gradient-to-br from-[color:var(--soft)]/50 to-[color:var(--paper)]">
             <CardContent className="p-6 md:p-8">
               <div className="grid gap-4 md:grid-cols-3">
                 {routes.map((route) => (
@@ -325,7 +327,7 @@ export default function Home() {
         </Card>
       </section>
 
-      <section className="bg-[#0b111a]">
+      <section className="bg-[color:var(--ink)]">
         <div className="mx-auto max-w-6xl px-6 py-20">
           <div className="text-center">
             <Badge className="rounded-full bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.15em] text-white/70">Coming soon</Badge>
@@ -373,7 +375,7 @@ export default function Home() {
                 ].map((item) => (
                   <Card key={item} className="rounded-2xl border-[color:var(--stroke)] bg-[color:var(--soft)]">
                     <CardContent className="flex items-center gap-2.5 p-4">
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-[color:var(--accent-2)]" />
                       <span className="text-sm">{item}</span>
                     </CardContent>
                   </Card>
@@ -434,8 +436,12 @@ export default function Home() {
                 </div>
                 <p className="flex-1 text-sm leading-relaxed text-muted-foreground">&ldquo;{item.quote}&rdquo;</p>
                 <div className="mt-5 flex items-center gap-3 border-t border-[color:var(--stroke)] pt-4">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)] text-xs font-bold text-white">
-                    {item.name.split(' ').map((n) => n[0]).join('')}
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)] text-white shadow-sm">
+                    {(item.role || '').includes('Host') ? (
+                      <Car className="h-5 w-5" />
+                    ) : (
+                      <UserRound className="h-5 w-5" />
+                    )}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-[color:var(--ink)]">{item.name}</p>
@@ -449,7 +455,7 @@ export default function Home() {
       </section>
 
       <section id="waitlist" className="mx-auto max-w-6xl px-6 pb-20">
-        <Card className="rounded-[36px] border-[color:var(--stroke)] bg-gradient-to-br from-blue-50/50 to-emerald-50/50 shadow-[var(--shadow)]">
+        <Card className="rounded-[36px] border-[color:var(--stroke)] bg-gradient-to-br from-[color:var(--soft)]/50 to-[color:var(--paper)] shadow-[var(--shadow)]">
           <CardContent className="p-8 text-center md:p-12">
             <h2 className="text-3xl font-semibold md:text-4xl">Stay in the loop.</h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">

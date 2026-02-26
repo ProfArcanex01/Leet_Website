@@ -5,53 +5,54 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Leet app palette — matches front_end/leet/constants/leet-theme.ts */
 :root {
-  --paper: #f6f7fb;
-  --ink: #0f1117;
-  --muted: #eef1f8;
-  --accent: #2f5bff;
-  --accent-2: #12b981;
+  --paper: #F6F1E7;
+  --ink: #15130F;
+  --muted: #ECE7DD;
+  --accent: #E06C2C;
+  --accent-2: #1E6F5C;
   --card: #ffffff;
-  --stroke: #e2e6f0;
-  --soft: #eef1f8;
-  --shadow: 0 30px 70px rgba(13, 16, 28, 0.12);
+  --stroke: #D6C2A6;
+  --soft: #DCEFEA;
+  --shadow: 0 30px 70px rgba(21, 19, 15, 0.1);
   --radius: 0.625rem;
-  --background: #f6f7fb;
-  --foreground: #0f1117;
-  --card-foreground: #0f1117;
+  --background: #F6F1E7;
+  --foreground: #15130F;
+  --card-foreground: #15130F;
   --popover: #ffffff;
-  --popover-foreground: #0f1117;
-  --primary: #2f5bff;
+  --popover-foreground: #15130F;
+  --primary: #E06C2C;
   --primary-foreground: #ffffff;
-  --secondary: #eef1f8;
-  --secondary-foreground: #0f1117;
-  --muted-foreground: #5b6170;
+  --secondary: #DCEFEA;
+  --secondary-foreground: #15130F;
+  --muted-foreground: #6D6258;
   --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #e2e6f0;
-  --input: #e2e6f0;
-  --ring: #2f5bff;
+  --border: #D6C2A6;
+  --input: #D6C2A6;
+  --ring: #E06C2C;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: #ffffff;
-  --sidebar-foreground: #0f1117;
-  --sidebar-primary: #2f5bff;
+  --sidebar-foreground: #15130F;
+  --sidebar-primary: #E06C2C;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef1f8;
-  --sidebar-accent-foreground: #0f1117;
-  --sidebar-border: #e2e6f0;
-  --sidebar-ring: #2f5bff;
+  --sidebar-accent: #DCEFEA;
+  --sidebar-accent-foreground: #15130F;
+  --sidebar-border: #D6C2A6;
+  --sidebar-ring: #E06C2C;
 }
 
 body {
   color: var(--ink);
   background:
-    radial-gradient(900px 520px at 10% -5%, rgba(47, 91, 255, 0.18), transparent 55%),
-    radial-gradient(700px 420px at 92% 12%, rgba(18, 185, 129, 0.16), transparent 55%),
-    radial-gradient(800px 480px at 30% 95%, rgba(47, 91, 255, 0.12), transparent 60%),
+    radial-gradient(900px 520px at 10% -5%, rgba(224, 108, 44, 0.08), transparent 55%),
+    radial-gradient(700px 420px at 92% 12%, rgba(30, 111, 92, 0.1), transparent 55%),
+    radial-gradient(800px 480px at 30% 95%, rgba(220, 239, 234, 0.6), transparent 60%),
     var(--paper);
   font-family: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
   font-size: 16px;
@@ -122,6 +123,35 @@ button, a {
   100% {
     transform: translateX(320%);
   }
+}
+
+@keyframes phone-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.phone-mockup {
+  animation: phone-float 5s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes phone-tag-pulse {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 8px 20px rgba(21, 19, 15, 0.08);
+  }
+  50% {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(21, 19, 15, 0.14);
+  }
+}
+
+.phone-tag {
+  animation: phone-tag-pulse 2.4s ease-in-out infinite;
 }
 
 /* Smooth transitions for interactive elements */
