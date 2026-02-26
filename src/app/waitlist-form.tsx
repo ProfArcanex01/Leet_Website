@@ -58,7 +58,7 @@ export function WaitlistForm({ idPrefix = 'wl', align = 'center', platform = 'al
 
   if (status === 'success') {
     return (
-      <div className="mt-6">
+      <div className="mt-6 w-full text-center">
         <p className="text-sm font-medium text-[color:var(--accent-2)]">
           You&apos;re subscribed! We&apos;ll keep you updated on new routes and features.
         </p>
