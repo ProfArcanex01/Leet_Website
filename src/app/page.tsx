@@ -197,7 +197,7 @@ export default function Home() {
                     <span>55 min</span>
                   </div>
                   <div className="mt-4 h-28 overflow-hidden rounded-xl border border-[color:var(--stroke)] bg-white/80 backdrop-blur-sm">
-                    <Image src="/cover.jpg" alt="Map showing a shared route" width={400} height={112} className="h-full w-full object-cover" />
+                    <Image src="/cover.webp" alt="Map showing a shared route" width={400} height={112} className="h-full w-full object-cover" />
                   </div>
                   <div className="mt-4 flex items-center justify-between text-sm">
                     <span className="font-semibold">3 seats left</span>
@@ -384,7 +384,7 @@ export default function Home() {
               <Card className="overflow-hidden rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
                 <div className="h-48 w-full md:h-72">
                   <Image
-                    src="/Ride-people-you-can-rely-on.png"
+                    src="/Ride-people-you-can-rely-on.webp"
                     alt="Two people sharing a ride"
                     width={500}
                     height={288}

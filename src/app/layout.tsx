@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     "shared rides",
   ],
   icons: {
-    icon: "/leet_logo.png",
-    apple: "/leet_logo.png",
+    icon: "/leet_logo.webp",
+    apple: "/leet_logo.webp",
   },
   openGraph: {
     type: "website",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     images: [
       {
-        url: "/leet_logo.png",
+        url: "/leet_logo.webp",
         width: 512,
         height: 512,
         alt: "Leet — Carpooling in Ghana",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: "Leet — Commute smarter",
     description:
       "Share your existing route. Ride together. Split the cost.",
-    images: ["/leet_logo.png"],
+    images: ["/leet_logo.webp"],
   },
   robots: {
     index: true,
