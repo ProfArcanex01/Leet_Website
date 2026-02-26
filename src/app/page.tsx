@@ -107,7 +107,7 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <WaitlistStickyCta />
-      <section className="mx-auto max-w-6xl px-6 pb-16 pt-14 md:pt-20">
+      <section className="mx-auto max-w-6xl px-6 pb-16 pt-8 md:pt-12">
         <nav className="flex items-center justify-between">
           <span className="rounded-xl bg-[color:var(--ink)] px-4 py-2 text-2xl font-bold tracking-tight text-white">Leet</span>
           <div className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
