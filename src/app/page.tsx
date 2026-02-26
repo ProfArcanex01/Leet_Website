@@ -129,16 +129,16 @@ export default function Home() {
           </div>
         </nav>
 
-        <div id="download" className="mt-20 grid gap-16 md:grid-cols-[1.1fr_0.9fr] md:items-center">
-          <div className="space-y-8">
+        <div id="download" className="mt-10 grid gap-10 md:mt-20 md:grid-cols-[1.1fr_0.9fr] md:gap-16 md:items-center">
+          <div className="flex flex-col items-center space-y-5 text-center md:items-start md:space-y-8 md:text-left">
             <h1 className="text-balance text-3xl font-semibold leading-tight sm:text-4xl md:text-6xl">
               Share your route. Ride together. Split the cost.
             </h1>
-            <p className="max-w-xl text-lg text-muted-foreground">
+            <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
               Leet matches riders with hosts already driving the same way. Not ride-hailing — real carpooling. Hosts
               share their commute, riders book a seat, and everyone saves.
             </p>
-            <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">
+            <div className="hidden flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)] md:flex">
               <Badge variant="secondary" className="rounded-full bg-[color:var(--soft)] px-4 py-2">
                 Route-first
               </Badge>
@@ -150,14 +150,14 @@ export default function Home() {
               </Badge>
             </div>
             <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
+              <div className="flex items-center justify-center gap-2 md:justify-start">
+                <span className="relative flex h-2 w-2 shrink-0">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--accent-2)] opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--accent-2)]" />
                 </span>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">Now Live on iOS &amp; Android</p>
               </div>
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center justify-center gap-3 md:justify-start">
                 <a
                   href="https://apps.apple.com/app/leet-carpooling/id6758221255"
                   target="_blank"
@@ -468,11 +468,11 @@ export default function Home() {
 
       <footer className="border-t border-[color:var(--stroke)] bg-[color:var(--card)] pb-16 md:pb-0">
         <div className="mx-auto max-w-6xl px-6 py-10">
-          <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
-            <div className="space-y-3">
+          <div className="flex flex-col items-center gap-8 text-center md:flex-row md:items-start md:justify-between md:text-left">
+            <div className="flex flex-col items-center space-y-3 md:items-start">
               <p className="text-lg font-semibold">Leet</p>
               <p className="text-sm text-muted-foreground">Routes that respect your time.</p>
-              <div className="flex items-center gap-3 pt-1">
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-1 md:justify-start">
                 <a
                   href="https://apps.apple.com/app/leet-carpooling/id6758221255"
                   target="_blank"
@@ -493,7 +493,7 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground md:pt-1">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground md:justify-start md:pt-1">
               <Link className="hover:text-[color:var(--ink)]" href="/terms">Terms</Link>
               <Link className="hover:text-[color:var(--ink)]" href="/privacy">Privacy</Link>
               <Link className="hover:text-[color:var(--ink)]" href="/support">Support</Link>
