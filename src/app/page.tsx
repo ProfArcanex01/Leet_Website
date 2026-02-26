@@ -399,6 +399,51 @@ export default function Home() {
         </Card>
       </section>
 
+      <section id="earnings" className="mx-auto max-w-6xl px-6 py-16">
+        <div className="grid gap-12 md:grid-cols-[1fr_auto] md:items-center md:gap-16">
+          <div className="flex flex-col items-center text-center md:items-start md:text-left">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent)]">For hosts</p>
+            <h2 className="mt-4 text-3xl font-semibold md:text-4xl">See your earnings at a glance.</h2>
+            <p className="mt-4 max-w-xl text-muted-foreground">
+              Track gross earnings, platform fees, and recent payouts by day, week, or month. Everything in one place — no spreadsheets.
+            </p>
+            <ul className="mt-6 list-inside list-disc space-y-2 text-sm text-muted-foreground">
+              <li>Daily, weekly, and monthly views</li>
+              <li>Platform fee and net payout breakdown</li>
+              <li>Recent payouts list</li>
+            </ul>
+          </div>
+          <div className="relative flex justify-center md:justify-end">
+            <div
+              className="relative w-[280px] flex-shrink-0 sm:w-[300px] md:w-[320px] phone-mockup"
+              aria-hidden
+            >
+              <div className="absolute -top-4 left-1/2 z-20 -translate-x-1/2 md:left-6 md:translate-x-0">
+                <span className="phone-tag inline-flex items-center gap-1 rounded-full bg-[color:var(--soft)] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[color:var(--accent-2)] shadow-sm">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--accent-2)] opacity-60" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--accent-2)]" />
+                  </span>
+                  Host earnings
+                </span>
+              </div>
+              <div className="relative overflow-hidden rounded-[2.75rem] border-[10px] border-[color:var(--ink)] bg-[color:var(--ink)] shadow-[0_40px_80px_rgba(21,19,15,0.25),0_0_0_1px_rgba(21,19,15,0.08)]">
+                <div className="absolute left-1/2 top-5 z-10 h-7 w-24 -translate-x-1/2 rounded-full bg-[color:var(--ink)]" />
+                <div className="aspect-[9/19] w-full overflow-hidden rounded-[2rem] bg-[color:var(--ink)]">
+                  <Image
+                    src="/earnings-screen.webp"
+                    alt="Leet app — Earnings screen showing payouts and trends"
+                    width={390}
+                    height={844}
+                    className="h-full w-full object-cover object-top"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="faqs" className="mx-auto max-w-6xl px-6 pb-16">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-semibold md:text-4xl">Frequently asked questions</h2>
