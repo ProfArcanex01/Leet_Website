@@ -451,9 +451,9 @@ export default function Home() {
       <section id="waitlist" className="mx-auto max-w-6xl px-6 pb-20">
         <Card className="rounded-[36px] border-[color:var(--stroke)] bg-gradient-to-br from-blue-50/50 to-emerald-50/50 shadow-[var(--shadow)]">
           <CardContent className="p-8 text-center md:p-12">
-            <h2 className="text-3xl font-semibold md:text-4xl">Be the first to know.</h2>
+            <h2 className="text-3xl font-semibold md:text-4xl">Stay in the loop.</h2>
             <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              Get early access to new routes, features, and community updates — straight to your inbox.
+              Get updates on new routes, features, and community news — straight to your inbox.
             </p>
             <WaitlistForm idPrefix="main" platform="all" />
           </CardContent>

@@ -60,23 +60,8 @@ export function WaitlistForm({ idPrefix = 'wl', align = 'center', platform = 'al
     return (
       <div className="mt-6">
         <p className="text-sm font-medium text-[color:var(--accent-2)]">
-          {platform === 'android'
-            ? "You're on the Android waitlist! We'll email you as soon as it launches."
-            : "You're on the list! We'll be in touch."}
+          You&apos;re subscribed! We&apos;ll keep you updated on new routes and features.
         </p>
-        {platform === 'android' && (
-          <p className="mt-3 text-xs text-muted-foreground">
-            Have an iPhone?{' '}
-            <a
-              href="https://apps.apple.com/app/leet-carpooling/id6758221255"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-[color:var(--accent)] underline hover:no-underline"
-            >
-              Download Leet now →
-            </a>
-          </p>
-        )}
       </div>
     );
   }
@@ -111,7 +96,7 @@ export function WaitlistForm({ idPrefix = 'wl', align = 'center', platform = 'al
           disabled={status === 'loading'}
           className="rounded-full px-6 py-3 text-sm font-semibold shadow-[var(--shadow)] disabled:opacity-60"
         >
-          {status === 'loading' ? 'Joining...' : 'Join the list'}
+          {status === 'loading' ? 'Subscribing...' : 'Get updates'}
         </Button>
       </form>
       {status === 'error' && (
