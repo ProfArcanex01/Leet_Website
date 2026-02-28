@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { detectPlatform, APP_STORE_URL, GOOGLE_PLAY_URL } from '@/lib/device';
 
-export function WaitlistStickyCta() {
+export function DownloadStickyCta() {
   const [visible, setVisible] = useState(false);
   const [platform, setPlatform] = useState<'ios' | 'android' | 'unknown'>('unknown');
 
@@ -15,12 +15,12 @@ export function WaitlistStickyCta() {
     const onScroll = () => {
       const pastHero = window.scrollY > 220;
       const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 240;
-      const waitlistEl = document.getElementById('waitlist');
-      const waitlistInView = waitlistEl
-        ? waitlistEl.getBoundingClientRect().top < window.innerHeight * 0.9
+      const newsletterEl = document.getElementById('newsletter');
+      const newsletterInView = newsletterEl
+        ? newsletterEl.getBoundingClientRect().top < window.innerHeight * 0.9
         : false;
 
-      setVisible(pastHero && !nearBottom && !waitlistInView);
+      setVisible(pastHero && !nearBottom && !newsletterInView);
     };
 
     onScroll();
@@ -53,7 +53,7 @@ export function WaitlistStickyCta() {
         <Button className="rounded-full px-5 py-3 text-sm font-semibold shadow-lg">{label}</Button>
       </a>
       {/* Mobile: full-width bottom bar */}
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[color:var(--stroke)] bg-white/95 px-4 py-3 backdrop-blur-sm md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[color:var(--stroke)] bg-white/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-sm md:hidden">
         <a
           href={href}
           {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}

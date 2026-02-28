@@ -5,13 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-type WaitlistFormProps = {
+type NewsletterFormProps = {
   idPrefix?: string;
   align?: 'left' | 'center';
   platform?: 'android' | 'all';
 };
 
-export function WaitlistForm({ idPrefix = 'wl', align = 'center', platform = 'all' }: WaitlistFormProps) {
+export function NewsletterForm({ idPrefix = 'nl', align = 'center', platform = 'all' }: NewsletterFormProps) {
   const [email, setEmail] = useState('');
   const [honeypot, setHoneypot] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -89,7 +89,7 @@ export function WaitlistForm({ idPrefix = 'wl', align = 'center', platform = 'al
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           disabled={status === 'loading'}
-          className="flex-1 rounded-full border border-[color:var(--stroke)] bg-white px-5 py-3 text-sm outline-none focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20 disabled:opacity-60"
+          className="flex-1 rounded-full border border-[color:var(--stroke)] bg-white px-5 py-3 text-base sm:text-sm outline-none focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20 disabled:opacity-60"
         />
         <Button
           type="submit"

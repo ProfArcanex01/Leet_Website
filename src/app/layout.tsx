@@ -46,10 +46,10 @@ export const metadata: Metadata = {
     url: siteUrl,
     images: [
       {
-        url: "/leet_logo.webp",
-        width: 512,
-        height: 512,
-        alt: "Leet — Carpooling in Ghana",
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Leet — Route-first carpooling in Ghana",
       },
     ],
   },
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     title: "Leet — Commute smarter",
     description:
       "Share your existing route. Ride together. Split the cost.",
-    images: ["/leet_logo.webp"],
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -73,6 +73,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+      </head>
       <body className={`${dmSans.variable} ${playfair.variable}`}>
         {children}
       </body>
