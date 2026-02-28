@@ -8,18 +8,37 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
-import { useState } from 'react';
+import { Menu, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { detectPlatform, APP_STORE_URL, GOOGLE_PLAY_URL } from '@/lib/device';
 
 const links = [
   { href: '#how', label: 'How it works' },
   { href: '#trust', label: 'Trust & safety' },
   { href: '#faqs', label: 'FAQ' },
-  { href: '#download', label: 'Download App' },
+  { href: '/support', label: 'Support' },
 ];
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const [platform, setPlatform] = useState<'ios' | 'android' | 'unknown'>('unknown');
+
+  useEffect(() => {
+    setPlatform(detectPlatform());
+  }, []);
+
+  const storeHref =
+    platform === 'ios' ? APP_STORE_URL :
+    platform === 'android' ? GOOGLE_PLAY_URL :
+    '#download';
+
+  const storeLabel =
+    platform === 'ios' ? 'Download for iPhone' :
+    platform === 'android' ? 'Download for Android' :
+    'Download the App';
+
+  const isExternal = platform !== 'unknown';
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -31,32 +50,59 @@ export function MobileNav() {
           <Menu className="h-5 w-5" />
         </button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[280px]">
+      <SheetContent side="right" className="flex w-[280px] flex-col">
         <SheetHeader>
           <SheetTitle className="text-left">
-            <span className="rounded-xl bg-black px-3 py-1.5 text-lg font-bold tracking-tight text-white">
+            <span className="rounded-xl bg-[color:var(--ink)] px-3 py-1.5 text-lg font-bold tracking-tight text-white">
               Leet
             </span>
           </SheetTitle>
         </SheetHeader>
-        <nav className="mt-8 flex flex-col gap-1">
+
+        <nav className="mt-6 flex flex-col">
           {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="rounded-xl px-4 py-3 text-sm font-medium text-[color:var(--ink)] transition-colors hover:bg-[color:var(--soft)]"
+              className="flex items-center justify-between border-b border-[color:var(--stroke)]/60 px-1 py-3.5 text-sm font-medium text-[color:var(--ink)]"
             >
               {link.label}
+              <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
             </a>
           ))}
         </nav>
-        <div className="mt-6 px-4">
-          <Button asChild className="w-full rounded-full text-sm font-semibold shadow-[var(--shadow)]">
-            <a href="#download" onClick={() => setOpen(false)}>
-              Download App
+
+        <div className="mt-auto space-y-3 pb-2">
+          <Button asChild className="w-full rounded-full py-3 text-sm font-semibold shadow-[var(--shadow)]">
+            <a
+              href={storeHref}
+              onClick={() => setOpen(false)}
+              {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            >
+              {storeLabel}
             </a>
           </Button>
+          <div className="flex items-center justify-center gap-3">
+            <a
+              href={APP_STORE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Download on the App Store"
+              onClick={() => setOpen(false)}
+            >
+              <Image src="/app-store.svg" alt="App Store" width={110} height={32} className="h-8 w-auto" />
+            </a>
+            <a
+              href={GOOGLE_PLAY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Get it on Google Play"
+              onClick={() => setOpen(false)}
+            >
+              <Image src="/play-store.svg" alt="Google Play" width={110} height={32} className="h-8 w-auto" />
+            </a>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

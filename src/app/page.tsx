@@ -170,7 +170,7 @@ export default function Home() {
                 Split the fare
               </Badge>
             </div>
-            <div className="space-y-3">
+            <div className="mt-3 space-y-3 md:mt-0">
               <div className="flex items-center justify-center gap-2 md:justify-start">
                 <span className="relative flex h-2 w-2 shrink-0">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--accent-2)] opacity-75" />
