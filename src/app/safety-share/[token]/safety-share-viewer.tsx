@@ -26,6 +26,7 @@ type SafetyShareViewerProps = {
 };
 
 const POLL_INTERVAL_MS = 10000;
+const PARTICLE_COUNT = 18;
 
 function getApiBase(): string {
   const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
@@ -37,6 +38,21 @@ function formatDate(value?: string | null): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return 'N/A';
   return date.toLocaleString();
+}
+
+function formatRelative(value?: string | null): string {
+  if (!value) return 'N/A';
+  const timestamp = new Date(value).getTime();
+  if (!Number.isFinite(timestamp)) return 'N/A';
+  const diffSeconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+  if (diffSeconds < 10) return 'just now';
+  if (diffSeconds < 60) return `${diffSeconds}s ago`;
+  const minutes = Math.floor(diffSeconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
 }
 
 function toNumber(value: number | string | null | undefined): number | null {
@@ -116,107 +132,208 @@ export function SafetyShareViewer({ token }: SafetyShareViewerProps) {
   const mapsUrl = canOpenMap
     ? `https://www.google.com/maps?q=${latitude},${longitude}`
     : null;
+  const isLive = viewState === 'live';
+  const statusLabel =
+    viewState === 'loading'
+      ? 'Connecting'
+      : viewState === 'live'
+        ? 'Live'
+        : viewState === 'unavailable'
+          ? 'Session ended'
+          : 'Connection issue';
+  const statusToneClass =
+    viewState === 'live'
+      ? 'border-emerald-400/50 bg-emerald-500/10 text-emerald-700'
+      : viewState === 'loading'
+        ? 'border-amber-400/50 bg-amber-400/10 text-amber-700'
+        : 'border-[color:var(--stroke)] bg-[color:var(--muted)] text-[color:var(--ink)]';
+  const particles = useMemo(
+    () =>
+      Array.from({ length: PARTICLE_COUNT }, (_, index) => ({
+        id: index,
+        left: `${(index * 17) % 100}%`,
+        top: `${(index * 29) % 100}%`,
+        size: 4 + ((index * 7) % 8),
+        delay: `${(index % 7) * 0.6}s`,
+        duration: `${6 + (index % 5)}s`,
+        opacity: 0.18 + (index % 3) * 0.08,
+      })),
+    []
+  );
 
   return (
-    <main className="min-h-screen bg-background px-6 py-10">
-      <section className="mx-auto max-w-3xl">
-        <div className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)] md:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--accent)]">Leet Safety Share</p>
-          <h1 className="mt-3 text-3xl md:text-4xl">Live Trip Tracking</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            This link was shared by a rider for trusted-contact safety monitoring.
-          </p>
+    <main className="min-h-screen bg-background px-5 py-8 md:px-8 md:py-12">
+      <section className="mx-auto max-w-5xl">
+        <div className="relative overflow-hidden rounded-[2rem] border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)] md:p-10">
+          <div className="pointer-events-none absolute inset-0 z-0">
+            {particles.map((particle) => (
+              <span
+                key={particle.id}
+                className="safety-particle absolute rounded-full bg-[color:var(--accent)]"
+                style={{
+                  left: particle.left,
+                  top: particle.top,
+                  width: particle.size,
+                  height: particle.size,
+                  animationDelay: particle.delay,
+                  animationDuration: particle.duration,
+                  opacity: particle.opacity,
+                }}
+              />
+            ))}
+          </div>
+          <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-[color:var(--accent)]/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-20 h-72 w-72 rounded-full bg-[color:var(--accent-2)]/10 blur-3xl" />
 
-          <div className="mt-6 space-y-4 rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--muted)] p-5">
+          <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--accent)]">
+                Leet Safety Share
+              </p>
+              <h1 className="mt-3 text-4xl md:text-5xl">Live Trip Tracking</h1>
+              <p className="mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
+                This protected link was shared by a rider so trusted contacts can follow trip progress.
+              </p>
+            </div>
+            <div className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold ${statusToneClass}`}>
+              <span className={`h-2 w-2 rounded-full ${isLive ? 'animate-pulse bg-emerald-500' : 'bg-current/70'}`} />
+              {statusLabel}
+            </div>
+          </div>
+
+          <div className="relative z-10 mt-8 grid gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-[color:var(--stroke)] bg-white/70 p-4 backdrop-blur">
+              <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground">Rider</p>
+              <p className="mt-1 text-lg font-semibold text-[color:var(--ink)]">
+                {snapshot?.rider_first_name || 'Waiting...'}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-[color:var(--stroke)] bg-white/70 p-4 backdrop-blur">
+              <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground">Host</p>
+              <p className="mt-1 text-lg font-semibold text-[color:var(--ink)]">
+                {snapshot?.host_first_name || 'Waiting...'}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-[color:var(--stroke)] bg-white/70 p-4 backdrop-blur">
+              <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground">Ride status</p>
+              <p className="mt-1 text-lg font-semibold text-[color:var(--ink)]">
+                {snapshot?.ride_status || 'Unknown'}
+              </p>
+            </div>
+          </div>
+
+          <div className="relative z-10 mt-5 rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--muted)]/70 p-5 backdrop-blur-sm md:p-6">
             {viewState === 'loading' ? (
-              <p className="text-sm text-muted-foreground">Loading shared trip…</p>
+              <div className="space-y-3">
+                <div className="h-4 w-40 animate-pulse rounded bg-[color:var(--stroke)]/70" />
+                <div className="h-3 w-full animate-pulse rounded bg-[color:var(--stroke)]/50" />
+                <div className="h-3 w-2/3 animate-pulse rounded bg-[color:var(--stroke)]/50" />
+              </div>
             ) : null}
 
             {viewState === 'unavailable' ? (
-              <>
-                <p className="text-sm font-semibold text-[color:var(--ink)]">This tracking session is not available.</p>
+              <div className="space-y-2">
+                <p className="text-xl font-semibold text-[color:var(--ink)]">This session is no longer active.</p>
                 <p className="text-sm text-muted-foreground">
-                  The rider may have stopped sharing, or the link may have expired.
+                  The rider may have ended sharing, the ride may have completed, or the link has expired.
                 </p>
-              </>
+              </div>
             ) : null}
 
             {viewState === 'error' ? (
-              <>
-                <p className="text-sm font-semibold text-[color:var(--ink)]">We couldn&apos;t load this trip.</p>
+              <div className="space-y-2">
+                <p className="text-xl font-semibold text-[color:var(--ink)]">Couldn&apos;t load tracking details.</p>
                 <p className="text-sm text-muted-foreground">{errorMessage}</p>
-              </>
+              </div>
             ) : null}
 
             {viewState === 'live' && snapshot ? (
-              <>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Rider</p>
-                    <p className="text-sm font-semibold text-[color:var(--ink)]">{snapshot.rider_first_name || 'Rider'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Host</p>
-                    <p className="text-sm font-semibold text-[color:var(--ink)]">{snapshot.host_first_name || 'Host'}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Ride status</p>
-                    <p className="text-sm font-semibold text-[color:var(--ink)]">{snapshot.ride_status}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Share expires</p>
-                    <p className="text-sm font-semibold text-[color:var(--ink)]">{formatDate(snapshot.expires_at)}</p>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">Latest location</p>
+              <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
+                <div className="rounded-xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-4">
+                  <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Latest coordinates</p>
                   {canOpenMap ? (
                     <>
-                      <p className="mt-1 text-sm text-[color:var(--ink)]">
+                      <p className="mt-2 text-2xl font-semibold text-[color:var(--ink)] md:text-3xl">
                         {latitude?.toFixed(6)}, {longitude?.toFixed(6)}
                       </p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        Updated: {formatDate(snapshot.last_location.timestamp)}
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        Updated {formatRelative(snapshot.last_location.timestamp)} ({formatDate(snapshot.last_location.timestamp)})
                       </p>
-                      <div className="mt-3">
-                        <a
-                          href={mapsUrl || '#'}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center rounded-full border border-[color:var(--accent)] bg-[color:var(--accent)] px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90"
-                        >
-                          Open in Maps
-                        </a>
-                      </div>
                     </>
                   ) : (
-                    <p className="mt-1 text-sm text-muted-foreground">Waiting for rider location update…</p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Waiting for the first rider location update.
+                    </p>
                   )}
                 </div>
-              </>
+
+                <div className="rounded-xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-4">
+                  <p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">Session window</p>
+                  <p className="mt-2 text-sm font-semibold text-[color:var(--ink)]">
+                    Expires {formatDate(snapshot.expires_at)}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">Auto-refresh every 10 seconds</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {canOpenMap ? (
+                      <a
+                        href={mapsUrl || '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center rounded-full border border-[color:var(--accent)] bg-[color:var(--accent)] px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90"
+                      >
+                        Open in Maps
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
             ) : null}
           </div>
 
-          <div className="mt-5 flex items-center justify-between gap-3">
+          <div className="relative z-10 mt-6 flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs text-muted-foreground">
               Last refresh: {formatDate(lastRefreshedAt)}
             </p>
             <button
               type="button"
               onClick={() => refreshSnapshot()}
-              className="rounded-full border border-[color:var(--stroke)] bg-[color:var(--card)] px-4 py-2 text-xs font-semibold text-[color:var(--ink)] transition hover:bg-[color:var(--soft)]"
+              className="rounded-full border border-[color:var(--stroke)] bg-[color:var(--card)] px-5 py-2 text-xs font-semibold text-[color:var(--ink)] transition hover:bg-[color:var(--soft)]"
             >
               Refresh now
             </button>
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Need help? <Link href="/support" className="font-semibold text-[color:var(--accent)]">Contact support</Link>
+        <p className="mt-7 text-center text-xs text-muted-foreground">
+          Need help?{' '}
+          <Link href="/support" className="font-semibold text-[color:var(--accent)]">
+            Contact support
+          </Link>
         </p>
       </section>
+      <style jsx>{`
+        .safety-particle {
+          animation-name: safetyParticleFloat;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
+          will-change: transform, opacity;
+        }
+
+        @keyframes safetyParticleFloat {
+          0% {
+            transform: translate3d(0, 0, 0) scale(1);
+            opacity: 0.14;
+          }
+          50% {
+            transform: translate3d(0, -10px, 0) scale(1.25);
+            opacity: 0.36;
+          }
+          100% {
+            transform: translate3d(0, 0, 0) scale(1);
+            opacity: 0.14;
+          }
+        }
+      `}</style>
     </main>
   );
 }
-
