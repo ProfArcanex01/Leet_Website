@@ -132,6 +132,7 @@ export function SafetyShareViewer({ token }: SafetyShareViewerProps) {
   const mapsUrl = canOpenMap
     ? `https://www.google.com/maps?q=${latitude},${longitude}`
     : null;
+  const appDeepLink = `leet://safety-share/${encodeURIComponent(token)}`;
   const isLive = viewState === 'live';
   const statusLabel =
     viewState === 'loading'
@@ -274,6 +275,12 @@ export function SafetyShareViewer({ token }: SafetyShareViewerProps) {
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">Auto-refresh every 10 seconds</p>
                   <div className="mt-4 flex flex-wrap gap-2">
+                    <a
+                      href={appDeepLink}
+                      className="inline-flex items-center rounded-full border border-[color:var(--accent-2)] bg-[color:var(--accent-2)] px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90"
+                    >
+                      Open in Leet App
+                    </a>
                     {canOpenMap ? (
                       <a
                         href={mapsUrl || '#'}
@@ -285,6 +292,9 @@ export function SafetyShareViewer({ token }: SafetyShareViewerProps) {
                       </a>
                     ) : null}
                   </div>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    If the app is installed, this opens in-app tracking directly.
+                  </p>
                 </div>
               </div>
             ) : null}
