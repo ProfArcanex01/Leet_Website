@@ -12,7 +12,11 @@ import { DollarSign, Navigation, Route, CheckCircle2, Star, UserRound, Car, MapP
 const steps = [
   {
     title: 'For riders',
-    steps: ['Search a route that matches yours', 'Request a seat from a verified host', 'Track your ride & pay in-app'],
+    steps: [
+      'Search a route that matches yours',
+      'Request a seat from a verified host',
+      'Track your ride, share with trusted contacts, and pay in-app',
+    ],
   },
   {
     title: 'For hosts',
@@ -96,6 +100,10 @@ const faqs = [
     title: 'What platforms is Leet available on?',
     copy: 'Leet is available now on both iOS and Android. Download from the App Store or Google Play and start carpooling today.',
   },
+  {
+    title: 'How does Safety Share work?',
+    copy: 'During an active ride, riders can generate a temporary Safety Share link and send it to trusted contacts. Contacts can view live trip updates while the session is active. Riders can pause, resume, or stop sharing at any time.',
+  },
 ];
 
 const testimonials = [
@@ -157,7 +165,7 @@ export default function Home() {
               Share your route. Ride together. Split the cost.
             </h1>
             <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
-              Leet connects riders (passengers) with hosts (drivers) already going the same way. It&apos;s not ride-hailing, it&apos;s real carpooling: hosts share their regular route, riders book a seat, and everyone saves on the trip.
+              Leet connects riders (passengers) with hosts (drivers) already going the same way. It&apos;s not ride-hailing, it&apos;s real carpooling: hosts share their regular route, riders book a seat, and everyone saves on the trip. Riders can also share live trip progress with trusted contacts during active rides.
             </p>
             <div className="hidden flex-wrap gap-3 text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)] md:flex">
               <Badge variant="secondary" className="rounded-full bg-[color:var(--soft)] px-4 py-2">
@@ -385,6 +393,9 @@ export default function Home() {
               <p className="mt-4 text-muted-foreground">
                 Every host is verified, riders are rated after each trip, and routes are visible before you request a
                 seat. You always know who you&apos;re riding with.
+              </p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Riders can also use Safety Share to send a temporary live trip link to trusted contacts and end sharing anytime.
               </p>
               <div className="mt-6 grid gap-4 text-sm text-muted-foreground md:grid-cols-2">
                 {[
