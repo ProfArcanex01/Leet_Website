@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import { TawkChat } from "./tawk-chat";
+import { CookieConsent } from "@/components/cookie-consent";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -79,6 +80,7 @@ export default function RootLayout({
       </head>
       <body className={`${dmSans.variable} ${playfair.variable}`}>
         {children}
+        <CookieConsent />
         <TawkChat />
       </body>
     </html>

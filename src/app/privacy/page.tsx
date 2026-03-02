@@ -103,7 +103,25 @@ export default function PrivacyPage() {
           </section>
 
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
-            <h2 className="text-lg font-semibold text-[color:var(--ink)]">7. Security and contact</h2>
+            <h2 className="text-lg font-semibold text-[color:var(--ink)]">7. Cookies and tracking</h2>
+            <p className="mt-3">
+              Our website uses cookies and similar technologies to remember your preferences, analyse site
+              traffic, and improve your browsing experience. We use:
+            </p>
+            <ul className="mt-3 list-disc space-y-1 pl-5">
+              <li><strong className="text-[color:var(--ink)]">Essential cookies</strong> — required for core site functionality such as remembering your cookie consent choice.</li>
+              <li><strong className="text-[color:var(--ink)]">Analytics cookies</strong> — help us understand how visitors use the site so we can improve it.</li>
+              <li><strong className="text-[color:var(--ink)]">Third-party cookies</strong> — set by services we integrate with, such as our live-chat provider, to enable their features.</li>
+            </ul>
+            <p className="mt-3">
+              When you first visit, a banner lets you accept or decline non-essential cookies. You can also
+              clear your preference at any time by clearing your browser&apos;s local storage for our site. Most
+              browsers let you block or delete cookies through their settings.
+            </p>
+          </section>
+
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+            <h2 className="text-lg font-semibold text-[color:var(--ink)]">8. Security and contact</h2>
             <p className="mt-3">
               We use technical and organizational safeguards to protect personal data, including access controls,
               tokenized sharing links, and monitoring for abuse. No system is completely risk-free, so users
