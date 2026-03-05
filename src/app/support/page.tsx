@@ -40,7 +40,9 @@ export default function SupportPage() {
               >
                 support@leetgh.com
               </a>
-              . Include your phone number and ride details for faster help.
+              . If you can&apos;t find the app in store search, use{' '}
+              <span className="font-semibold text-[color:var(--ink)]">Leet.Carpooling</span>. Include your phone number
+              and ride details for faster help.
             </p>
           </section>
 

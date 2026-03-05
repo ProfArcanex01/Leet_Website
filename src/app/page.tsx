@@ -98,7 +98,7 @@ const faqs = [
   },
   {
     title: 'What platforms is Leet available on?',
-    copy: 'Leet is available now on both iOS and Android. Download from the App Store or Google Play and start carpooling today.',
+    copy: 'Leet is available on iOS and Android. Use the App Store or Google Play buttons here, or search for "Leet.Carpooling" in store search.',
   },
   {
     title: 'How does Safety Share work?',
@@ -206,6 +206,9 @@ export default function Home() {
                   <Image src="/play-store.svg" alt="Get it on Google Play" width={190} height={56} className="h-12 w-auto sm:h-10" />
                 </a>
               </div>
+              <p className="text-xs text-muted-foreground">
+                Can&apos;t find it in store search? Search <span className="font-semibold text-[color:var(--ink)]">Leet.Carpooling</span>.
+              </p>
             </div>
           </div>
           <div className="relative flex justify-center md:justify-end">
@@ -354,6 +357,9 @@ export default function Home() {
               </a>
             </div>
           </CardContent>
+          <p className="px-5 pb-5 text-center text-xs text-muted-foreground sm:px-6 md:text-left">
+            Can&apos;t find it in store search? Search <span className="font-semibold text-[color:var(--ink)]">Leet.Carpooling</span>.
+          </p>
         </Card>
       </section>
 
@@ -581,6 +587,9 @@ export default function Home() {
                   <Image src="/play-store.svg" alt="Get it on Google Play" width={110} height={32} className="h-8 w-auto" />
                 </a>
               </div>
+              <p className="text-xs text-muted-foreground">
+                Search name: <span className="font-semibold text-[color:var(--ink)]">Leet.Carpooling</span>
+              </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground md:justify-start md:pt-1">
               <Link className="hover:text-[color:var(--ink)]" href="/terms">Terms</Link>
