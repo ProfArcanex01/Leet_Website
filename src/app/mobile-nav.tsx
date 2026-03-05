@@ -34,8 +34,8 @@ export function MobileNav() {
     '#download';
 
   const storeLabel =
-    platform === 'ios' ? 'Download for iPhone (Leet.Carpooling)' :
-    platform === 'android' ? 'Download for Android (Leet.Carpooling)' :
+    platform === 'ios' ? 'Download for iPhone (Leet-carpooling)' :
+    platform === 'android' ? 'Download for Android (Leet-carpooling)' :
     'Download the App';
 
   const isExternal = platform !== 'unknown';

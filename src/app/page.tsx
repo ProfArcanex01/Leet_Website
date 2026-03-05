@@ -98,7 +98,7 @@ const faqs = [
   },
   {
     title: 'What platforms is Leet available on?',
-    copy: 'Leet is available on iOS and Android. Use the App Store or Google Play buttons here, or search for "Leet.Carpooling" in store search.',
+    copy: 'Leet is available on iOS and Android. Use the App Store or Google Play buttons here, or search for "Leet-carpooling" in store search.',
   },
   {
     title: 'How does Safety Share work?',
@@ -207,7 +207,7 @@ export default function Home() {
                 </a>
               </div>
               <p className="text-xs text-muted-foreground">
-                Can&apos;t find it in store search? Search <span className="font-semibold text-[color:var(--ink)]">Leet.Carpooling</span>.
+                Can&apos;t find it in store search? Search <span className="font-semibold text-[color:var(--ink)]">Leet-carpooling</span>.
               </p>
             </div>
           </div>
@@ -358,7 +358,7 @@ export default function Home() {
             </div>
           </CardContent>
           <p className="px-5 pb-5 text-center text-xs text-muted-foreground sm:px-6 md:text-left">
-            Can&apos;t find it in store search? Search <span className="font-semibold text-[color:var(--ink)]">Leet.Carpooling</span>.
+            Can&apos;t find it in store search? Search <span className="font-semibold text-[color:var(--ink)]">Leet-carpooling</span>.
           </p>
         </Card>
       </section>
@@ -588,7 +588,7 @@ export default function Home() {
                 </a>
               </div>
               <p className="text-xs text-muted-foreground">
-                Search name: <span className="font-semibold text-[color:var(--ink)]">Leet.Carpooling</span>
+                Search name: <span className="font-semibold text-[color:var(--ink)]">Leet-carpooling</span>
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground md:justify-start md:pt-1">

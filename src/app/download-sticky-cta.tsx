@@ -38,7 +38,7 @@ export function DownloadStickyCta() {
   const label =
     platform === 'ios' ? 'Download for iPhone' :
     platform === 'android' ? 'Download for Android' :
-    'Get Leet (search Leet.Carpooling)';
+    'Get Leet (search Leet-carpooling)';
 
   const isExternal = platform !== 'unknown';
 
