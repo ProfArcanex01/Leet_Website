@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +9,21 @@ import { DownloadStickyCta } from './download-sticky-cta';
 import { MobileNav } from './mobile-nav';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { DollarSign, Navigation, Route, CheckCircle2, Star, UserRound, Car, MapPin, ArrowRight } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Leet — Commute smarter',
+  description:
+    'Share your existing route. Ride together. Split the cost. Leet matches riders with hosts on reliable routes for safer, cheaper commuting in Ghana.',
+  openGraph: {
+    title: 'Leet — Commute smarter',
+    description:
+      'Share your existing route. Ride together. Split the cost. Leet matches riders with hosts already driving the same way.',
+  },
+  twitter: {
+    title: 'Leet — Commute smarter',
+    description: 'Share your existing route. Ride together. Split the cost.',
+  },
+};
 
 const steps = [
   {

@@ -15,7 +15,17 @@ import { AgentApplicationForm } from './agent-application-form';
 
 export const metadata: Metadata = {
   title: 'Become a Leet Agent',
-  description: 'Apply to become a Leet driver recruitment agent and help onboard drivers across Ghana.',
+  description:
+    'Earn money recruiting drivers for Leet. Meet drivers at washing bays, fuel stations, and mechanics — get them live on the app and earn when they activate. Flexible, field-based work across Ghana.',
+  openGraph: {
+    title: 'Become a Leet Agent — Earn money recruiting drivers',
+    description:
+      'Earn when you recruit and activate drivers. Find drivers where they already are, get them on Leet, and get credited for every real activation. Apply to become an agent.',
+  },
+  twitter: {
+    title: 'Become a Leet Agent — Earn money recruiting drivers',
+    description: 'Earn when you recruit and activate drivers. Flexible field work across Ghana.',
+  },
 };
 
 const hotZones = [
