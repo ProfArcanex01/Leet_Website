@@ -78,7 +78,7 @@ export default function AgentsPage() {
 
         {/* Full-bleed banner image */}
         <Image
-          src="/recruit_driver_5.png"
+          src="/recruit_driver_5.webp"
           alt="Leet agent recruiting a driver"
           fill
           className="object-cover object-center"
@@ -245,7 +245,7 @@ export default function AgentsPage() {
             <div className="relative order-2 lg:order-1">
               <div className="overflow-hidden rounded-[2rem] shadow-[0_32px_72px_rgba(21,19,15,0.14)]">
                 <Image
-                  src="/recruit_driver_2.png"
+                  src="/recruit_driver_2.webp"
                   alt="Leet agents recruiting drivers in the field"
                   width={720}
                   height={520}
