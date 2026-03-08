@@ -164,7 +164,7 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <a
                 href="#download"
-                className="hidden items-center gap-2 rounded-full bg-[#E06C2C] px-6 py-3 text-sm font-bold text-white shadow-[0_8px_28px_rgba(224,108,44,0.4)] transition hover:bg-[#c95d24] md:inline-flex"
+                className="hidden items-center gap-2.5 rounded-full bg-[#E06C2C] px-7 py-3.5 text-sm font-bold text-white shadow-[0_8px_28px_rgba(224,108,44,0.45)] transition-all duration-200 hover:bg-[#c95d24] hover:shadow-[0_12px_36px_rgba(224,108,44,0.5)] active:scale-[0.98] md:inline-flex"
               >
                 Download App
                 <ArrowRight className="h-4 w-4" />

@@ -63,28 +63,30 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1,
-h2,
-h3,
-h4 {
-  font-family: var(--font-display), Georgia, serif;
-  letter-spacing: -0.018em;
-  line-height: 1.15;
-  color: var(--ink);
-  text-wrap: balance;
-}
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), Georgia, serif;
+    letter-spacing: -0.018em;
+    line-height: 1.15;
+    color: var(--ink);
+    text-wrap: balance;
+  }
 
-h1 {
-  font-weight: 700;
-}
+  h1 {
+    font-weight: 700;
+  }
 
-h2 {
-  font-weight: 650;
-}
+  h2 {
+    font-weight: 650;
+  }
 
-h3,
-h4 {
-  font-weight: 600;
+  h3,
+  h4 {
+    font-weight: 600;
+  }
 }
 
 p {

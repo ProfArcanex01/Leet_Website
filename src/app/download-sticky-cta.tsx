@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
+import { Download } from 'lucide-react';
 import { detectPlatform, APP_STORE_URL, GOOGLE_PLAY_URL } from '@/lib/device';
 
 export function DownloadStickyCta() {
@@ -9,7 +9,6 @@ export function DownloadStickyCta() {
   const [platform, setPlatform] = useState<'ios' | 'android' | 'unknown'>('unknown');
 
   useEffect(() => {
-    // Detect platform once on mount
     setPlatform(detectPlatform());
 
     const onScroll = () => {
@@ -38,27 +37,36 @@ export function DownloadStickyCta() {
   const label =
     platform === 'ios' ? 'Download for iPhone' :
     platform === 'android' ? 'Download for Android' :
-    'Get Leet (search Leet-carpooling)';
+    'Get Leet';
 
   const isExternal = platform !== 'unknown';
 
+  const buttonClass =
+    'inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#E06C2C] px-6 py-3.5 text-sm font-bold text-white shadow-[0_8px_28px_rgba(224,108,44,0.45)] transition-all duration-200 hover:bg-[#c95d24] hover:shadow-[0_12px_36px_rgba(224,108,44,0.5)] active:scale-[0.98]';
+
   return (
     <>
-      {/* Desktop: floating pill button */}
+      {/* Desktop: floating pill */}
       <a
         href={href}
         {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-        className="fixed bottom-4 right-4 z-50 hidden md:block"
+        className="fixed bottom-6 right-6 z-50 hidden md:inline-flex"
       >
-        <Button className="rounded-full px-5 py-3 text-sm font-semibold shadow-lg">{label}</Button>
+        <span className={buttonClass}>
+          <Download className="h-4 w-4" />
+          {label}
+        </span>
       </a>
-      {/* Mobile: full-width bottom bar */}
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[color:var(--stroke)] bg-white/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-sm md:hidden">
+      {/* Mobile: bottom bar — dark, premium */}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#0A0907]/95 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-md md:hidden">
         <a
           href={href}
           {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
         >
-          <Button className="w-full rounded-full py-3 text-sm font-semibold shadow-lg">{label}</Button>
+          <span className={buttonClass}>
+            <Download className="h-4 w-4" />
+            {label}
+          </span>
         </a>
       </div>
     </>

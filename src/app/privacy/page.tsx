@@ -1,27 +1,36 @@
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-background">
-      <section className="mx-auto max-w-4xl px-6 pb-16 pt-16">
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent)]">
-              Leet Privacy Policy
-            </p>
-            <h1 className="mt-3 text-3xl font-semibold md:text-4xl">Privacy Policy</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Last updated: March 1, 2026</p>
-          </div>
+    <main className="min-h-screen bg-[color:var(--paper)]">
+      {/* Dark header */}
+      <header className="border-b border-white/10 bg-[#0A0907]">
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
+          <Link href="/" className="rounded-xl bg-white/10 px-4 py-2.5 text-lg font-bold tracking-tight text-white backdrop-blur-sm">
+            Leet
+          </Link>
           <Link
             href="/"
-            className="shrink-0 rounded-full border border-[color:var(--stroke)] bg-[color:var(--card)] px-4 py-2 text-xs font-semibold text-[color:var(--ink)] hover:bg-[color:var(--soft)] transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/85 backdrop-blur-sm transition hover:bg-white/10 hover:text-white"
           >
             Back to home
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+      </header>
 
-        <div className="space-y-8 text-sm text-muted-foreground">
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+      <section className="mx-auto max-w-4xl px-6 pb-20 pt-12 md:pt-16">
+        <div className="mb-10">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">
+            Leet Privacy Policy
+          </p>
+          <h1 className="mt-3 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Privacy Policy</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Last updated: March 1, 2026</p>
+        </div>
+
+        <div className="space-y-6 text-sm text-muted-foreground">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">1. Information we collect</h2>
             <p className="mt-3">
               We collect account details (name, phone), ride activity (routes, requests), and device data
@@ -29,7 +38,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">2. Location data</h2>
             <p className="mt-3">
               We use location data to match routes, show live tracking, and confirm pickups. You can manage
@@ -41,7 +50,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">3. How we use data</h2>
             <p className="mt-3">
               We use your data to operate the platform, keep users safe, improve matching, and communicate
@@ -54,7 +63,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">4. Sharing</h2>
             <p className="mt-3">
               Limited information is shared between riders and hosts (names, ratings, pickup locations) to
@@ -67,7 +76,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">5. Data retention</h2>
             <p className="mt-3">
               We keep data as long as your account is active or as needed to comply with legal obligations.
@@ -84,7 +93,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">6. Your choices</h2>
             <p className="mt-3">
               You can update your profile details, manage notifications, and opt out of marketing messages
@@ -102,7 +111,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">7. Cookies and tracking</h2>
             <p className="mt-3">
               Our website uses cookies and similar technologies to remember your preferences, analyse site
@@ -120,7 +129,7 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">8. Security and contact</h2>
             <p className="mt-3">
               We use technical and organizational safeguards to protect personal data, including access controls,
@@ -140,6 +149,17 @@ export default function PrivacyPage() {
           </section>
         </div>
       </section>
+
+      {/* Dark footer */}
+      <footer className="border-t border-[color:var(--stroke)]/60 bg-[#0A0907] px-6 py-6">
+        <div className="mx-auto flex max-w-4xl items-center justify-between">
+          <span className="text-lg font-bold tracking-tight text-white">Leet</span>
+          <p className="text-xs text-white/40">© {new Date().getFullYear()} Leet · Ghana</p>
+          <Link href="/" className="text-sm font-medium text-white/60 transition hover:text-[#E06C2C]">
+            Home
+          </Link>
+        </div>
+      </footer>
     </main>
   );
 }

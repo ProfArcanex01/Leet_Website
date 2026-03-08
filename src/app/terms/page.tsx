@@ -1,27 +1,36 @@
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen bg-background">
-      <section className="mx-auto max-w-4xl px-6 pb-16 pt-16">
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent)]">
-              Leet Terms of Use
-            </p>
-            <h1 className="mt-3 text-3xl font-semibold md:text-4xl">Terms of Use</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Last updated: January 25, 2026</p>
-          </div>
+    <main className="min-h-screen bg-[color:var(--paper)]">
+      {/* Dark header */}
+      <header className="border-b border-white/10 bg-[#0A0907]">
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
+          <Link href="/" className="rounded-xl bg-white/10 px-4 py-2.5 text-lg font-bold tracking-tight text-white backdrop-blur-sm">
+            Leet
+          </Link>
           <Link
             href="/"
-            className="shrink-0 rounded-full border border-[color:var(--stroke)] bg-[color:var(--card)] px-4 py-2 text-xs font-semibold text-[color:var(--ink)] hover:bg-[color:var(--soft)] transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/85 backdrop-blur-sm transition hover:bg-white/10 hover:text-white"
           >
             Back to home
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+      </header>
 
-        <div className="space-y-8 text-sm text-muted-foreground">
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+      <section className="mx-auto max-w-4xl px-6 pb-20 pt-12 md:pt-16">
+        <div className="mb-10">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">
+            Leet Terms of Use
+          </p>
+          <h1 className="mt-3 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Terms of Use</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Last updated: January 25, 2026</p>
+        </div>
+
+        <div className="space-y-6 text-sm text-muted-foreground">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">1. About Leet</h2>
             <p className="mt-3">
               Leet connects riders with hosts who share planned routes. The service helps users coordinate
@@ -30,7 +39,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">2. Eligibility & accounts</h2>
             <p className="mt-3">
               You must be at least 18 years old, provide accurate information, and keep your account secure.
@@ -43,7 +52,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">3. Host responsibilities</h2>
             <p className="mt-3">
               Hosts are responsible for vehicle condition, safe driving, and honoring confirmed ride requests.
@@ -51,7 +60,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">4. Rider responsibilities</h2>
             <p className="mt-3">
               Riders must follow pickup instructions, respect hosts and vehicles, and pay the fare shown in-app.
@@ -59,7 +68,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">5. Payments & fees</h2>
             <p className="mt-3">
               Fares are set and displayed before you ride. Payment is processed through in-app methods.
@@ -79,7 +88,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">6. Cancellations</h2>
             <p className="mt-3">
               Riders and hosts should avoid last-minute cancellations. Repeated cancellations may result in
@@ -91,7 +100,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">7. Safety & community</h2>
             <p className="mt-3">
               Leet expects respectful behavior, accurate identity details, and adherence to safety guidelines.
@@ -103,7 +112,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">8. Changes to these terms</h2>
             <p className="mt-3">
               We may update these terms from time to time. The latest version is always posted here.
@@ -111,6 +120,17 @@ export default function TermsPage() {
           </section>
         </div>
       </section>
+
+      {/* Dark footer */}
+      <footer className="border-t border-[color:var(--stroke)]/60 bg-[#0A0907] px-6 py-6">
+        <div className="mx-auto flex max-w-4xl items-center justify-between">
+          <span className="text-lg font-bold tracking-tight text-white">Leet</span>
+          <p className="text-xs text-white/40">© {new Date().getFullYear()} Leet · Ghana</p>
+          <Link href="/" className="text-sm font-medium text-white/60 transition hover:text-[#E06C2C]">
+            Home
+          </Link>
+        </div>
+      </footer>
     </main>
   );
 }

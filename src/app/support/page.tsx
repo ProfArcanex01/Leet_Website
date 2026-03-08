@@ -1,28 +1,37 @@
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { SupportForm } from './support-form';
 
 export default function SupportPage() {
   return (
-    <main className="min-h-screen bg-background">
-      <section className="mx-auto max-w-4xl px-6 pb-16 pt-16">
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[color:var(--accent)]">
-              Help & Support
-            </p>
-            <h1 className="mt-3 text-3xl font-semibold md:text-4xl">We&apos;re here to help</h1>
-            <p className="mt-2 text-sm text-muted-foreground">Last updated: February 11, 2026</p>
-          </div>
+    <main className="min-h-screen bg-[color:var(--paper)]">
+      {/* Dark header */}
+      <header className="border-b border-white/10 bg-[#0A0907]">
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
+          <Link href="/" className="rounded-xl bg-white/10 px-4 py-2.5 text-lg font-bold tracking-tight text-white backdrop-blur-sm">
+            Leet
+          </Link>
           <Link
             href="/"
-            className="shrink-0 rounded-full border border-[color:var(--stroke)] bg-[color:var(--card)] px-4 py-2 text-xs font-semibold text-[color:var(--ink)] transition-colors hover:bg-[color:var(--soft)]"
+            className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/85 backdrop-blur-sm transition hover:bg-white/10 hover:text-white"
           >
             Back to home
+            <ArrowRight className="h-4 w-4" />
           </Link>
+        </div>
+      </header>
+
+      <section className="mx-auto max-w-4xl px-6 pb-20 pt-12 md:pt-16">
+        <div className="mb-10">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">
+            Help & Support
+          </p>
+          <h1 className="mt-3 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">We&apos;re here to help</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Get in touch for ride issues, account help, or general questions.</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">In-app support</h2>
             <p className="mt-3 text-sm text-muted-foreground">
               Open the Leet app and go to <span className="font-semibold text-[color:var(--ink)]">Help & Support</span> for
@@ -30,7 +39,7 @@ export default function SupportPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">Email support</h2>
             <p className="mt-3 text-sm text-muted-foreground">
               For non-urgent questions or if you can&apos;t access the app, email us at{' '}
@@ -46,7 +55,7 @@ export default function SupportPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">Safety concerns</h2>
             <p className="mt-3 text-sm text-muted-foreground">
               If something feels unsafe during a ride, report it immediately through the app. We review all safety
@@ -61,7 +70,7 @@ export default function SupportPage() {
             </p>
           </section>
 
-          <section className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
+          <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">Refunds & disputes</h2>
             <p className="mt-3 text-sm text-muted-foreground">
               Payment disputes are handled through the in-app Help & Support flow. We may request trip details and
@@ -77,7 +86,7 @@ export default function SupportPage() {
           </section>
         </div>
 
-        <section className="mt-10 rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)] md:p-8">
+        <section className="mt-10 rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
           <h2 className="text-lg font-semibold text-[color:var(--ink)]">Send us a message</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Fill out the form below and we&apos;ll get back to you as soon as possible.
@@ -87,6 +96,17 @@ export default function SupportPage() {
           </div>
         </section>
       </section>
+
+      {/* Dark footer */}
+      <footer className="border-t border-[color:var(--stroke)]/60 bg-[#0A0907] px-6 py-6">
+        <div className="mx-auto flex max-w-4xl items-center justify-between">
+          <span className="text-lg font-bold tracking-tight text-white">Leet</span>
+          <p className="text-xs text-white/40">© {new Date().getFullYear()} Leet · Ghana</p>
+          <Link href="/" className="text-sm font-medium text-white/60 transition hover:text-[#E06C2C]">
+            Home
+          </Link>
+        </div>
+      </footer>
     </main>
   );
 }
