@@ -155,7 +155,7 @@ export default function Home() {
         <div className="relative mx-auto max-w-6xl px-6 pt-8 pb-20 md:px-12 md:pb-28 md:pt-12">
           <nav className="flex items-center justify-between">
             <span className="rounded-xl bg-white/10 px-4 py-2.5 text-xl font-bold tracking-tight text-white backdrop-blur-sm">Leet</span>
-            <div className="hidden items-center gap-8 text-sm text-white/70 md:flex">
+            <div className="hidden items-center gap-8 text-base text-white/70 md:flex">
               <a className="transition hover:text-white" href="#how">How it works</a>
               <a className="transition hover:text-white" href="#trust">Trust & safety</a>
               <a className="transition hover:text-white" href="#faqs">FAQ</a>
@@ -164,7 +164,7 @@ export default function Home() {
             <div className="flex items-center gap-3">
               <a
                 href="#download"
-                className="hidden items-center gap-2.5 rounded-full bg-[#E06C2C] px-7 py-3.5 text-sm font-bold text-white shadow-[0_8px_28px_rgba(224,108,44,0.45)] transition-all duration-200 hover:bg-[#c95d24] hover:shadow-[0_12px_36px_rgba(224,108,44,0.5)] active:scale-[0.98] md:inline-flex"
+                className="hidden items-center gap-2.5 rounded-full bg-[#E06C2C] px-7 py-3.5 text-base font-bold text-white shadow-[0_8px_28px_rgba(224,108,44,0.45)] transition-all duration-200 hover:bg-[#c95d24] hover:shadow-[0_12px_36px_rgba(224,108,44,0.5)] active:scale-[0.98] md:inline-flex"
               >
                 Download App
                 <ArrowRight className="h-4 w-4" />
@@ -175,14 +175,7 @@ export default function Home() {
 
           <div id="download" className="mt-14 grid gap-12 md:mt-24 md:grid-cols-[1.1fr_0.9fr] md:gap-16 md:items-center">
             <div className="flex flex-col items-center text-center md:items-start md:text-left">
-              <p className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/6 px-4 py-2 text-xs font-medium text-white/70 backdrop-blur-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E06C2C] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#E06C2C]" />
-                </span>
-                Now live on iOS &amp; Android
-              </p>
-              <h1 className="mt-6 text-balance text-3xl font-bold leading-tight sm:text-4xl md:text-5xl lg:text-6xl" style={{ color: 'white' }}>
+              <h1 className="text-balance text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl" style={{ color: 'white' }}>
                 Share your route.
                 <br />
                 <span
@@ -196,13 +189,13 @@ export default function Home() {
                   Ride together. Split the cost.
                 </span>
               </h1>
-              <p className="mt-6 max-w-xl text-base text-white/65 sm:text-lg">
+              <p className="mt-6 max-w-xl text-lg text-white/65 sm:text-xl">
                 Leet connects riders with hosts already going the same way. It&apos;s real carpooling: hosts share their route, riders book a seat, everyone saves. Riders can share live trip progress with trusted contacts.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5 md:justify-start">
-                <span className="rounded-full border border-white/15 bg-white/8 px-3.5 py-1.5 text-xs font-medium text-white/60">Route-first</span>
-                <span className="rounded-full border border-white/15 bg-white/8 px-3.5 py-1.5 text-xs font-medium text-white/60">Book a seat</span>
-                <span className="rounded-full border border-white/15 bg-white/8 px-3.5 py-1.5 text-xs font-medium text-white/60">Split the fare</span>
+                <span className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm font-medium text-white/60">Route-first</span>
+                <span className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm font-medium text-white/60">Book a seat</span>
+                <span className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm font-medium text-white/60">Split the fare</span>
               </div>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
                 <a
@@ -224,14 +217,14 @@ export default function Home() {
                   <Image src="/play-store.svg" alt="Get it on Google Play" width={190} height={56} className="h-12 w-auto sm:h-11" />
                 </a>
               </div>
-              <p className="mt-3 text-xs text-white/45">
+              <p className="mt-3 text-sm text-white/45">
                 Can&apos;t find it? Search <span className="font-semibold text-white/70">Leet-carpooling</span> in the store.
               </p>
             </div>
             <div className="relative flex justify-center md:justify-end">
               <div className="relative w-[280px] flex-shrink-0 sm:w-[300px] md:w-[320px] phone-mockup" aria-hidden>
                 <div className="absolute -top-4 left-6 z-20">
-                  <span className="phone-tag inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/30 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#f0b48c] backdrop-blur-sm">
+                  <span className="phone-tag inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/30 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#f0b48c] backdrop-blur-sm">
                     <span className="relative flex h-2 w-2">
                       <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E06C2C] opacity-60" />
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-[#E06C2C]" />
