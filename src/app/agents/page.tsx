@@ -78,7 +78,7 @@ export default function AgentsPage() {
 
         {/* Full-bleed banner image */}
         <Image
-          src="/recruit_driver_3.png"
+          src="/recruit_driver_5.png"
           alt="Leet agent recruiting a driver"
           fill
           className="object-cover object-center"
