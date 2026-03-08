@@ -74,21 +74,30 @@ export default function AgentsPage() {
     <main className="min-h-screen overflow-x-hidden bg-[color:var(--paper)]">
 
       {/* ─── HERO ─────────────────────────────────────────── */}
-      <section className="relative isolate overflow-hidden bg-[#0E0C09]">
-        {/* Orb glows */}
-        <div
-          className="orb-1 pointer-events-none absolute -left-64 -top-64 h-[700px] w-[700px] rounded-full opacity-60"
-          style={{ background: 'radial-gradient(circle, rgba(224,108,44,0.35) 0%, transparent 68%)' }}
-          aria-hidden
+      <section className="relative isolate min-h-[92vh] overflow-hidden bg-[#0A0907]">
+
+        {/* Full-bleed banner image */}
+        <Image
+          src="/recruit_driver_3.png"
+          alt="Leet agent recruiting a driver"
+          fill
+          className="object-cover object-center"
+          priority
+          sizes="100vw"
         />
+
+        {/* Left gradient: dark where text sits, fades right so image stays bright */}
         <div
-          className="orb-2 pointer-events-none absolute -right-48 top-1/4 h-[600px] w-[600px] rounded-full opacity-50"
-          style={{ background: 'radial-gradient(circle, rgba(30,111,92,0.30) 0%, transparent 68%)' }}
+          className="absolute inset-0 z-[1]"
+          style={{
+            background:
+              'linear-gradient(to right, rgba(10,9,7,0.92) 0%, rgba(10,9,7,0.78) 28%, rgba(10,9,7,0.35) 55%, transparent 85%)',
+          }}
           aria-hidden
         />
 
         {/* Nav */}
-        <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 pt-8 md:px-12 md:pt-10">
+        <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 pt-8 md:px-12 md:pt-10">
           <Link
             href="/"
             className="flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-5 py-2.5 text-sm font-semibold text-white/80 backdrop-blur-sm transition hover:bg-white/12 hover:text-white"
@@ -96,21 +105,24 @@ export default function AgentsPage() {
             <ArrowRight className="h-4 w-4 rotate-180 opacity-70" />
             Leet
           </Link>
-          <span className="flex items-center gap-2.5 rounded-full border border-[#E06C2C]/35 bg-[#E06C2C]/12 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.22em] text-[#f0b48c]">
+          <span className="flex items-center gap-2.5 rounded-full border border-[#E06C2C]/35 bg-[#E06C2C]/12 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.22em] text-[#f0b48c] backdrop-blur-sm">
             <span className="live-dot h-1.5 w-1.5 rounded-full bg-[#f0b48c]" />
             Now recruiting
           </span>
         </div>
 
-        {/* Hero copy */}
-        <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-16 md:px-12 md:pb-28 md:pt-24">
-          <div className="max-w-4xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-4 py-2 text-sm font-medium text-white/55">
+        {/* Copy — left-aligned, max half width so image shows on the right */}
+        <div className="relative z-10 mx-auto flex max-w-7xl flex-col justify-center px-6 pb-28 pt-14 md:px-12 md:pb-32 md:pt-20">
+          <div className="max-w-xl">
+            <p className="inline-flex w-fit items-center gap-2 rounded-full border border-white/15 bg-black/25 px-4 py-2 text-sm font-medium text-white/85 backdrop-blur-sm" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.35)' }}>
               <Flame className="h-4 w-4 text-[#f0b48c]" />
               Field recruitment · Ghana
             </p>
 
-            <h1 className="mt-8 text-[clamp(2.6rem,7vw,5.5rem)] font-bold leading-[1.0] tracking-tight" style={{ color: 'white' }}>
+            <h1
+              className="mt-7 text-[clamp(2.8rem,5.5vw,4.8rem)] font-bold leading-[1.02] tracking-tight"
+              style={{ color: 'white', textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}
+            >
               Recruit drivers.<br />
               <span
                 style={{
@@ -118,38 +130,42 @@ export default function AgentsPage() {
                   WebkitBackgroundClip: 'text',
                   backgroundClip: 'text',
                   backgroundImage: 'linear-gradient(100deg, #f5c49a 0%, #E06C2C 60%)',
+                  filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.4))',
                 }}
               >
                 Earn on every activation.
               </span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/60 md:text-xl">
-              You meet drivers where they already are — washing bays, fuel stations, mechanics. Help them join Leet and get credited when they go live. No experience needed.
+            <p className="mt-6 text-base leading-relaxed text-white/90 md:text-lg" style={{ textShadow: '0 1px 12px rgba(0,0,0,0.45)' }}>
+              You meet drivers where they already are — washing bays, fuel stations, mechanics. Help them join Leet and get credited when they go live.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <p className="mt-2.5 text-sm font-semibold text-white/80" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>No experience needed.</p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
                 href="#apply"
-                className="group inline-flex items-center gap-2.5 rounded-full bg-[#E06C2C] px-8 py-4 text-base font-bold text-white shadow-[0_12px_36px_rgba(224,108,44,0.45)] transition-all duration-300 hover:bg-[#c95d24] hover:shadow-[0_16px_48px_rgba(224,108,44,0.5)]"
+                className="group inline-flex items-center gap-2.5 rounded-full bg-[#E06C2C] px-8 py-4 text-sm font-bold text-white shadow-[0_12px_36px_rgba(224,108,44,0.5)] transition-all duration-300 hover:bg-[#c95d24] hover:shadow-[0_16px_48px_rgba(224,108,44,0.55)]"
               >
-                Apply — it's free
-                <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                Apply — it&apos;s free
+                <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
               </a>
               <a
                 href="#how"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/7 px-7 py-4 text-base font-medium text-white/80 backdrop-blur-sm transition hover:bg-white/10 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-7 py-4 text-sm font-medium text-white/85 backdrop-blur-sm transition hover:bg-black/40 hover:text-white"
               >
                 How it works
               </a>
             </div>
 
-            {/* Pill tags */}
-            <div className="mt-10 flex flex-wrap gap-3">
+            {/* Feature pills */}
+            <div className="mt-8 flex flex-wrap gap-2.5">
               {['Performance-based', 'Mobile-first', 'WhatsApp follow-up', 'No resume needed'].map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full border border-white/10 bg-white/6 px-4 py-2 text-xs font-medium text-white/50"
+                  className="rounded-full border border-white/20 bg-black/35 px-4 py-1.5 text-xs font-medium text-white/80 backdrop-blur-sm"
+                  style={{ textShadow: '0 1px 4px rgba(0,0,0,0.3)' }}
                 >
                   {tag}
                 </span>
@@ -159,10 +175,10 @@ export default function AgentsPage() {
         </div>
 
         {/* Marquee ticker */}
-        <div className="overflow-hidden border-t border-white/8 bg-white/4">
+        <div className="absolute bottom-0 left-0 right-0 z-10 overflow-hidden border-t border-white/8 bg-black/40 backdrop-blur-sm">
           <div className="animate-marquee flex whitespace-nowrap py-3.5">
             {ticker.map((item, i) => (
-              <span key={i} className="mx-7 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.14em] text-white/40">
+              <span key={i} className="mx-7 flex items-center gap-3 text-xs font-medium uppercase tracking-[0.14em] text-white/45">
                 <span className="h-1 w-1 rounded-full bg-[#E06C2C]" />
                 {item}
               </span>
