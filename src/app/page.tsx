@@ -555,7 +555,41 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="newsletter" className="mx-auto max-w-6xl px-6 pb-20">
+      {/* Become an agent — uses recruit_driver_5 */}
+      <section className="bg-[#0A0907] py-16 md:py-24">
+        <div className="mx-auto max-w-6xl px-6 md:px-12">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <div className="relative overflow-hidden rounded-[2rem] shadow-[0_32px_72px_rgba(0,0,0,0.35)]">
+              <Image
+                src="/recruit_driver_5.webp"
+                alt="Leet agents recruiting drivers in the field"
+                width={720}
+                height={480}
+                className="w-full object-cover object-center"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f0b48c]">Join the team</p>
+              <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">
+                Become a Leet agent. Recruit drivers, earn on every activation.
+              </h2>
+              <p className="mt-5 text-white/65">
+                Meet drivers where they are — washing bays, fuel stations, mechanics. Help them go live on Leet and get credited for every real activation. No experience needed.
+              </p>
+              <Link
+                href="/agents"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#E06C2C] px-7 py-4 text-base font-bold text-white shadow-[0_8px_28px_rgba(224,108,44,0.45)] transition hover:bg-[#c95d24]"
+              >
+                Apply to become an agent
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="newsletter" className="mx-auto max-w-6xl px-6 pt-16 pb-20">
         <Card className="rounded-[36px] border-[color:var(--stroke)] bg-white shadow-[0_8px_32px_rgba(21,19,15,0.08)]">
           <CardContent className="p-8 text-center md:p-12">
             <h2 className="text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Stay in the loop.</h2>

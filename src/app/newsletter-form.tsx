@@ -68,7 +68,7 @@ export function NewsletterForm({ idPrefix = 'nl', align = 'center', platform = '
 
   return (
     <div className="mt-8">
-      <form onSubmit={handleSubmit} className={`flex max-w-md gap-3 ${isCenter ? 'mx-auto' : ''} flex-col sm:flex-row`}>
+      <form onSubmit={handleSubmit} className={`flex max-w-md gap-4 ${isCenter ? 'mx-auto' : ''} flex-col sm:flex-row`}>
         {/* Honeypot — hidden from real users, bots will fill it */}
         <div aria-hidden="true" className="absolute -left-[9999px] -top-[9999px] h-0 w-0 overflow-hidden">
           <label htmlFor={honeypotId}>Website</label>
