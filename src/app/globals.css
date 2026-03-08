@@ -134,6 +134,53 @@ button, a {
   }
 }
 
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+
+@keyframes orb-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.08); }
+  66% { transform: translate(-20px, 20px) scale(0.96); }
+}
+@keyframes orb-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-35px, 25px) scale(0.95); }
+  66% { transform: translate(30px, -20px) scale(1.06); }
+}
+@keyframes orb-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, 30px) scale(1.04); }
+}
+
+.orb-1 { animation: orb-drift-1 12s ease-in-out infinite; }
+.orb-2 { animation: orb-drift-2 16s ease-in-out infinite; }
+.orb-3 { animation: orb-drift-3 10s ease-in-out infinite; }
+
+@keyframes counter-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224,108,44,0); }
+  50% { box-shadow: 0 0 32px 8px rgba(224,108,44,0.18); }
+}
+.counter-glow { animation: counter-glow 3s ease-in-out infinite; }
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+.live-dot { animation: live-pulse 1.8s ease-in-out infinite; }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up 0.7s ease both; }
+
 @keyframes phone-float {
   0%, 100% {
     transform: translateY(0);

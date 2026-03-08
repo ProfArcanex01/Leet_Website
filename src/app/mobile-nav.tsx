@@ -17,6 +17,7 @@ const links = [
   { href: '#how', label: 'How it works' },
   { href: '#trust', label: 'Trust & safety' },
   { href: '#faqs', label: 'FAQ' },
+  { href: '/agents', label: 'Become an agent' },
   { href: '/support', label: 'Support' },
 ];
 

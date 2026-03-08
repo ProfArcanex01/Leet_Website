@@ -29,6 +29,7 @@ const navItems: NavItem[] = [
   { label: 'Rides', href: '/ops-9xk3/rides', description: 'Ride history & status' },
   { label: 'System', href: '/ops-9xk3/system', description: 'Pricing & configuration' },
   { label: 'Waitlist', href: '/ops-9xk3/waitlist', description: 'Launch waitlist signups' },
+  { label: 'Agents', href: '/ops-9xk3/agents', description: 'Recruitment applications' },
   { label: 'Support', href: '/ops-9xk3/support', description: 'Support tickets & reports' },
 ];
 

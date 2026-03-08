@@ -150,6 +150,9 @@ export default function Home() {
             <a className="hover:text-[color:var(--ink)]" href="#faqs">
               FAQ
             </a>
+            <Link className="hover:text-[color:var(--ink)]" href="/agents">
+              Become an agent
+            </Link>
           </div>
           <div className="flex items-center gap-3">
             <Button asChild className="hidden rounded-full px-6 text-sm font-semibold shadow-[var(--shadow)] md:inline-flex">
