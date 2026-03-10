@@ -45,7 +45,7 @@ export default function PrivacyPage() {
               location permissions in your device settings, but some features may not work without it.
             </p>
             <p className="mt-3">
-              If a rider enables Safety Share, we process live trip coordinates, timestamps, and trip status
+              If a passenger enables Safety Share, we process live trip coordinates, timestamps, and trip status
               so a trusted contact can view trip progress through a temporary share link.
             </p>
           </section>
@@ -66,13 +66,13 @@ export default function PrivacyPage() {
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">4. Sharing</h2>
             <p className="mt-3">
-              Limited information is shared between riders and hosts (names, ratings, pickup locations) to
+              Limited information is shared between passengers and drivers (names, ratings, pickup locations) to
               complete rides. We may share data with service providers for payment processing and analytics.
             </p>
             <p className="mt-3">
-              For Safety Share, trip information is disclosed to anyone with the active share link. Riders
+              For Safety Share, trip information is disclosed to anyone with the active share link. Passengers
               should only share this link with trusted contacts. Links are temporary and can be stopped,
-              paused, resumed, or revoked by the rider.
+              paused, resumed, or revoked by the passenger.
             </p>
           </section>
 
@@ -87,7 +87,7 @@ export default function PrivacyPage() {
               fraud investigation, dispute handling, and legal compliance.
             </p>
             <p className="mt-3">
-              Safety Share sessions are temporary by design. Active sessions expire automatically, and riders
+              Safety Share sessions are temporary by design. Active sessions expire automatically, and passengers
               can end sharing at any time. We may retain limited session and access-log records for security,
               abuse prevention, incident response, and legal compliance.
             </p>
@@ -106,7 +106,7 @@ export default function PrivacyPage() {
               dispute-resolution purposes.
             </p>
             <p className="mt-3">
-              Riders control Safety Share directly in the app and can pause, resume, stop, or revoke sharing
+              Passengers control Safety Share directly in the app and can pause, resume, stop, or revoke sharing
               during an active ride.
             </p>
           </section>

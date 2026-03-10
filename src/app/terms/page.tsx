@@ -33,9 +33,10 @@ export default function TermsPage() {
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">1. About Leet</h2>
             <p className="mt-3">
-              Leet connects riders with hosts who share planned routes. The service helps users coordinate
-              pickup, tracking, and payment for rides. We do not operate vehicles; we provide the platform
-              to help users arrange rides.
+              Leet connects passengers with drivers who share planned routes. Inside the app, drivers are
+              referred to as Hosts and passengers are referred to as Riders. The service helps users coordinate
+              pickup, tracking, and payment for rides. We do not operate vehicles; we provide the platform to
+              help users arrange rides.
             </p>
           </section>
 
@@ -43,7 +44,7 @@ export default function TermsPage() {
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">2. Eligibility & accounts</h2>
             <p className="mt-3">
               You must be at least 18 years old, provide accurate information, and keep your account secure.
-              Hosts must maintain valid driving documents and comply with applicable local laws.
+              Drivers (Hosts) must maintain valid driving documents and comply with applicable local laws.
             </p>
             <p className="mt-3">
               Leet may require an invitation or referral code for account activation. Referral tools are
@@ -53,18 +54,18 @@ export default function TermsPage() {
           </section>
 
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
-            <h2 className="text-lg font-semibold text-[color:var(--ink)]">3. Host responsibilities</h2>
+            <h2 className="text-lg font-semibold text-[color:var(--ink)]">3. Driver responsibilities</h2>
             <p className="mt-3">
-              Hosts are responsible for vehicle condition, safe driving, and honoring confirmed ride requests.
-              Hosts control who joins their routes, and must follow Leet safety policies and community standards.
+              Drivers (Hosts) are responsible for vehicle condition, safe driving, and honoring confirmed ride requests.
+              Drivers control who joins their routes, and must follow Leet safety policies and community standards.
             </p>
           </section>
 
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
-            <h2 className="text-lg font-semibold text-[color:var(--ink)]">4. Rider responsibilities</h2>
+            <h2 className="text-lg font-semibold text-[color:var(--ink)]">4. Passenger responsibilities</h2>
             <p className="mt-3">
-              Riders must follow pickup instructions, respect hosts and vehicles, and pay the fare shown in-app.
-              Riders agree to provide feedback after completed rides when prompted.
+              Passengers (Riders) must follow pickup instructions, respect drivers and vehicles, and pay the fare shown in-app.
+              Passengers agree to provide feedback after completed rides when prompted.
             </p>
           </section>
 
@@ -75,7 +76,7 @@ export default function TermsPage() {
               Leet may charge a service fee to support platform operations.
             </p>
             <p className="mt-3">
-              For hosts, Leet applies a platform fee as a percentage of weekly completed-ride revenue.
+              For drivers, Leet applies a platform fee as a percentage of weekly completed-ride revenue.
               The applicable percentage is determined by Leet and may be updated with notice.
             </p>
             <p className="mt-3">
@@ -91,7 +92,7 @@ export default function TermsPage() {
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
             <h2 className="text-lg font-semibold text-[color:var(--ink)]">6. Cancellations</h2>
             <p className="mt-3">
-              Riders and hosts should avoid last-minute cancellations. Repeated cancellations may result in
+              Passengers and drivers should avoid last-minute cancellations. Repeated cancellations may result in
               account limits. Specific timing rules are shown in-app.
             </p>
             <p className="mt-3">

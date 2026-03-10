@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s | Leet",
   },
   description:
-    "Leet connects riders and hosts on reliable routes for safer, cheaper commuting in Ghana.",
+    "Leet connects passengers and drivers on reliable routes for safer, cheaper commuting in Ghana.",
   keywords: [
     "carpooling",
     "ride sharing",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     siteName: "Leet",
     title: "Leet — Commute smarter",
     description:
-      "Share your existing route. Ride together. Split the cost. Leet matches riders with hosts already driving the same way.",
+      "Share your existing route. Ride together. Split the cost. Leet matches passengers with drivers already going the same way.",
     url: siteUrl,
     images: [
       {

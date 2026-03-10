@@ -13,11 +13,11 @@ import { DollarSign, Navigation, Route, CheckCircle2, Star, UserRound, Car, MapP
 export const metadata: Metadata = {
   title: 'Leet — Commute smarter',
   description:
-    'Share your existing route. Ride together. Split the cost. Leet matches riders with hosts on reliable routes for safer, cheaper commuting in Ghana.',
+    'Share your existing route. Ride together. Split the cost. Leet matches passengers with drivers on reliable routes for safer, cheaper commuting in Ghana.',
   openGraph: {
     title: 'Leet — Commute smarter',
     description:
-      'Share your existing route. Ride together. Split the cost. Leet matches riders with hosts already driving the same way.',
+      'Share your existing route. Ride together. Split the cost. Leet matches passengers with drivers already going the same way.',
   },
   twitter: {
     title: 'Leet — Commute smarter',
@@ -27,16 +27,16 @@ export const metadata: Metadata = {
 
 const steps = [
   {
-    title: 'For riders',
+    title: 'For passengers',
     steps: [
       'Search a route that matches yours',
-      'Request a seat from a verified host',
+      'Request a seat from a verified driver',
       'Track your ride, share with trusted contacts, and pay in-app',
     ],
   },
   {
-    title: 'For hosts',
-    steps: ['Plan a route you already drive', 'Review and approve rider requests', 'Earn per seat, every trip'],
+    title: 'For drivers',
+    steps: ['Plan a route you already drive', 'Review and approve passenger requests', 'Earn per seat, every trip'],
   },
 ];
 
@@ -53,7 +53,7 @@ const features = [
   },
   {
     title: 'Route-first matching',
-    copy: 'Riders join planned routes instead of requesting random pickups. Every trip is reliable and repeatable.',
+    copy: 'Passengers join planned routes instead of requesting random pickups. Every trip is reliable and repeatable.',
     icon: Route,
   },
 ];
@@ -62,17 +62,17 @@ const features = [
 const comingSoonFeatures = [
   {
     title: 'Route intelligence',
-    copy: 'Detects overlapping routes in real time to connect the right riders with the right hosts.',
+    copy: 'Detects overlapping routes in real time to connect the right passengers with the right drivers.',
     image: '/adaptiv-routing.png',
   },
   {
     title: 'Smart pricing',
-    copy: 'Demand-based fare suggestions that help hosts earn more without guessing.',
+    copy: 'Demand-based fare suggestions that help drivers earn more without guessing.',
     image: '/ai-commute-2.svg',
   },
   {
     title: 'Demand insights',
-    copy: 'Seat fill predictions so hosts can plan better and riders always find a spot.',
+    copy: 'Seat fill predictions so drivers can plan better and passengers always find a spot.',
     image: '/ai-commute-3.svg',
   },
 ];
@@ -86,19 +86,19 @@ const routes = [
 const faqs = [
   {
     title: 'How is Leet different from Uber or Bolt?',
-    copy: 'Leet is not ride-hailing. Hosts share routes they already drive \u2014 riders join those existing trips. It\'s carpooling, not on-demand taxi service.',
+    copy: 'Leet is not ride-hailing. Drivers share routes they already drive, and passengers join those existing trips. It\'s carpooling, not on-demand taxi service.',
   },
   {
-    title: 'How do I become a host?',
-    copy: 'Sign up, verify your phone and email, then add your vehicle details (make, model, plate number, and capacity). Once your vehicle is set up, you can start planning routes and accepting riders.',
+    title: 'How do I become a driver?',
+    copy: 'Sign up, verify your phone and email, then add your vehicle details (make, model, plate number, and capacity). Once your vehicle is set up, you can start planning routes and accepting passengers.',
   },
   {
     title: 'What are the payment methods?',
-    copy: 'Leet supports Mobile Money (including MTN MoMo), credit/debit cards, bank accounts, and cash. Riders pay during or after the ride, and hosts confirm receipt before completing the trip.',
+    copy: 'Leet supports Mobile Money (including MTN MoMo), credit/debit cards, bank accounts, and cash. Passengers pay during or after the ride, and drivers confirm receipt before completing the trip.',
   },
   {
-    title: 'What happens if a host cancels?',
-    copy: 'If a host cancels a ride or deactivates a route, all affected riders are notified immediately and their seats are freed. Cancel as early as possible so riders can find alternatives.',
+    title: 'What happens if a driver cancels?',
+    copy: 'If a driver cancels a ride or deactivates a route, all affected passengers are notified immediately and their seats are freed. Cancel as early as possible so passengers can find alternatives.',
   },
   {
     title: 'What cities is Leet available in?',
@@ -109,8 +109,8 @@ const faqs = [
     copy: 'No. You can use Leet for any repeatable route \u2014 work, school, or weekend trips between cities.',
   },
   {
-    title: 'Can hosts choose who rides with them?',
-    copy: 'Yes. Hosts review every request and decide who joins before confirming seats.',
+    title: 'Can drivers choose who rides with them?',
+    copy: 'Yes. Drivers review every request and decide who joins before confirming seats.',
   },
   {
     title: 'What platforms is Leet available on?',
@@ -118,7 +118,7 @@ const faqs = [
   },
   {
     title: 'How does Safety Share work?',
-    copy: 'During an active ride, riders can generate a temporary Safety Share link and send it to trusted contacts. Contacts can view live trip updates while the session is active. Riders can pause, resume, or stop sharing at any time.',
+    copy: 'During an active ride, passengers can generate a temporary Safety Share link and send it to trusted contacts. Contacts can view live trip updates while the session is active. Passengers can pause, resume, or stop sharing at any time.',
   },
 ];
 
@@ -126,7 +126,7 @@ const testimonials = [
   {
     quote: 'I cut my weekly transport cost by about 30% and now have a consistent Kasoa → Accra ride every weekday.',
     name: 'Ama K.',
-    role: 'Rider',
+    role: 'Passenger',
     route: 'Kasoa → Accra',
     trips: 34,
     stars: 5,
@@ -134,7 +134,7 @@ const testimonials = [
   {
     quote: 'I share my usual Accra → Oyibi route after work, when traffic is packed and people are waiting for a lift, and my seats still fill without changing my normal commute.',
     name: 'Kwesi A.',
-    role: 'Host',
+    role: 'Driver',
     route: 'Accra → Oyibi',
     trips: 61,
     stars: 5,
@@ -142,7 +142,7 @@ const testimonials = [
   {
     quote: 'Pickup times are clearer than other options, and I can see a host\u2019s ratings and verified details before I request a seat.',
     name: 'Efua M.',
-    role: 'Rider',
+    role: 'Passenger',
     route: 'Tema → Accra',
     trips: 12,
     stars: 4,
@@ -206,7 +206,7 @@ export default function Home() {
                 </span>
               </h1>
               <p className="mt-6 max-w-xl text-lg text-white/65 sm:text-xl">
-                Leet connects riders with hosts already going the same way. It&apos;s real carpooling: hosts share their route, riders book a seat, everyone saves. Riders can share live trip progress with trusted contacts.
+                Leet connects passengers with drivers already going the same way. It&apos;s real carpooling: drivers share their route, passengers book a seat, everyone saves. Passengers can share live trip progress with trusted contacts.
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5 md:justify-start">
                 <span className="rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm font-medium text-white/60">Route-first</span>
@@ -275,7 +275,7 @@ export default function Home() {
           </p>
           <h2 className="text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Built around the routes you already take.</h2>
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            Hosts plan routes they drive every day. Riders search, request a seat, and pay — all in the app. No middleman, no surge.
+            Drivers plan routes they drive every day. Passengers search, request a seat, and pay — all in the app. No middleman, no surge.
           </p>
         </Reveal>
 
@@ -426,16 +426,16 @@ export default function Home() {
                 <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">Trust & safety</p>
                 <h2 className="mt-4 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Ride with people you can rely on.</h2>
                 <p className="mt-4 text-muted-foreground">
-                  Every host is verified, riders are rated after each trip, and routes are visible before you request a
+                  Every driver is verified, passengers are rated after each trip, and routes are visible before you request a
                   seat. You always know who you&apos;re riding with.
                 </p>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  Riders can also use Safety Share to send a temporary live trip link to trusted contacts and end sharing anytime.
+                  Passengers can also use Safety Share to send a temporary live trip link to trusted contacts and end sharing anytime.
                 </p>
                 <div className="mt-6 grid gap-4 text-sm text-muted-foreground md:grid-cols-2">
                   {[
                     'Identity verification',
-                    'Rider & host ratings',
+                    'Passenger & driver ratings',
                     'Secure in-app payments',
                     'Verified vehicle details',
                     'Live trip sharing',
@@ -472,7 +472,7 @@ export default function Home() {
       <section id="earnings" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
         <div className="grid gap-12 md:grid-cols-[1fr_auto] md:items-center md:gap-16">
           <Reveal className="flex flex-col items-center text-center md:items-start md:text-left">
-            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">For hosts</p>
+            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">For drivers</p>
             <h2 className="mt-4 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">See your earnings at a glance.</h2>
             <p className="mt-4 max-w-xl text-muted-foreground">
               Track gross earnings, platform fees, and recent payouts by day, week, or month. Everything in one place — no spreadsheets.
@@ -494,7 +494,7 @@ export default function Home() {
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--accent-2)] opacity-60" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--accent-2)]" />
                   </span>
-                  Host earnings
+                  Driver earnings
                 </span>
               </div>
               <div className="relative overflow-hidden rounded-[2.75rem] border-[10px] border-[color:var(--ink)] bg-[color:var(--ink)] shadow-[0_40px_80px_rgba(21,19,15,0.25),0_0_0_1px_rgba(21,19,15,0.08)]">
@@ -538,7 +538,7 @@ export default function Home() {
       <section className="mx-auto max-w-6xl px-6 pb-10 md:pb-16">
         <Reveal className="mb-8 text-center">
           <p className="mx-auto text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent)]">Community feedback</p>
-          <h2 className="mt-3 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">What riders and hosts are saying</h2>
+          <h2 className="mt-3 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">What passengers and drivers are saying</h2>
         </Reveal>
         <div className="grid gap-4 md:grid-cols-3">
           {testimonials.map((item, index) => (
@@ -564,7 +564,7 @@ export default function Home() {
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">&ldquo;{item.quote}&rdquo;</p>
                   <div className="mt-5 flex items-center gap-3 border-t border-[color:var(--stroke)] pt-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)] text-white shadow-sm">
-                      {item.role === 'Host' ? (
+                      {item.role === 'Driver' ? (
                         <Car className="h-5 w-5" />
                       ) : (
                         <UserRound className="h-5 w-5" />
