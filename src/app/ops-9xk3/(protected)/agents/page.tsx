@@ -145,6 +145,21 @@ function resolveUserLabel(user: AdminUser) {
   return fullName || user.phone_number;
 }
 
+function sanitizeCodeSegment(value: string) {
+  return value.replace(/[^A-Z0-9]/g, '');
+}
+
+function buildAgentCode(user: AdminUser) {
+  const firstName = sanitizeCodeSegment((user.first_name || '').toUpperCase());
+  const lastName = sanitizeCodeSegment((user.last_name || '').toUpperCase());
+  const phoneDigits = user.phone_number.replace(/\D/g, '');
+  const nameSeed = firstName || lastName || 'AGENT';
+  const namePart = nameSeed.slice(0, 3).padEnd(3, 'X');
+  const phonePart = phoneDigits.slice(-2).padStart(2, '0');
+  const randomPart = Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(2, 6).padEnd(4, 'X');
+  return `AGENT-${namePart}${phonePart}-${randomPart}`.slice(0, 32);
+}
+
 export default function AgentsOpsPage() {
   const [entries, setEntries] = useState<AgentApplication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -400,6 +415,19 @@ export default function AgentsOpsPage() {
     await searchAgents(agentSearch);
   }
 
+  function handleSelectAgent(user: AdminUser) {
+    setSelectedAgent(user);
+    setNewCode(buildAgentCode(user));
+    setCreateMessage(null);
+    setAgentCodesError(null);
+  }
+
+  function handleRegenerateCode() {
+    if (!selectedAgent) return;
+    setNewCode(buildAgentCode(selectedAgent));
+    setCreateMessage(null);
+  }
+
   async function handleCodeUpdate(updates: Partial<Pick<AgentInviteCode, 'is_active'>> & { revoked_at?: string | null }) {
     if (!selectedCode) return;
     setCodeSaving(true);
@@ -498,7 +526,7 @@ export default function AgentsOpsPage() {
                         </TableCell>
                         <TableCell>{user.user_type || '—'}</TableCell>
                         <TableCell className="text-right">
-                          <Button type="button" size="sm" variant="outline" onClick={() => setSelectedAgent(user)}>
+                          <Button type="button" size="sm" variant="outline" onClick={() => handleSelectAgent(user)}>
                             Use
                           </Button>
                         </TableCell>
@@ -519,12 +547,17 @@ export default function AgentsOpsPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-xs font-medium text-muted-foreground">Reusable code</label>
-                  <Input
-                    value={newCode}
-                    onChange={(event) => setNewCode(event.target.value.toUpperCase())}
-                    placeholder="AGENT-PHIL-01"
-                    maxLength={32}
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      value={newCode}
+                      onChange={(event) => setNewCode(event.target.value.toUpperCase())}
+                      placeholder={selectedAgent ? 'Auto-generated from agent' : 'Select an agent first'}
+                      maxLength={32}
+                    />
+                    <Button type="button" variant="outline" onClick={handleRegenerateCode} disabled={!selectedAgent}>
+                      Regenerate
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-muted-foreground">Max redemptions</label>
