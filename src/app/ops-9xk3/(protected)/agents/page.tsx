@@ -299,7 +299,7 @@ export default function AgentsOpsPage() {
       if (!response.ok) {
         throw new Error((payload as { detail?: string } | null)?.detail || 'Unable to search users.');
       }
-      setAgentOptions((payload?.results || []).filter((user) => user.is_staff));
+      setAgentOptions(payload?.results || []);
     } catch {
       setAgentOptions([]);
     } finally {
