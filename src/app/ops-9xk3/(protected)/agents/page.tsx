@@ -547,13 +547,13 @@ export default function AgentsOpsPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-xs font-medium text-muted-foreground">Reusable code</label>
-                  <div className="flex gap-2">
-                    <Input
-                      value={newCode}
-                      onChange={(event) => setNewCode(event.target.value.toUpperCase())}
-                      placeholder={selectedAgent ? 'Auto-generated from agent' : 'Select an agent first'}
-                      maxLength={32}
-                    />
+                  <Input
+                    value={newCode}
+                    onChange={(event) => setNewCode(event.target.value.toUpperCase())}
+                    placeholder={selectedAgent ? 'Auto-generated from agent' : 'Select an agent first'}
+                    maxLength={32}
+                  />
+                  <div className="mt-2">
                     <Button type="button" variant="outline" onClick={handleRegenerateCode} disabled={!selectedAgent}>
                       Regenerate
                     </Button>
