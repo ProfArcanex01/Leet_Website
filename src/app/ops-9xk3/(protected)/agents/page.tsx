@@ -40,6 +40,33 @@ type AgentApplication = {
   created_at: string;
 };
 
+type AgentInviteCode = {
+  id: number;
+  agent: number;
+  agent_name: string;
+  agent_phone_number: string;
+  code: string;
+  is_active: boolean;
+  expires_at: string | null;
+  max_redemptions: number | null;
+  redemption_count: number;
+  redemptions_remaining: number | null;
+  revoked_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type AdminUser = {
+  id: number;
+  first_name: string | null;
+  last_name: string | null;
+  phone_number: string;
+  email: string | null;
+  is_staff: boolean;
+  is_invite_activated?: boolean;
+  user_type: 'HOST' | 'RIDER' | null;
+};
+
 type Paginated<T> = {
   count: number;
   next: string | null;
@@ -73,6 +100,12 @@ function badgeTone(status: string) {
   }
 }
 
+function codeBadgeTone(isActive: boolean) {
+  return isActive
+    ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
+    : 'bg-slate-100 text-slate-700 border-slate-200';
+}
+
 function formatChannel(channel: string) {
   return channel
     .toLowerCase()
@@ -96,6 +129,22 @@ function formatWeeklyEstimate(value: string) {
   }
 }
 
+function formatDate(value: string | null | undefined) {
+  if (!value) return '—';
+  return new Date(value).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function resolveUserLabel(user: AdminUser) {
+  const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+  return fullName || user.phone_number;
+}
+
 export default function AgentsOpsPage() {
   const [entries, setEntries] = useState<AgentApplication[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,6 +158,25 @@ export default function AgentsOpsPage() {
   const [editNotes, setEditNotes] = useState('');
   const [saving, setSaving] = useState(false);
 
+  const [agentCodes, setAgentCodes] = useState<AgentInviteCode[]>([]);
+  const [agentCodesCount, setAgentCodesCount] = useState(0);
+  const [agentCodesLoading, setAgentCodesLoading] = useState(true);
+  const [agentCodesError, setAgentCodesError] = useState<string | null>(null);
+  const [agentCodeQuery, setAgentCodeQuery] = useState('');
+  const [agentCodeActiveFilter, setAgentCodeActiveFilter] = useState<'all' | 'true' | 'false'>('all');
+  const [selectedCodeId, setSelectedCodeId] = useState<number | null>(null);
+  const [codeSaving, setCodeSaving] = useState(false);
+
+  const [agentSearch, setAgentSearch] = useState('');
+  const [agentOptions, setAgentOptions] = useState<AdminUser[]>([]);
+  const [agentSearchLoading, setAgentSearchLoading] = useState(false);
+  const [selectedAgent, setSelectedAgent] = useState<AdminUser | null>(null);
+  const [newCode, setNewCode] = useState('');
+  const [newMaxRedemptions, setNewMaxRedemptions] = useState('');
+  const [newExpiresAt, setNewExpiresAt] = useState('');
+  const [creatingCode, setCreatingCode] = useState(false);
+  const [createMessage, setCreateMessage] = useState<string | null>(null);
+
   const pageSize = 20;
   const pageCount = useMemo(() => Math.max(1, Math.ceil(count / pageSize)), [count]);
 
@@ -119,6 +187,16 @@ export default function AgentsOpsPage() {
       approvedCount: entries.filter((entry) => entry.status === 'APPROVED').length,
     }),
     [entries],
+  );
+
+  const activeCodeCount = useMemo(
+    () => agentCodes.filter((code) => code.is_active && !code.revoked_at).length,
+    [agentCodes],
+  );
+
+  const selectedCode = useMemo(
+    () => agentCodes.find((code) => code.id === selectedCodeId) || null,
+    [agentCodes, selectedCodeId],
   );
 
   const loadEntries = useCallback(
@@ -155,9 +233,72 @@ export default function AgentsOpsPage() {
     [page, query, filterStatus],
   );
 
+  const loadAgentCodes = useCallback(
+    async (overrides?: { query?: string; isActive?: 'all' | 'true' | 'false' }) => {
+      setAgentCodesLoading(true);
+      setAgentCodesError(null);
+
+      const nextQuery = overrides?.query ?? agentCodeQuery;
+      const nextIsActive = overrides?.isActive ?? agentCodeActiveFilter;
+      const params = new URLSearchParams();
+      params.set('page_size', '50');
+      if (nextQuery.trim()) params.set('q', nextQuery.trim());
+      if (nextIsActive !== 'all') params.set('is_active', nextIsActive);
+
+      try {
+        const response = await authFetch(`/invites/admin/agent-codes/?${params.toString()}`);
+        const payload = (await response.json().catch(() => null)) as Paginated<AgentInviteCode> | null;
+        if (!response.ok) {
+          throw new Error((payload as { detail?: string } | null)?.detail || 'Unable to load agent codes.');
+        }
+        const results = payload?.results || [];
+        setAgentCodes(results);
+        setAgentCodesCount(payload?.count || 0);
+        if (results.length > 0 && !results.find((code) => code.id === selectedCodeId)) {
+          setSelectedCodeId(results[0].id);
+        }
+        if (results.length === 0) {
+          setSelectedCodeId(null);
+        }
+      } catch (err) {
+        setAgentCodesError(err instanceof Error ? err.message : 'Unable to load agent codes.');
+      } finally {
+        setAgentCodesLoading(false);
+      }
+    },
+    [agentCodeActiveFilter, agentCodeQuery, selectedCodeId],
+  );
+
+  const searchAgents = useCallback(async (searchTerm: string) => {
+    if (!searchTerm.trim()) {
+      setAgentOptions([]);
+      return;
+    }
+    setAgentSearchLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set('q', searchTerm.trim());
+      params.set('page_size', '20');
+      const response = await authFetch(`/accounts/admin/users/?${params.toString()}`);
+      const payload = (await response.json().catch(() => null)) as Paginated<AdminUser> | null;
+      if (!response.ok) {
+        throw new Error((payload as { detail?: string } | null)?.detail || 'Unable to search users.');
+      }
+      setAgentOptions((payload?.results || []).filter((user) => user.is_staff));
+    } catch {
+      setAgentOptions([]);
+    } finally {
+      setAgentSearchLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     loadEntries();
-  }, [page]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [page, loadEntries]);
+
+  useEffect(() => {
+    loadAgentCodes();
+  }, [loadAgentCodes]);
 
   function handleSearch(event: React.FormEvent) {
     event.preventDefault();
@@ -210,6 +351,79 @@ export default function AgentsOpsPage() {
     }
   }
 
+  async function handleCreateCode(event: React.FormEvent) {
+    event.preventDefault();
+    if (!selectedAgent || !newCode.trim()) {
+      setAgentCodesError('Select an agent and enter a code.');
+      return;
+    }
+
+    setCreatingCode(true);
+    setAgentCodesError(null);
+    setCreateMessage(null);
+    try {
+      const response = await authFetch('/invites/admin/agent-codes/', {
+        method: 'POST',
+        body: JSON.stringify({
+          agent_id: selectedAgent.id,
+          code: newCode.trim().toUpperCase(),
+          is_active: true,
+          max_redemptions: newMaxRedemptions.trim() ? Number(newMaxRedemptions) : null,
+          expires_at: newExpiresAt ? new Date(newExpiresAt).toISOString() : null,
+        }),
+      });
+      const payload = (await response.json().catch(() => null)) as AgentInviteCode | { detail?: string; code?: string[] } | null;
+      if (!response.ok) {
+        const data = payload as { detail?: string; code?: string[] } | null;
+        throw new Error(data?.detail || data?.code?.[0] || 'Unable to create agent code.');
+      }
+
+      const created = payload as AgentInviteCode;
+      setCreateMessage(`Created reusable code ${created.code} for ${created.agent_name}.`);
+      setNewCode('');
+      setNewMaxRedemptions('');
+      setNewExpiresAt('');
+      setSelectedAgent(null);
+      setAgentSearch('');
+      setAgentOptions([]);
+      await loadAgentCodes();
+      setSelectedCodeId(created.id);
+    } catch (err) {
+      setAgentCodesError(err instanceof Error ? err.message : 'Unable to create agent code.');
+    } finally {
+      setCreatingCode(false);
+    }
+  }
+
+  async function handleAgentSearch(event: React.FormEvent) {
+    event.preventDefault();
+    await searchAgents(agentSearch);
+  }
+
+  async function handleCodeUpdate(updates: Partial<Pick<AgentInviteCode, 'is_active'>> & { revoked_at?: string | null }) {
+    if (!selectedCode) return;
+    setCodeSaving(true);
+    setAgentCodesError(null);
+    try {
+      const response = await authFetch(`/invites/admin/agent-codes/${selectedCode.id}/`, {
+        method: 'PATCH',
+        body: JSON.stringify(updates),
+      });
+      const payload = (await response.json().catch(() => null)) as AgentInviteCode | { error?: string; detail?: string } | null;
+      if (!response.ok) {
+        const data = payload as { error?: string; detail?: string } | null;
+        throw new Error(data?.detail || data?.error || 'Unable to update agent code.');
+      }
+      const updated = payload as AgentInviteCode;
+      setAgentCodes((current) => current.map((code) => (code.id === updated.id ? updated : code)));
+      setSelectedCodeId(updated.id);
+    } catch (err) {
+      setAgentCodesError(err instanceof Error ? err.message : 'Unable to update agent code.');
+    } finally {
+      setCodeSaving(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-4">
@@ -231,18 +445,274 @@ export default function AgentsOpsPage() {
         </Card>
         <Card className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">Contacted on this page</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-semibold text-indigo-600">{loading ? '—' : stats.contactedCount}</p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
-          <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">Approved on this page</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-semibold text-emerald-600">{loading ? '—' : stats.approvedCount}</p>
+          </CardContent>
+        </Card>
+        <Card className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
+          <CardHeader>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Active agent codes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-semibold text-indigo-600">{agentCodesLoading ? '—' : activeCodeCount}</p>
+            <p className="mt-2 text-xs text-muted-foreground">{agentCodesCount} codes loaded in admin</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        <Card className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
+          <CardHeader>
+            <CardTitle>Create agent code</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <form onSubmit={handleAgentSearch} className="flex gap-2">
+              <Input
+                value={agentSearch}
+                onChange={(event) => setAgentSearch(event.target.value)}
+                placeholder="Search approved agent by name, phone, or email"
+              />
+              <Button type="submit" variant="outline" disabled={agentSearchLoading}>
+                {agentSearchLoading ? 'Finding...' : 'Find'}
+              </Button>
+            </form>
+
+            {agentOptions.length > 0 ? (
+              <div className="rounded-2xl border border-[color:var(--stroke)]">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Agent</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead className="text-right">Select</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {agentOptions.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <div className="font-medium">{resolveUserLabel(user)}</div>
+                          <div className="text-xs text-muted-foreground">{user.phone_number}</div>
+                        </TableCell>
+                        <TableCell>{user.user_type || '—'}</TableCell>
+                        <TableCell className="text-right">
+                          <Button type="button" size="sm" variant="outline" onClick={() => setSelectedAgent(user)}>
+                            Use
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : null}
+
+            <form onSubmit={handleCreateCode} className="space-y-4 rounded-3xl border border-[color:var(--stroke)] bg-white p-5">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Selected agent</p>
+                <p className="mt-2 text-sm">
+                  {selectedAgent ? `${resolveUserLabel(selectedAgent)} • ${selectedAgent.phone_number}` : 'No agent selected yet.'}
+                </p>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-muted-foreground">Reusable code</label>
+                  <Input
+                    value={newCode}
+                    onChange={(event) => setNewCode(event.target.value.toUpperCase())}
+                    placeholder="AGENT-PHIL-01"
+                    maxLength={32}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-muted-foreground">Max redemptions</label>
+                  <Input
+                    value={newMaxRedemptions}
+                    onChange={(event) => setNewMaxRedemptions(event.target.value.replace(/[^\d]/g, ''))}
+                    placeholder="Leave blank for unlimited"
+                    inputMode="numeric"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">Expires at</label>
+                <Input
+                  type="datetime-local"
+                  value={newExpiresAt}
+                  onChange={(event) => setNewExpiresAt(event.target.value)}
+                />
+              </div>
+              {createMessage ? <p className="text-sm text-emerald-600">{createMessage}</p> : null}
+              <div className="flex gap-2">
+                <Button type="submit" disabled={creatingCode}>
+                  {creatingCode ? 'Creating...' : 'Create agent code'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedAgent(null);
+                    setNewCode('');
+                    setNewMaxRedemptions('');
+                    setNewExpiresAt('');
+                    setCreateMessage(null);
+                  }}
+                >
+                  Clear
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
+          <CardHeader>
+            <CardTitle>Manage agent codes</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                loadAgentCodes();
+              }}
+              className="flex flex-col gap-3 md:flex-row"
+            >
+              <Input
+                value={agentCodeQuery}
+                onChange={(event) => setAgentCodeQuery(event.target.value)}
+                placeholder="Search by code, phone, or email"
+              />
+              <Select value={agentCodeActiveFilter} onValueChange={(value) => setAgentCodeActiveFilter(value as 'all' | 'true' | 'false')}>
+                <SelectTrigger className="md:w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All codes</SelectItem>
+                  <SelectItem value="true">Active only</SelectItem>
+                  <SelectItem value="false">Inactive only</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button type="submit" variant="outline">Refresh</Button>
+            </form>
+
+            <div className="rounded-2xl border border-[color:var(--stroke)]">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Code</TableHead>
+                    <TableHead>Agent</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Uses</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {agentCodesLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
+                        Loading codes...
+                      </TableCell>
+                    </TableRow>
+                  ) : agentCodes.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="py-10 text-center text-muted-foreground">
+                        No agent codes found.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    agentCodes.map((code) => (
+                      <TableRow
+                        key={code.id}
+                        className={`cursor-pointer ${selectedCodeId === code.id ? 'bg-[color:var(--soft)]/30' : 'hover:bg-[color:var(--soft)]/20'}`}
+                        onClick={() => setSelectedCodeId(code.id)}
+                      >
+                        <TableCell className="font-medium">{code.code}</TableCell>
+                        <TableCell>
+                          <div>{code.agent_name}</div>
+                          <div className="text-xs text-muted-foreground">{code.agent_phone_number}</div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={codeBadgeTone(code.is_active && !code.revoked_at)}>
+                            {code.revoked_at ? 'Revoked' : code.is_active ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {code.redemption_count}
+                          {code.max_redemptions !== null ? ` / ${code.max_redemptions}` : ''}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+
+            {selectedCode ? (
+              <div className="space-y-4 rounded-3xl border border-[color:var(--stroke)] bg-white p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Selected code</p>
+                    <h3 className="mt-2 text-xl font-semibold">{selectedCode.code}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedCode.agent_name} • {selectedCode.agent_phone_number}
+                    </p>
+                  </div>
+                  <Badge variant="outline" className={codeBadgeTone(selectedCode.is_active && !selectedCode.revoked_at)}>
+                    {selectedCode.revoked_at ? 'Revoked' : selectedCode.is_active ? 'Active' : 'Inactive'}
+                  </Badge>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Created</p>
+                    <p className="mt-2 text-sm">{formatDate(selectedCode.created_at)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Expires</p>
+                    <p className="mt-2 text-sm">{formatDate(selectedCode.expires_at)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Redemptions</p>
+                    <p className="mt-2 text-sm">
+                      {selectedCode.redemption_count}
+                      {selectedCode.max_redemptions !== null ? ` used of ${selectedCode.max_redemptions}` : ' used'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Remaining</p>
+                    <p className="mt-2 text-sm">{selectedCode.redemptions_remaining ?? 'Unlimited'}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={codeSaving || selectedCode.revoked_at !== null || selectedCode.is_active}
+                    onClick={() => handleCodeUpdate({ is_active: true })}
+                  >
+                    Activate
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={codeSaving || selectedCode.revoked_at !== null || !selectedCode.is_active}
+                    onClick={() => handleCodeUpdate({ is_active: false })}
+                  >
+                    Deactivate
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={codeSaving || selectedCode.revoked_at !== null}
+                    onClick={() => handleCodeUpdate({ is_active: false, revoked_at: new Date().toISOString() })}
+                  >
+                    Revoke permanently
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+
+            {agentCodesError ? <p className="text-sm text-red-600">{agentCodesError}</p> : null}
           </CardContent>
         </Card>
       </div>
@@ -335,13 +805,7 @@ export default function AgentsOpsPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="pr-6 text-right text-sm text-muted-foreground">
-                        {new Date(entry.created_at).toLocaleDateString('en-GB', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+                        {formatDate(entry.created_at)}
                       </TableCell>
                     </TableRow>
                     {expandedId === entry.id ? (
