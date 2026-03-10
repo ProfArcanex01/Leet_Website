@@ -1,10 +1,12 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 const GH_COUNTRY_CODE = '+233';
+const AGENT_AGREEMENT_VERSION = '2026-03-10';
 
 const RECRUITMENT_CHANNELS = [
   { value: 'WASHING_BAYS', label: 'Washing bays' },
@@ -31,6 +33,8 @@ type FormState = {
   weekly_recruitment_estimate: string;
   has_smartphone: string;
   notes: string;
+  agreement_accepted: boolean;
+  agreement_name_confirmation: string;
 };
 
 const INITIAL_FORM: FormState = {
@@ -41,6 +45,8 @@ const INITIAL_FORM: FormState = {
   weekly_recruitment_estimate: '',
   has_smartphone: '',
   notes: '',
+  agreement_accepted: false,
+  agreement_name_confirmation: '',
 };
 
 export function AgentApplicationForm() {
@@ -63,7 +69,9 @@ export function AgentApplicationForm() {
           form.location.trim() &&
           form.recruitment_channels.length > 0 &&
           form.weekly_recruitment_estimate &&
-          form.has_smartphone,
+          form.has_smartphone &&
+          form.agreement_accepted &&
+          form.agreement_name_confirmation.trim(),
       ),
     [form],
   );
@@ -147,6 +155,9 @@ export function AgentApplicationForm() {
           phone_number: normalizedPhone,
           has_smartphone: form.has_smartphone === 'yes',
           notes: form.notes.trim(),
+          agreement_accepted: form.agreement_accepted,
+          agreement_name_confirmation: form.agreement_name_confirmation.trim(),
+          agreement_version: AGENT_AGREEMENT_VERSION,
           website: honeypot,
           _t: loadedAt.current,
         }),
@@ -394,6 +405,66 @@ export function AgentApplicationForm() {
           className="w-full resize-none rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--paper)]/35 px-4 py-3 text-sm outline-none focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
         />
         <p className="mt-2 text-xs text-muted-foreground">{form.notes.length}/500 characters</p>
+      </div>
+
+      <div className="rounded-[1.75rem] border border-[color:var(--stroke)] bg-white px-5 py-5">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">Section 6</p>
+            <p className="mt-1 text-lg font-semibold text-[color:var(--ink)]">Agreement and commission summary</p>
+          </div>
+          <div className="rounded-full bg-[color:var(--paper)] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Required
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--paper)]/35 px-4 py-4">
+          <p className="text-sm font-semibold text-[color:var(--ink)]">Current public commission terms</p>
+          <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+            <li>Drivers: GHS 1 after 1 completed trip within 30 days of registration.</li>
+            <li>Passengers: GHS 1 after 3 completed trips within 30 days of registration.</li>
+            <li>Full payout, conduct, privacy, and fraud rules are in the Agent Agreement.</li>
+          </ul>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Agreement version: {AGENT_AGREEMENT_VERSION}
+          </p>
+          <Link
+            href="/agents/agreement"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex text-sm font-semibold text-[color:var(--accent)] underline underline-offset-4"
+          >
+            Read the full Leet Agent Agreement
+          </Link>
+        </div>
+
+        <label className="mt-5 flex items-start gap-3 rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--paper)]/20 px-4 py-4 text-sm text-[color:var(--ink)]">
+          <input
+            type="checkbox"
+            checked={form.agreement_accepted}
+            onChange={(event) => update('agreement_accepted', event.target.checked)}
+            disabled={status === 'loading'}
+            className="mt-0.5 h-4 w-4 rounded border-[color:var(--stroke)] text-[color:var(--accent)] focus:ring-[color:var(--accent)]"
+          />
+          <span>
+            I have read and agree to the Leet Agent Agreement.
+          </span>
+        </label>
+
+        <div className="mt-5">
+          <label className="mb-2 block text-sm font-semibold text-[color:var(--ink)]">
+            Type your full name to confirm agreement
+          </label>
+          <input
+            type="text"
+            required
+            value={form.agreement_name_confirmation}
+            onChange={(event) => update('agreement_name_confirmation', event.target.value)}
+            placeholder="Type your full name exactly"
+            disabled={status === 'loading'}
+            className="w-full rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--paper)]/35 px-4 py-3 text-sm outline-none focus:border-[color:var(--accent)] focus:ring-2 focus:ring-[color:var(--accent)]/20"
+          />
+        </div>
       </div>
 
       {status === 'error' ? <p className="text-sm text-red-600">{errorMsg}</p> : null}

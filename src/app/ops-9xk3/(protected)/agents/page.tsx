@@ -34,6 +34,10 @@ type AgentApplication = {
   weekly_recruitment_estimate: string;
   has_smartphone: boolean;
   notes: string;
+  agreement_accepted: boolean;
+  agreement_accepted_at: string | null;
+  agreement_version: string;
+  agreement_name_confirmation: string;
   status: string;
   status_display: string;
   admin_notes: string;
@@ -865,6 +869,20 @@ export default function AgentsOpsPage() {
                                 <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
                                   {entry.notes || 'No extra notes submitted.'}
                                 </p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Agreement</p>
+                                <p className="mt-2 text-sm text-[color:var(--ink)]/80">
+                                  {entry.agreement_accepted ? 'Accepted' : 'Not accepted'}
+                                </p>
+                                <p className="mt-1 text-xs text-muted-foreground">
+                                  {entry.agreement_accepted_at ? `${formatDate(entry.agreement_accepted_at)} · v${entry.agreement_version}` : 'No acceptance recorded'}
+                                </p>
+                                {entry.agreement_name_confirmation ? (
+                                  <p className="mt-1 text-xs text-muted-foreground">
+                                    Confirmed as: {entry.agreement_name_confirmation}
+                                  </p>
+                                ) : null}
                               </div>
                             </div>
 

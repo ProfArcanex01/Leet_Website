@@ -16,15 +16,15 @@ import { AgentApplicationForm } from './agent-application-form';
 export const metadata: Metadata = {
   title: 'Become a Leet Agent',
   description:
-    'Earn money recruiting drivers for Leet. Meet drivers at washing bays, fuel stations, and mechanics — get them live on the app and earn when they activate. Flexible, field-based work across Ghana.',
+    'Earn money recruiting drivers for Leet. Meet drivers at washing bays, fuel stations, and mechanics, help them qualify on Leet, and earn under the current commission terms. Flexible, field-based work across Ghana.',
   openGraph: {
     title: 'Become a Leet Agent — Earn money recruiting drivers',
     description:
-      'Earn when you recruit and activate drivers. Find drivers where they already are, get them on Leet, and get credited for every real activation. Apply to become an agent.',
+      'Earn when your recruited drivers and passengers qualify on Leet under the current commission terms. Apply to become an agent.',
   },
   twitter: {
     title: 'Become a Leet Agent — Earn money recruiting drivers',
-    description: 'Earn when you recruit and activate drivers. Flexible field work across Ghana.',
+    description: 'Earn when your recruits qualify on Leet under the current commission terms.',
   },
 };
 
@@ -54,8 +54,8 @@ const roleSteps = [
   },
   {
     step: '03',
-    title: 'Earn when they go live.',
-    copy: 'Your credit comes from real activation — not downloads or empty profiles. Real drivers on real routes.',
+    title: 'Earn when they qualify.',
+    copy: 'Your credit comes from qualified recruits under Leet’s current commission terms, not downloads or empty profiles.',
     icon: CircleDollarSign,
   },
 ];
@@ -68,13 +68,10 @@ const whoFits = [
   'Anyone with a smartphone and the drive to hustle',
 ];
 
-const spotDetails = [
-  { label: 'Washing bays', note: 'Drivers wait between jobs — natural conversation time' },
-  { label: 'Fuel stations', note: 'High daily driver traffic, quick and repeatable' },
-  { label: 'Mechanical shops', note: 'Face-to-face trust — one of the best conversion spots' },
-  { label: 'Eateries', note: 'Break time is pitch time' },
-  { label: 'Office parking areas', note: 'Private car owners with spare seats every day' },
-  { label: 'Churches & community centres', note: 'Strong local trust networks, word spreads fast' },
+const earningsRules = [
+  'GHS 1 per qualified driver after 1 completed trip within 30 days',
+  'GHS 1 per qualified passenger after 3 completed trips within 30 days',
+  'Only recruits attributed to your Leet agent code count',
 ];
 
 export default function AgentsPage() {
@@ -143,15 +140,17 @@ export default function AgentsPage() {
                   filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.4))',
                 }}
               >
-                Earn on every activation.
+                Earn on qualified recruits.
               </span>
             </h1>
 
             <p className="mt-6 text-base leading-relaxed text-white/90 md:text-lg" style={{ textShadow: '0 1px 12px rgba(0,0,0,0.45)' }}>
-              You meet drivers where they already are — washing bays, fuel stations, mechanics. Help them join Leet and get credited when they go live.
+              You meet drivers where they already are — washing bays, fuel stations, mechanics. Help drivers and passengers join Leet and earn when they qualify under the current commission terms.
             </p>
 
-            <p className="mt-2.5 text-sm font-semibold text-white/80" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>No experience needed.</p>
+            <p className="mt-2.5 text-sm font-semibold text-white/80" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
+              Current public rates: GHS 1 per qualified driver, GHS 1 per qualified passenger. Full terms apply.
+            </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
@@ -246,76 +245,10 @@ export default function AgentsPage() {
         </div>
       </section>
 
-      {/* ─── REAL LIFE SPLIT ──────────────────────────────── */}
-      <section className="border-t border-[color:var(--stroke)]/50 py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-6 md:px-12">
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-
-            {/* Image side */}
-            <div className="relative order-2 lg:order-1">
-              <div className="overflow-hidden rounded-[2rem] shadow-[0_32px_72px_rgba(21,19,15,0.14)]">
-                <Image
-                  src="/recruit_driver_2.webp"
-                  alt="Leet agents recruiting drivers in the field"
-                  width={720}
-                  height={520}
-                  className="w-full object-cover object-center"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-              </div>
-              {/* Floating badge */}
-              <div className="absolute -bottom-5 -right-3 flex items-center gap-3 rounded-2xl border border-[color:var(--stroke)] bg-white px-5 py-3.5 shadow-[0_12px_36px_rgba(21,19,15,0.12)] md:-right-6">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[color:var(--accent)]">
-                  <MapPinned className="h-4 w-4 text-white" />
-                </span>
-                <div>
-                  <p className="text-xs font-bold text-[color:var(--ink)]">Street-level recruitment</p>
-                  <p className="text-[11px] text-muted-foreground">Real people, real conversations</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Copy side */}
-            <div className="order-1 lg:order-2">
-              <p className="text-xs font-bold uppercase tracking-[0.26em] text-[color:var(--accent)]">
-                In the field
-              </p>
-              <h2 className="mt-3 text-3xl text-[color:var(--ink)] md:text-4xl">
-                This is what the role actually looks like.
-              </h2>
-              <p className="mt-5 text-muted-foreground">
-                No office. No cold calls. You walk into the right spots, strike up natural conversations with drivers who already have routes, and help them see the value. That's the whole job.
-              </p>
-              <ul className="mt-7 space-y-3">
-                {[
-                  'Show up to washing bays, fuel stations, and mechanics',
-                  'Demo the Leet app on your phone in under 2 minutes',
-                  'Get credited when the driver publishes their first route',
-                ].map((point) => (
-                  <li key={point} className="flex items-start gap-3">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[color:var(--accent-2)]" />
-                    <span className="text-sm text-[color:var(--ink)]/80">{point}</span>
-                  </li>
-                ))}
-              </ul>
-              <a
-                href="#apply"
-                className="mt-9 inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-7 py-3.5 text-sm font-bold text-white shadow-[0_8px_28px_rgba(224,108,44,0.3)] transition hover:bg-[#c95d24]"
-              >
-                Apply now
-                <ArrowRight className="h-4 w-4" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── WHO FITS + HOT ZONES ─────────────────────────── */}
+      {/* ─── EARNINGS + FIT ──────────────────────────────── */}
       <section className="border-t border-[color:var(--stroke)]/50 py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-6 md:px-12">
           <div className="grid gap-8 lg:grid-cols-2">
-
-            {/* Who fits */}
             <div className="rounded-[2rem] border border-[color:var(--stroke)] bg-[#15130F] p-8 text-white md:p-10">
               <div className="flex items-center gap-3.5">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
@@ -343,34 +276,35 @@ export default function AgentsPage() {
               </div>
             </div>
 
-            {/* Hot zones */}
             <div className="rounded-[2rem] border border-[color:var(--stroke)] bg-white p-8 shadow-[0_4px_24px_rgba(21,19,15,0.05)] md:p-10">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">
-                    Hot zones
+                    Earnings
                   </p>
-                  <h2 className="mt-1 text-xl text-[color:var(--ink)]">Best places to recruit</h2>
+                  <h2 className="mt-1 text-xl text-[color:var(--ink)]">How commission works</h2>
                 </div>
                 <span className="shrink-0 rounded-full bg-[color:var(--soft)] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-[color:var(--accent-2)]">
-                  High intent
+                  Current terms
                 </span>
               </div>
 
               <div className="mt-7 space-y-3">
-                {spotDetails.map((spot) => (
+                {earningsRules.map((rule) => (
                   <div
-                    key={spot.label}
+                    key={rule}
                     className="group flex items-start gap-4 rounded-2xl border border-[color:var(--stroke)]/70 px-4 py-4 transition hover:border-[color:var(--accent)]/25 hover:bg-[color:var(--paper)]/60"
                   >
                     <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[color:var(--accent)] transition-transform duration-200 group-hover:scale-125" />
                     <div>
-                      <p className="text-sm font-semibold text-[color:var(--ink)]">{spot.label}</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">{spot.note}</p>
+                      <p className="text-sm font-semibold text-[color:var(--ink)]">{rule}</p>
                     </div>
                   </div>
                 ))}
               </div>
+              <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
+                Full commission, attribution, fraud, and payout rules are set out in the Leet Agent Agreement.
+              </p>
             </div>
           </div>
         </div>
@@ -408,7 +342,7 @@ export default function AgentsPage() {
                 {
                   n: '3',
                   title: 'You get your brief',
-                  copy: 'Approved agents receive clear guidance: where to recruit, what to say, and how to track activations.',
+                  copy: 'Approved agents receive clear guidance: where to recruit, what to say, and how to track qualified recruits.',
                 },
               ].map((item) => (
                 <div key={item.n} className="flex gap-5 rounded-[1.75rem] border border-[color:var(--stroke)] bg-white px-6 py-5 shadow-[0_2px_16px_rgba(21,19,15,0.04)]">
@@ -422,54 +356,6 @@ export default function AgentsPage() {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── WHY THIS WORKS ───────────────────────────────── */}
-      <section className="border-t border-[color:var(--stroke)]/50 py-20 md:py-28">
-        <div className="mx-auto max-w-7xl px-6 md:px-12">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                icon: CircleDollarSign,
-                label: 'Performance-based',
-                copy: "Your earnings are tied to real driver activations. The more drivers you bring live, the more you earn.",
-                accent: '#E06C2C',
-                bg: 'rgba(224,108,44,0.08)',
-              },
-              {
-                icon: Smartphone,
-                label: 'Mobile-first',
-                copy: 'Everything runs through your phone — from applying, to recruiting, to getting paid.',
-                accent: '#1E6F5C',
-                bg: 'rgba(30,111,92,0.08)',
-              },
-              {
-                icon: MessageCircle,
-                label: 'WhatsApp-first support',
-                copy: 'The Leet team follows up, briefs you, and confirms your activations over WhatsApp — no apps to install.',
-                accent: '#E06C2C',
-                bg: 'rgba(224,108,44,0.08)',
-              },
-            ].map((item) => {
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.label}
-                  className="rounded-[2rem] border border-[color:var(--stroke)] bg-white p-8 shadow-[0_4px_20px_rgba(21,19,15,0.04)]"
-                >
-                  <div
-                    className="flex h-13 w-13 items-center justify-center rounded-2xl"
-                    style={{ background: item.bg }}
-                  >
-                    <Icon className="h-6 w-6" style={{ color: item.accent }} />
-                  </div>
-                  <p className="mt-6 text-lg font-semibold text-[color:var(--ink)]">{item.label}</p>
-                  <p className="mt-2.5 text-sm leading-relaxed text-muted-foreground">{item.copy}</p>
-                </div>
-              );
-            })}
           </div>
         </div>
       </section>
@@ -524,7 +410,7 @@ export default function AgentsPage() {
               <div className="mt-5 grid grid-cols-3 gap-2.5">
                 {[
                   { label: 'Role', value: 'Field agent' },
-                  { label: 'Focus', value: 'Driver activation' },
+                  { label: 'Focus', value: 'Qualified recruits' },
                   { label: 'Follow-up', value: 'WhatsApp' },
                 ].map((item) => (
                   <div key={item.label} className="rounded-xl border border-[color:var(--stroke)] bg-[color:var(--paper)]/60 px-3 py-3">
