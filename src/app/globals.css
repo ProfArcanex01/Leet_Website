@@ -212,6 +212,79 @@ button, a {
   animation: phone-tag-pulse 2.4s ease-in-out infinite;
 }
 
+.reveal {
+  opacity: 0;
+  transform: translateY(28px) scale(0.985);
+  filter: blur(10px);
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform, filter;
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.lift-card {
+  transition:
+    transform 240ms ease,
+    box-shadow 240ms ease,
+    border-color 240ms ease;
+}
+
+.lift-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px rgba(21, 19, 15, 0.14);
+}
+
+.glow-frame {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-frame::after {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(circle, rgba(224, 108, 44, 0.12) 0%, transparent 55%);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 260ms ease, transform 260ms ease;
+  pointer-events: none;
+}
+
+.glow-frame:hover::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal,
+  .reveal-visible,
+  .phone-mockup,
+  .phone-tag,
+  .orb-1,
+  .orb-2,
+  .orb-3,
+  .animate-marquee,
+  .counter-glow,
+  .live-dot {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+}
+
 /* Smooth transitions for interactive elements */
 * {
   -webkit-tap-highlight-color: transparent;

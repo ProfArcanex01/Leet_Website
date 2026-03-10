@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
 import { NewsletterForm } from './newsletter-form';
 import { DownloadStickyCta } from './download-sticky-cta';
 import { MobileNav } from './mobile-nav';
+import { Reveal } from '@/components/reveal';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { DollarSign, Navigation, Route, CheckCircle2, Star, UserRound, Car, MapPin, ArrowRight } from 'lucide-react';
 
@@ -158,12 +158,12 @@ export default function Home() {
       <section className="relative isolate overflow-hidden bg-[#0A0907]">
         {/* Subtle orbs */}
         <div
-          className="pointer-events-none absolute -left-48 -top-48 h-[500px] w-[500px] rounded-full opacity-50"
+          className="pointer-events-none absolute -left-48 -top-48 h-[500px] w-[500px] rounded-full opacity-50 orb-1"
           style={{ background: 'radial-gradient(circle, rgba(224,108,44,0.28) 0%, transparent 70%)' }}
           aria-hidden
         />
         <div
-          className="pointer-events-none absolute -right-32 top-1/3 h-[400px] w-[400px] rounded-full opacity-40"
+          className="pointer-events-none absolute -right-32 top-1/3 h-[400px] w-[400px] rounded-full opacity-40 orb-2"
           style={{ background: 'radial-gradient(circle, rgba(30,111,92,0.22) 0%, transparent 70%)' }}
           aria-hidden
         />
@@ -190,7 +190,7 @@ export default function Home() {
           </nav>
 
           <div id="download" className="mt-14 grid gap-12 md:mt-24 md:grid-cols-[1.1fr_0.9fr] md:gap-16 md:items-center">
-            <div className="flex flex-col items-center text-center md:items-start md:text-left">
+            <Reveal className="flex flex-col items-center text-center md:items-start md:text-left">
               <h1 className="text-balance text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl" style={{ color: 'white' }}>
                 Share your route.
                 <br />
@@ -236,8 +236,8 @@ export default function Home() {
               <p className="mt-3 text-sm text-white/45">
                 Can&apos;t find it? Search <span className="font-semibold text-white/70">Leet-carpooling</span> in the store.
               </p>
-            </div>
-            <div className="relative flex justify-center md:justify-end">
+            </Reveal>
+            <Reveal className="relative flex justify-center md:justify-end" delayMs={120}>
               <div className="relative w-[280px] flex-shrink-0 sm:w-[300px] md:w-[320px] phone-mockup" aria-hidden>
                 <div className="absolute -top-4 left-6 z-20">
                   <span className="phone-tag inline-flex items-center gap-1 rounded-full border border-white/15 bg-black/30 px-3.5 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#f0b48c] backdrop-blur-sm">
@@ -263,13 +263,13 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       <section id="how" className="mx-auto max-w-6xl px-6 py-14 md:py-20">
-        <div className="mb-12 text-center">
+        <Reveal className="mb-12 text-center">
           <p className="mx-auto mb-4 text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">
             How it works
           </p>
@@ -277,9 +277,9 @@ export default function Home() {
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
             Hosts plan routes they drive every day. Riders search, request a seat, and pay — all in the app. No middleman, no surge.
           </p>
-        </div>
+        </Reveal>
 
-        <div className="mb-12">
+        <Reveal className="mb-12" delayMs={80}>
           <Card className="rounded-3xl border-[color:var(--stroke)] bg-white shadow-[0_8px_32px_rgba(21,19,15,0.08)]">
             <CardContent className="p-6 md:p-8">
               <div className="-mx-2 flex gap-3 overflow-x-auto px-2 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0">
@@ -297,95 +297,99 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </Reveal>
 
         <div className="grid gap-6 md:grid-cols-2">
-          {steps.map((card) => (
-            <Card
-              key={card.title}
-              className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)] transition-all hover:-translate-y-1 hover:shadow-lg"
-            >
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold">{card.title}</CardTitle>
-                <CardDescription className="sr-only">Steps for {card.title.toLowerCase()}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ol className="space-y-4">
-                  {card.steps.map((step, index) => (
-                    <li key={step} className="group flex items-start gap-4">
-                      <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--soft)] text-sm font-semibold text-[color:var(--accent)] transition-colors group-hover:bg-[color:var(--accent)] group-hover:text-white">
-                        {index + 1}
-                      </div>
-                      <p className="pt-1 text-sm font-medium text-[color:var(--ink)] transition-colors group-hover:text-[color:var(--accent)]">
-                        {step}
-                      </p>
-                    </li>
-                  ))}
-                </ol>
-              </CardContent>
-            </Card>
+          {steps.map((card, index) => (
+            <Reveal key={card.title} delayMs={index * 120}>
+              <Card
+                className="lift-card rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]"
+              >
+                <CardHeader>
+                  <CardTitle className="text-xl font-semibold">{card.title}</CardTitle>
+                  <CardDescription className="sr-only">Steps for {card.title.toLowerCase()}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ol className="space-y-4">
+                    {card.steps.map((step, stepIndex) => (
+                      <li key={step} className="group flex items-start gap-4">
+                        <div className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--soft)] text-sm font-semibold text-[color:var(--accent)] transition-colors group-hover:bg-[color:var(--accent)] group-hover:text-white">
+                          {stepIndex + 1}
+                        </div>
+                        <p className="pt-1 text-sm font-medium text-[color:var(--ink)] transition-colors group-hover:text-[color:var(--accent)]">
+                          {step}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                </CardContent>
+              </Card>
+            </Reveal>
           ))}
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-10 md:pb-16">
         <div className="grid gap-6 md:grid-cols-3">
-          {features.map((feature) => (
-            <Card
-              key={feature.title}
-              className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)] transition-all hover:-translate-y-1 hover:shadow-lg"
-            >
-              <CardHeader>
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)]/60">
-                  <feature.icon className="h-6 w-6 text-white" strokeWidth={1.75} />
-                </div>
-                <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{feature.copy}</p>
-              </CardContent>
-            </Card>
+          {features.map((feature, index) => (
+            <Reveal key={feature.title} delayMs={index * 110}>
+              <Card
+                className="glow-frame lift-card rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]"
+              >
+                <CardHeader>
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)]/60">
+                    <feature.icon className="h-6 w-6 text-white" strokeWidth={1.75} />
+                  </div>
+                  <CardTitle className="text-xl font-semibold">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{feature.copy}</p>
+                </CardContent>
+              </Card>
+            </Reveal>
           ))}
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-10 md:pb-16">
-        <Card className="rounded-3xl border-[color:var(--stroke)] bg-[#0A0907] shadow-[0_24px_56px_rgba(0,0,0,0.25)]">
-          <CardContent className="flex flex-col gap-5 p-6 text-center sm:p-8 md:flex-row md:items-center md:justify-between md:text-left">
-            <div className="mx-auto md:mx-0">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#f0b48c]">Now available</p>
-              <h3 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl md:text-2xl" style={{ color: 'white' }}>Ready to start carpooling?</h3>
-            </div>
-            <div className="mx-auto grid w-full max-w-[340px] grid-cols-2 gap-2 md:mx-0 md:gap-3">
-              <a
-                href="https://apps.apple.com/app/leet-carpooling/id6758221255"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Download Leet on the App Store"
-                className="transition hover:-translate-y-0.5 md:justify-self-end"
-              >
-                <Image src="/app-store.svg" alt="Download on the App Store" width={170} height={50} className="h-10 w-auto md:h-11" />
-              </a>
-              <a
-                href="https://play.google.com/store/apps/details?id=com.leetgh.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Get Leet on Google Play"
-                className="transition hover:-translate-y-0.5"
-              >
-                <Image src="/play-store.svg" alt="Get it on Google Play" width={170} height={50} className="h-10 w-auto md:h-11" />
-              </a>
-            </div>
-          </CardContent>
-          <p className="px-6 pb-6 text-center text-xs text-white/50 sm:px-8 md:text-left">
-            Can&apos;t find it? Search <span className="font-semibold text-white/70">Leet-carpooling</span> in the store.
-          </p>
-        </Card>
+        <Reveal>
+          <Card className="rounded-3xl border-[color:var(--stroke)] bg-[#0A0907] shadow-[0_24px_56px_rgba(0,0,0,0.25)]">
+            <CardContent className="flex flex-col gap-5 p-6 text-center sm:p-8 md:flex-row md:items-center md:justify-between md:text-left">
+              <div className="mx-auto md:mx-0">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#f0b48c]">Now available</p>
+                <h3 className="mt-2 text-2xl font-bold leading-tight sm:text-3xl md:text-2xl" style={{ color: 'white' }}>Ready to start carpooling?</h3>
+              </div>
+              <div className="mx-auto grid w-full max-w-[340px] grid-cols-2 gap-2 md:mx-0 md:gap-3">
+                <a
+                  href="https://apps.apple.com/app/leet-carpooling/id6758221255"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Download Leet on the App Store"
+                  className="transition hover:-translate-y-0.5 md:justify-self-end"
+                >
+                  <Image src="/app-store.svg" alt="Download on the App Store" width={170} height={50} className="h-10 w-auto md:h-11" />
+                </a>
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.leetgh.app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Get Leet on Google Play"
+                  className="transition hover:-translate-y-0.5"
+                >
+                  <Image src="/play-store.svg" alt="Get it on Google Play" width={170} height={50} className="h-10 w-auto md:h-11" />
+                </a>
+              </div>
+            </CardContent>
+            <p className="px-6 pb-6 text-center text-xs text-white/50 sm:px-8 md:text-left">
+              Can&apos;t find it? Search <span className="font-semibold text-white/70">Leet-carpooling</span> in the store.
+            </p>
+          </Card>
+        </Reveal>
       </section>
 
       <section className="bg-[#0A0907]">
         <div className="mx-auto max-w-6xl px-6 py-14 md:py-20">
-          <div className="text-center">
+          <Reveal className="text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#E06C2C]/30 bg-[#E06C2C]/15 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#f0b48c]">
               Coming soon
             </span>
@@ -395,75 +399,79 @@ export default function Home() {
             <p className="mx-auto mt-4 max-w-xl text-sm text-white/60">
               We&apos;re building smarter tools to take the guesswork out of every commute.
             </p>
-          </div>
+          </Reveal>
           <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {comingSoonFeatures.map((item) => (
-              <div key={item.title} className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-left backdrop-blur-sm">
-                <div className="aspect-video w-full overflow-hidden">
-                  <Image src={item.image} alt={item.title} width={720} height={405} sizes="(max-width: 768px) 100vw, 33vw" className="h-full w-full object-cover object-top" />
+            {comingSoonFeatures.map((item, index) => (
+              <Reveal key={item.title} delayMs={index * 120}>
+                <div className="lift-card overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-left backdrop-blur-sm">
+                  <div className="aspect-video w-full overflow-hidden">
+                    <Image src={item.image} alt={item.title} width={720} height={405} sizes="(max-width: 768px) 100vw, 33vw" className="h-full w-full object-cover object-top transition duration-500 hover:scale-[1.04]" />
+                  </div>
+                  <div className="p-6">
+                    <p className="font-semibold text-white">{item.title}</p>
+                    <p className="mt-2 text-sm text-white/55">{item.copy}</p>
+                  </div>
                 </div>
-                <div className="p-6">
-                  <p className="font-semibold text-white">{item.title}</p>
-                  <p className="mt-2 text-sm text-white/55">{item.copy}</p>
-                </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
       <section id="trust" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
-        <Card className="rounded-[36px] border-[color:var(--stroke)] bg-white shadow-[0_8px_32px_rgba(21,19,15,0.08)]">
-          <CardContent className="grid gap-8 p-8 md:grid-cols-[0.6fr_0.4fr] md:p-12">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">Trust & safety</p>
-              <h2 className="mt-4 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Ride with people you can rely on.</h2>
-              <p className="mt-4 text-muted-foreground">
-                Every host is verified, riders are rated after each trip, and routes are visible before you request a
-                seat. You always know who you&apos;re riding with.
-              </p>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Riders can also use Safety Share to send a temporary live trip link to trusted contacts and end sharing anytime.
-              </p>
-              <div className="mt-6 grid gap-4 text-sm text-muted-foreground md:grid-cols-2">
-                {[
-                  'Identity verification',
-                  'Rider & host ratings',
-                  'Secure in-app payments',
-                  'Verified vehicle details',
-                  'Live trip sharing',
-                  'In-app support',
-                ].map((item) => (
-                  <Card key={item} className="rounded-2xl border-[color:var(--stroke)] bg-[color:var(--soft)]">
-                    <CardContent className="flex items-center gap-2.5 p-4">
-                      <CheckCircle2 className="h-4 w-4 shrink-0 text-[color:var(--accent-2)]" />
-                      <span className="text-sm">{item}</span>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center">
-              <Card className="overflow-hidden rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
-                <div className="h-56 w-full md:h-72">
-                  <Image
-                    src="/Ride-people-you-can-rely-on.webp"
-                    alt="Two people sharing a ride"
-                    width={500}
-                    height={288}
-                    sizes="(max-width: 768px) 100vw, 40vw"
-                    className="h-full w-full object-cover"
-                  />
+        <Reveal>
+          <Card className="rounded-[36px] border-[color:var(--stroke)] bg-white shadow-[0_8px_32px_rgba(21,19,15,0.08)]">
+            <CardContent className="grid gap-8 p-8 md:grid-cols-[0.6fr_0.4fr] md:p-12">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">Trust & safety</p>
+                <h2 className="mt-4 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Ride with people you can rely on.</h2>
+                <p className="mt-4 text-muted-foreground">
+                  Every host is verified, riders are rated after each trip, and routes are visible before you request a
+                  seat. You always know who you&apos;re riding with.
+                </p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Riders can also use Safety Share to send a temporary live trip link to trusted contacts and end sharing anytime.
+                </p>
+                <div className="mt-6 grid gap-4 text-sm text-muted-foreground md:grid-cols-2">
+                  {[
+                    'Identity verification',
+                    'Rider & host ratings',
+                    'Secure in-app payments',
+                    'Verified vehicle details',
+                    'Live trip sharing',
+                    'In-app support',
+                  ].map((item) => (
+                    <Card key={item} className="rounded-2xl border-[color:var(--stroke)] bg-[color:var(--soft)]">
+                      <CardContent className="flex items-center gap-2.5 p-4">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[color:var(--accent-2)]" />
+                        <span className="text-sm">{item}</span>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-              </Card>
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+              <div className="flex items-center">
+                <Card className="overflow-hidden rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
+                  <div className="h-56 w-full md:h-72">
+                    <Image
+                      src="/Ride-people-you-can-rely-on.webp"
+                      alt="Two people sharing a ride"
+                      width={500}
+                      height={288}
+                      sizes="(max-width: 768px) 100vw, 40vw"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </Reveal>
       </section>
 
       <section id="earnings" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
         <div className="grid gap-12 md:grid-cols-[1fr_auto] md:items-center md:gap-16">
-          <div className="flex flex-col items-center text-center md:items-start md:text-left">
+          <Reveal className="flex flex-col items-center text-center md:items-start md:text-left">
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-[color:var(--accent)]">For hosts</p>
             <h2 className="mt-4 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">See your earnings at a glance.</h2>
             <p className="mt-4 max-w-xl text-muted-foreground">
@@ -474,8 +482,8 @@ export default function Home() {
               <li>Platform fee and net payout breakdown</li>
               <li>Recent payouts list</li>
             </ul>
-          </div>
-          <div className="relative flex justify-center md:justify-end">
+          </Reveal>
+          <Reveal className="relative flex justify-center md:justify-end" delayMs={120}>
             <div
               className="relative w-[280px] flex-shrink-0 sm:w-[300px] md:w-[320px] phone-mockup"
               aria-hidden
@@ -503,70 +511,73 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       <section id="faqs" className="mx-auto max-w-6xl px-6 pb-10 md:pb-16">
-        <div className="mb-8 text-center">
+        <Reveal className="mb-8 text-center">
           <h2 className="text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Frequently asked questions</h2>
-        </div>
-        <Card className="mx-auto max-w-3xl rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
-          <CardContent className="p-6 md:p-8">
-            <Accordion type="single" collapsible className="w-full">
-              {faqs.map((faq, i) => (
-                <AccordionItem key={faq.title} value={`faq-${i}`} className="border-[color:var(--stroke)]">
-                  <AccordionTrigger className="text-base font-semibold hover:no-underline">{faq.title}</AccordionTrigger>
-                  <AccordionContent className="text-sm text-muted-foreground">{faq.copy}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </CardContent>
-        </Card>
+        </Reveal>
+        <Reveal delayMs={80}>
+          <Card className="mx-auto max-w-3xl rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
+            <CardContent className="p-6 md:p-8">
+              <Accordion type="single" collapsible className="w-full">
+                {faqs.map((faq, i) => (
+                  <AccordionItem key={faq.title} value={`faq-${i}`} className="border-[color:var(--stroke)]">
+                    <AccordionTrigger className="text-base font-semibold hover:no-underline">{faq.title}</AccordionTrigger>
+                    <AccordionContent className="text-sm text-muted-foreground">{faq.copy}</AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </CardContent>
+          </Card>
+        </Reveal>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-10 md:pb-16">
-        <div className="mb-8 text-center">
+        <Reveal className="mb-8 text-center">
           <p className="mx-auto text-xs font-bold uppercase tracking-[0.22em] text-[color:var(--accent)]">Community feedback</p>
           <h2 className="mt-3 text-3xl font-bold text-[color:var(--ink)] md:text-4xl">What riders and hosts are saying</h2>
-        </div>
+        </Reveal>
         <div className="grid gap-4 md:grid-cols-3">
-          {testimonials.map((item) => (
-            <Card
-              key={item.name}
-              className="rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]"
-            >
-              <CardContent className="flex h-full flex-col p-6">
-                <div className="mb-1 flex items-center justify-between">
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${i < item.stars ? 'fill-amber-400 text-amber-400' : 'fill-transparent text-[color:var(--stroke)]'}`}
-                      />
-                    ))}
+          {testimonials.map((item, index) => (
+            <Reveal key={item.name} delayMs={index * 120}>
+              <Card
+                className="lift-card rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]"
+              >
+                <CardContent className="flex h-full flex-col p-6">
+                  <div className="mb-1 flex items-center justify-between">
+                    <div className="flex gap-0.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${i < item.stars ? 'fill-amber-400 text-amber-400' : 'fill-transparent text-[color:var(--stroke)]'}`}
+                        />
+                      ))}
+                    </div>
+                    <span className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground">
+                      <MapPin className="h-3 w-3" />
+                      {item.route}
+                    </span>
                   </div>
-                  <span className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground">
-                    <MapPin className="h-3 w-3" />
-                    {item.route}
-                  </span>
-                </div>
-                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">&ldquo;{item.quote}&rdquo;</p>
-                <div className="mt-5 flex items-center gap-3 border-t border-[color:var(--stroke)] pt-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)] text-white shadow-sm">
-                    {item.role === 'Host' ? (
-                      <Car className="h-5 w-5" />
-                    ) : (
-                      <UserRound className="h-5 w-5" />
-                    )}
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">&ldquo;{item.quote}&rdquo;</p>
+                  <div className="mt-5 flex items-center gap-3 border-t border-[color:var(--stroke)] pt-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[color:var(--accent)] to-[color:var(--accent-2)] text-white shadow-sm">
+                      {item.role === 'Host' ? (
+                        <Car className="h-5 w-5" />
+                      ) : (
+                        <UserRound className="h-5 w-5" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-[color:var(--ink)]">{item.name}</p>
+                      <p className="text-xs text-muted-foreground">{item.role} · {item.trips} trips</p>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-[color:var(--ink)]">{item.name}</p>
-                    <p className="text-xs text-muted-foreground">{item.role} · {item.trips} trips</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -575,7 +586,7 @@ export default function Home() {
       <section className="bg-[#0A0907] py-16 md:py-24">
         <div className="mx-auto max-w-6xl px-6 md:px-12">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-            <div className="relative overflow-hidden rounded-[2rem] shadow-[0_32px_72px_rgba(0,0,0,0.35)]">
+            <Reveal className="relative overflow-hidden rounded-[2rem] shadow-[0_32px_72px_rgba(0,0,0,0.35)]">
               <Image
                 src="/recruit_driver_5.webp"
                 alt="Leet agents recruiting drivers in the field"
@@ -584,8 +595,8 @@ export default function Home() {
                 className="w-full object-cover object-center"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
-            </div>
-            <div>
+            </Reveal>
+            <Reveal delayMs={110}>
               <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f0b48c]">Join the team</p>
               <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">
                 Become a Leet agent. Recruit drivers, earn on every activation.
@@ -600,21 +611,23 @@ export default function Home() {
                 Apply to become an agent
                 <ArrowRight className="h-4 w-4" />
               </Link>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       <section id="newsletter" className="mx-auto max-w-6xl px-6 pt-16 pb-20">
-        <Card className="rounded-[36px] border-[color:var(--stroke)] bg-white shadow-[0_8px_32px_rgba(21,19,15,0.08)]">
-          <CardContent className="p-8 text-center md:p-12">
-            <h2 className="text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Stay in the loop.</h2>
-            <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-              Get updates on new routes, features, and community news — straight to your inbox.
-            </p>
-            <NewsletterForm idPrefix="main" platform="all" />
-          </CardContent>
-        </Card>
+        <Reveal>
+          <Card className="rounded-[36px] border-[color:var(--stroke)] bg-white shadow-[0_8px_32px_rgba(21,19,15,0.08)]">
+            <CardContent className="p-8 text-center md:p-12">
+              <h2 className="text-3xl font-bold text-[color:var(--ink)] md:text-4xl">Stay in the loop.</h2>
+              <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
+                Get updates on new routes, features, and community news — straight to your inbox.
+              </p>
+              <NewsletterForm idPrefix="main" platform="all" />
+            </CardContent>
+          </Card>
+        </Reveal>
       </section>
 
       <footer className="border-t border-white/10 bg-[#0A0907] pb-20 md:pb-0">
