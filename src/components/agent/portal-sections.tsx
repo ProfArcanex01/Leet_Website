@@ -62,6 +62,7 @@ export type DashboardResponse = {
   rider_invites: number;
   active_invite_codes: number;
   total_invite_redemptions: number;
+  one_time_invite_activations: number;
   published_materials: number;
   recent_invitees: Invitee[];
   invite_codes: InviteCodeSummary[];
@@ -98,6 +99,12 @@ const statCards = [
     label: "Live materials",
     accent: "from-[#B695FF]/16 via-white/0 to-white/0",
     icon: BookOpen,
+  },
+  {
+    key: "one_time_invite_activations",
+    label: "One-time invites used",
+    accent: "from-[#F8D66D]/18 via-white/0 to-white/0",
+    icon: PlayCircle,
   },
 ] as const;
 
