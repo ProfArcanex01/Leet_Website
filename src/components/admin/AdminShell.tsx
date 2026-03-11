@@ -30,6 +30,7 @@ const navItems: NavItem[] = [
   { label: 'System', href: '/ops-9xk3/system', description: 'Pricing & configuration' },
   { label: 'Waitlist', href: '/ops-9xk3/waitlist', description: 'Launch waitlist signups' },
   { label: 'Agents', href: '/ops-9xk3/agents', description: 'Recruitment applications' },
+  { label: 'Training', href: '/ops-9xk3/training', description: 'Agent learning materials' },
   { label: 'Support', href: '/ops-9xk3/support', description: 'Support tickets & reports' },
 ];
 
@@ -218,6 +219,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   </Button>
                   <Button variant="outline" onClick={() => router.push('/ops-9xk3/rides')}>
                     Rides
+                  </Button>
+                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/training')}>
+                    Training
                   </Button>
                   <Button
                     variant="outline"

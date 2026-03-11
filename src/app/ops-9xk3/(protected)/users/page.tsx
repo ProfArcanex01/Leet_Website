@@ -28,6 +28,7 @@ type AdminUser = {
   is_active: boolean;
   is_staff: boolean;
   is_superuser: boolean;
+  is_agent: boolean;
   suspended_until?: string | null;
   date_joined: string;
 };
@@ -62,6 +63,7 @@ export default function AdminUsersPage() {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const [query, setQuery] = useState('');
   const [userType, setUserType] = useState('all');
@@ -89,6 +91,7 @@ export default function AdminUsersPage() {
     setSuspensionPeriod('none');
     setCustomSuspension('');
     setError(null);
+    setSuccessMessage(null);
   };
 
   const loadUsers = async (overrides?: {
@@ -101,6 +104,7 @@ export default function AdminUsersPage() {
   }) => {
     setLoading(true);
     setError(null);
+    setSuccessMessage(null);
     const params = new URLSearchParams();
     const nextPage = overrides?.page ?? page;
     const nextQuery = overrides?.query ?? query;
@@ -210,6 +214,7 @@ export default function AdminUsersPage() {
       if (selected.user_type !== selectedBase.user_type) requestBody.user_type = selected.user_type;
       if (selected.is_verified !== selectedBase.is_verified) requestBody.is_verified = selected.is_verified;
       if (selected.is_active !== selectedBase.is_active) requestBody.is_active = selected.is_active;
+      if (selected.is_agent !== selectedBase.is_agent) requestBody.is_agent = selected.is_agent;
       if (selected.is_staff !== selectedBase.is_staff) requestBody.is_staff = selected.is_staff;
       if (selected.is_superuser !== selectedBase.is_superuser) requestBody.is_superuser = selected.is_superuser;
       Object.assign(requestBody, suspensionPayload);
@@ -240,10 +245,12 @@ export default function AdminUsersPage() {
       setSelectedBase(updatedUser);
       setSuspensionPeriod('none');
       setCustomSuspension('');
+      setSuccessMessage('User updated successfully.');
       await loadUsers({ page });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unable to update user.';
       setError(message);
+      setSuccessMessage(null);
     } finally {
       setUpdating(false);
     }
@@ -273,10 +280,12 @@ export default function AdminUsersPage() {
       setCount((current) => Math.max(0, current - 1));
       setSelected(null);
       setSelectedBase(null);
+      setSuccessMessage('User deleted successfully.');
       closeDeleteModal();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unable to delete user.';
       setError(message);
+      setSuccessMessage(null);
     } finally {
       setDeleting(false);
     }
@@ -469,6 +478,16 @@ export default function AdminUsersPage() {
                                     <span>{user.is_active ? 'User can sign in' : 'User is disabled'}</span>
                                   </TooltipContent>
                                 </Tooltip>
+                                {user.is_agent ? (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Badge className="bg-violet-100 text-violet-700">Agent</Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <span>Has access to the separate agent portal</span>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                ) : null}
                                 {user.suspended_until ? (
                                   <Tooltip>
                                     <TooltipTrigger asChild>
@@ -594,6 +613,7 @@ export default function AdminUsersPage() {
                       {[
                         { key: 'is_verified', label: 'Verified account' },
                         { key: 'is_active', label: 'Active user' },
+                        { key: 'is_agent', label: 'Agent portal access' },
                         { key: 'is_staff', label: 'Staff access' },
                         { key: 'is_superuser', label: 'Superadmin' },
                       ].map((item) => (
@@ -602,9 +622,12 @@ export default function AdminUsersPage() {
                             type="checkbox"
                             checked={Boolean((selected as any)[item.key])}
                             onChange={(event) =>
-                              setSelected((prev) =>
-                                prev ? { ...prev, [item.key]: event.target.checked } : prev
-                              )
+                              {
+                                setSuccessMessage(null);
+                                setSelected((prev) =>
+                                  prev ? { ...prev, [item.key]: event.target.checked } : prev
+                                );
+                              }
                             }
                           />
                           {item.label}
@@ -622,6 +645,7 @@ export default function AdminUsersPage() {
                       Delete user
                     </Button>
                     {error ? <p className="text-sm text-red-500">{error}</p> : null}
+                    {successMessage ? <p className="text-sm text-emerald-600">{successMessage}</p> : null}
                   </>
                 )}
               </CardContent>

@@ -665,6 +665,7 @@ export default function Home() {
               <Link className="transition hover:text-white" href="/privacy">Privacy</Link>
               <Link className="transition hover:text-white" href="/support">Support</Link>
               <Link className="transition hover:text-[#E06C2C]" href="/agents">Become an agent</Link>
+              <Link className="transition hover:text-white" href="/agent-portal/login">Agent login</Link>
               <a
                 href="https://twitter.com/LeetCarpooling"
                 target="_blank"

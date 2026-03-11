@@ -166,6 +166,12 @@ export default function AgentsPage() {
               >
                 How it works
               </a>
+              <Link
+                href="/agent-portal/login"
+                className="inline-flex items-center gap-2 rounded-full border border-[#E06C2C]/45 bg-[#E06C2C]/18 px-6 py-4 text-sm font-medium text-[#f5c49a] backdrop-blur-sm transition hover:border-[#E06C2C]/70 hover:bg-[#E06C2C]/24 hover:text-white"
+              >
+                Agent login
+              </Link>
             </div>
 
             {/* Feature pills */}
@@ -439,13 +445,21 @@ export default function AgentsPage() {
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Leet · Ghana
           </p>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-[color:var(--accent-2)] transition hover:opacity-75"
-          >
-            Home
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+          <div className="flex items-center gap-5">
+            <Link
+              href="/agent-portal/login"
+              className="text-sm font-medium text-[color:var(--accent-2)] transition hover:opacity-75"
+            >
+              Agent login
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-[color:var(--accent-2)] transition hover:opacity-75"
+            >
+              Home
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         </div>
       </div>
     </main>
