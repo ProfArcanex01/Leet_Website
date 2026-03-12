@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Info } from 'lucide-react';
@@ -61,6 +62,28 @@ type VehicleRate = {
   description: string;
 };
 
+type AppVersionPolicy = {
+  id: number;
+  platform: 'IOS' | 'ANDROID';
+  channel: 'production' | 'preview';
+  latest_version: string;
+  minimum_supported_version: string;
+  latest_build_number: number | null;
+  minimum_supported_build_number: number | null;
+  update_mode_default: 'NONE' | 'SOFT' | 'HARD';
+  soft_title: string;
+  soft_message: string;
+  hard_title: string;
+  hard_message: string;
+  store_url: string;
+  ota_enabled: boolean;
+  maintenance_enabled: boolean;
+  maintenance_message: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 const days = [
   { value: 0, label: 'Monday' },
   { value: 1, label: 'Tuesday' },
@@ -77,6 +100,22 @@ const vehicleTypes = [
   { value: 'MINIVAN', label: 'Minivan' },
   { value: 'LUXURY', label: 'Luxury' },
   { value: 'ECONOMY', label: 'Economy' },
+];
+
+const appPlatforms = [
+  { value: 'IOS', label: 'iOS' },
+  { value: 'ANDROID', label: 'Android' },
+];
+
+const releaseChannels = [
+  { value: 'production', label: 'Production' },
+  { value: 'preview', label: 'Preview' },
+];
+
+const updateModes = [
+  { value: 'NONE', label: 'None' },
+  { value: 'SOFT', label: 'Soft' },
+  { value: 'HARD', label: 'Hard' },
 ];
 
 const pricingGuide = {
@@ -105,6 +144,7 @@ export default function AdminSystemPage() {
   const [pricing, setPricing] = useState<PricingParameters[]>([]);
   const [demand, setDemand] = useState<DemandMultiplier[]>([]);
   const [vehicleRates, setVehicleRates] = useState<VehicleRate[]>([]);
+  const [appPolicies, setAppPolicies] = useState<AppVersionPolicy[]>([]);
 
   const [editingRegion, setEditingRegion] = useState<Region | null>(null);
   const [regionForm, setRegionForm] = useState({ name: '', center_latitude: '', center_longitude: '', radius: '' });
@@ -144,8 +184,49 @@ export default function AdminSystemPage() {
     multiplier: '',
     description: '',
   });
+  const [editingPolicy, setEditingPolicy] = useState<AppVersionPolicy | null>(null);
+  const [policyForm, setPolicyForm] = useState({
+    platform: 'IOS',
+    channel: 'production',
+    latest_version: '',
+    minimum_supported_version: '',
+    latest_build_number: '',
+    minimum_supported_build_number: '',
+    update_mode_default: 'NONE',
+    soft_title: '',
+    soft_message: '',
+    hard_title: '',
+    hard_message: '',
+    store_url: '',
+    ota_enabled: 'false',
+    maintenance_enabled: 'false',
+    maintenance_message: '',
+    is_active: 'true',
+  });
 
   const regionOptions = useMemo(() => regions.map((region) => ({ value: String(region.id), label: region.name })), [regions]);
+
+  const resetPolicyForm = () => {
+    setEditingPolicy(null);
+    setPolicyForm({
+      platform: 'IOS',
+      channel: 'production',
+      latest_version: '',
+      minimum_supported_version: '',
+      latest_build_number: '',
+      minimum_supported_build_number: '',
+      update_mode_default: 'NONE',
+      soft_title: '',
+      soft_message: '',
+      hard_title: '',
+      hard_message: '',
+      store_url: '',
+      ota_enabled: 'false',
+      maintenance_enabled: 'false',
+      maintenance_message: '',
+      is_active: 'true',
+    });
+  };
 
   const renderLabel = (key: keyof typeof pricingGuide, label: string) => (
     <div className="flex items-center gap-2">
@@ -171,21 +252,25 @@ export default function AdminSystemPage() {
     setLoading(true);
     setError(null);
     try {
-      const [regionsRes, pricingRes, demandRes, vehicleRes] = await Promise.all([
+      const [regionsRes, pricingRes, demandRes, vehicleRes, policiesRes] = await Promise.all([
         authFetch('/fares/admin/regions/'),
         authFetch('/fares/admin/pricing/'),
         authFetch('/fares/admin/demand-multipliers/'),
         authFetch('/fares/admin/vehicle-rates/'),
+        authFetch('/accounts/admin/app-version-policies/'),
       ]);
       const regionsData = await regionsRes.json().catch(() => ([]));
       const pricingData = await pricingRes.json().catch(() => ([]));
       const demandData = await demandRes.json().catch(() => ([]));
       const vehicleData = await vehicleRes.json().catch(() => ([]));
+      const policiesData = await policiesRes.json().catch(() => ([]));
       if (!regionsRes.ok) throw new Error(regionsData?.detail || regionsData?.error || 'Unable to load regions.');
+      if (!policiesRes.ok) throw new Error((policiesData as any)?.detail || (policiesData as any)?.error || 'Unable to load app update policies.');
       setRegions(regionsData);
       setPricing(pricingRes.ok ? pricingData : []);
       setDemand(demandRes.ok ? demandData : []);
       setVehicleRates(vehicleRes.ok ? vehicleData : []);
+      setAppPolicies(Array.isArray(policiesData) ? policiesData : []);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unable to load configuration.';
       setError(message);
@@ -322,6 +407,66 @@ export default function AdminSystemPage() {
     }
   };
 
+  const savePolicy = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const payload = {
+        ...policyForm,
+        latest_build_number: policyForm.latest_build_number ? Number(policyForm.latest_build_number) : null,
+        minimum_supported_build_number: policyForm.minimum_supported_build_number
+          ? Number(policyForm.minimum_supported_build_number)
+          : null,
+        ota_enabled: policyForm.ota_enabled === 'true',
+        maintenance_enabled: policyForm.maintenance_enabled === 'true',
+        is_active: policyForm.is_active === 'true',
+      };
+
+      const response = await authFetch(
+        editingPolicy
+          ? `/accounts/admin/app-version-policies/${editingPolicy.id}/`
+          : '/accounts/admin/app-version-policies/',
+        {
+          method: editingPolicy ? 'PATCH' : 'POST',
+          body: JSON.stringify(payload),
+        }
+      );
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error((data as any)?.detail || (data as any)?.error || 'Unable to save app update policy.');
+      }
+      resetPolicyForm();
+      await loadAll();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unable to save app update policy.';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deletePolicy = async () => {
+    if (!editingPolicy) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await authFetch(`/accounts/admin/app-version-policies/${editingPolicy.id}/`, {
+        method: 'DELETE',
+      });
+      if (!response.ok && response.status !== 204) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error((data as any)?.detail || (data as any)?.error || 'Unable to delete app update policy.');
+      }
+      resetPolicyForm();
+      await loadAll();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unable to delete app update policy.';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -343,6 +488,7 @@ export default function AdminSystemPage() {
           <TabsTrigger value="pricing">Pricing</TabsTrigger>
           <TabsTrigger value="demand">Demand</TabsTrigger>
           <TabsTrigger value="vehicles">Vehicle rates</TabsTrigger>
+          <TabsTrigger value="app-updates">App updates</TabsTrigger>
         </TabsList>
 
         <TabsContent value="regions">
@@ -804,6 +950,228 @@ export default function AdminSystemPage() {
                 <Button onClick={saveVehicle} disabled={loading}>
                   {loading ? 'Saving...' : editingVehicle ? 'Save vehicle rate' : 'Create vehicle rate'}
                 </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="app-updates">
+          <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
+            <Card>
+              <CardHeader className="space-y-1">
+                <CardTitle>App update policies</CardTitle>
+                <CardDescription>Control soft and hard updates for iOS and Android.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Platform</TableHead>
+                      <TableHead>Channel</TableHead>
+                      <TableHead>Latest</TableHead>
+                      <TableHead>Minimum</TableHead>
+                      <TableHead>Default mode</TableHead>
+                      <TableHead>Flags</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {appPolicies.map((policy) => (
+                      <TableRow
+                        key={policy.id}
+                        onClick={() => {
+                          setEditingPolicy(policy);
+                          setPolicyForm({
+                            platform: policy.platform,
+                            channel: policy.channel,
+                            latest_version: policy.latest_version,
+                            minimum_supported_version: policy.minimum_supported_version,
+                            latest_build_number: policy.latest_build_number?.toString() ?? '',
+                            minimum_supported_build_number: policy.minimum_supported_build_number?.toString() ?? '',
+                            update_mode_default: policy.update_mode_default,
+                            soft_title: policy.soft_title || '',
+                            soft_message: policy.soft_message || '',
+                            hard_title: policy.hard_title || '',
+                            hard_message: policy.hard_message || '',
+                            store_url: policy.store_url || '',
+                            ota_enabled: String(policy.ota_enabled),
+                            maintenance_enabled: String(policy.maintenance_enabled),
+                            maintenance_message: policy.maintenance_message || '',
+                            is_active: String(policy.is_active),
+                          });
+                        }}
+                      >
+                        <TableCell className="font-semibold">{policy.platform}</TableCell>
+                        <TableCell>{policy.channel}</TableCell>
+                        <TableCell>
+                          {policy.latest_version}
+                          {policy.latest_build_number ? ` (${policy.latest_build_number})` : ''}
+                        </TableCell>
+                        <TableCell>
+                          {policy.minimum_supported_version}
+                          {policy.minimum_supported_build_number ? ` (${policy.minimum_supported_build_number})` : ''}
+                        </TableCell>
+                        <TableCell>{policy.update_mode_default}</TableCell>
+                        <TableCell>
+                          {[policy.ota_enabled ? 'OTA' : null, policy.maintenance_enabled ? 'Maintenance' : null, policy.is_active ? 'Active' : 'Inactive']
+                            .filter(Boolean)
+                            .join(' • ')}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                    {appPolicies.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-sm text-muted-foreground">
+                          No app update policies configured yet.
+                        </TableCell>
+                      </TableRow>
+                    ) : null}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="space-y-1">
+                <CardTitle>{editingPolicy ? 'Edit app policy' : 'New app policy'}</CardTitle>
+                <CardDescription>One row per platform and release channel.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label>Platform</Label>
+                  <Select value={policyForm.platform} onValueChange={(value) => setPolicyForm((p) => ({ ...p, platform: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select platform" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {appPlatforms.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Channel</Label>
+                  <Select value={policyForm.channel} onValueChange={(value) => setPolicyForm((p) => ({ ...p, channel: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select channel" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {releaseChannels.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Latest version</Label>
+                  <Input value={policyForm.latest_version} onChange={(e) => setPolicyForm((p) => ({ ...p, latest_version: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Latest build number</Label>
+                  <Input value={policyForm.latest_build_number} onChange={(e) => setPolicyForm((p) => ({ ...p, latest_build_number: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Minimum supported version</Label>
+                  <Input value={policyForm.minimum_supported_version} onChange={(e) => setPolicyForm((p) => ({ ...p, minimum_supported_version: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Minimum supported build number</Label>
+                  <Input value={policyForm.minimum_supported_build_number} onChange={(e) => setPolicyForm((p) => ({ ...p, minimum_supported_build_number: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Default update mode</Label>
+                  <Select value={policyForm.update_mode_default} onValueChange={(value) => setPolicyForm((p) => ({ ...p, update_mode_default: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select update mode" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {updateModes.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Store URL</Label>
+                  <Input value={policyForm.store_url} onChange={(e) => setPolicyForm((p) => ({ ...p, store_url: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Soft update title</Label>
+                  <Input value={policyForm.soft_title} onChange={(e) => setPolicyForm((p) => ({ ...p, soft_title: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Soft update message</Label>
+                  <Textarea value={policyForm.soft_message} onChange={(e) => setPolicyForm((p) => ({ ...p, soft_message: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Hard update title</Label>
+                  <Input value={policyForm.hard_title} onChange={(e) => setPolicyForm((p) => ({ ...p, hard_title: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Hard update message</Label>
+                  <Textarea value={policyForm.hard_message} onChange={(e) => setPolicyForm((p) => ({ ...p, hard_message: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>OTA enabled</Label>
+                  <Select value={policyForm.ota_enabled} onValueChange={(value) => setPolicyForm((p) => ({ ...p, ota_enabled: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select OTA setting" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Enabled</SelectItem>
+                      <SelectItem value="false">Disabled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Maintenance enabled</Label>
+                  <Select value={policyForm.maintenance_enabled} onValueChange={(value) => setPolicyForm((p) => ({ ...p, maintenance_enabled: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select maintenance setting" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Enabled</SelectItem>
+                      <SelectItem value="false">Disabled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Maintenance message</Label>
+                  <Textarea value={policyForm.maintenance_message} onChange={(e) => setPolicyForm((p) => ({ ...p, maintenance_message: e.target.value }))} />
+                </div>
+                <div>
+                  <Label>Record state</Label>
+                  <Select value={policyForm.is_active} onValueChange={(value) => setPolicyForm((p) => ({ ...p, is_active: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select record state" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Active</SelectItem>
+                      <SelectItem value="false">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <Button onClick={savePolicy} disabled={loading}>
+                    {loading ? 'Saving...' : editingPolicy ? 'Save app policy' : 'Create app policy'}
+                  </Button>
+                  {editingPolicy ? (
+                    <>
+                      <Button variant="outline" onClick={resetPolicyForm} disabled={loading}>
+                        Cancel
+                      </Button>
+                      <Button variant="outline" onClick={deletePolicy} disabled={loading}>
+                        Delete
+                      </Button>
+                    </>
+                  ) : null}
+                </div>
               </CardContent>
             </Card>
           </div>
