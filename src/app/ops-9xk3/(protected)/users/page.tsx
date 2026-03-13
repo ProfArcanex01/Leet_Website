@@ -13,6 +13,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { authFetch } from '@/lib/api';
 
+type AdminGroupName =
+  | 'ops_admin'
+  | 'trust_safety_admin'
+  | 'finance_admin'
+  | 'growth_admin'
+  | 'platform_admin';
+
 type AdminUser = {
   id: number;
   phone_number: string;
@@ -29,6 +36,7 @@ type AdminUser = {
   is_staff: boolean;
   is_superuser: boolean;
   is_agent: boolean;
+  admin_groups?: AdminGroupName[];
   suspended_until?: string | null;
   date_joined: string;
 };
@@ -56,6 +64,18 @@ function extractApiError(payload: unknown, fallback: string) {
   return fallback;
 }
 
+const ADMIN_ROLE_OPTIONS: Array<{ key: AdminGroupName; label: string }> = [
+  { key: 'ops_admin', label: 'Ops admin' },
+  { key: 'trust_safety_admin', label: 'Trust & safety admin' },
+  { key: 'finance_admin', label: 'Finance admin' },
+  { key: 'growth_admin', label: 'Growth admin' },
+  { key: 'platform_admin', label: 'Platform admin' },
+];
+
+function normalizeAdminGroups(groups?: AdminGroupName[]): AdminGroupName[] {
+  return [...new Set(groups || [])].sort() as AdminGroupName[];
+}
+
 export default function AdminUsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -78,6 +98,7 @@ export default function AdminUsersPage() {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [suspensionPeriod, setSuspensionPeriod] = useState<'none' | 'clear' | 'day' | 'week' | 'month' | 'custom'>('none');
   const [customSuspension, setCustomSuspension] = useState('');
+  const [adminRoleReason, setAdminRoleReason] = useState('');
   const [noInviteUsers, setNoInviteUsers] = useState<AdminUser[]>([]);
   const [noInviteLoading, setNoInviteLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'all-users' | 'no-invite'>('all-users');
@@ -86,10 +107,12 @@ export default function AdminUsersPage() {
   const noInvitePreview = useMemo(() => noInviteUsers.slice(0, 20), [noInviteUsers]);
 
   const handleSelectUser = (user: AdminUser) => {
-    setSelected(user);
-    setSelectedBase(user);
+    const normalizedUser = { ...user, admin_groups: normalizeAdminGroups(user.admin_groups) };
+    setSelected(normalizedUser);
+    setSelectedBase(normalizedUser);
     setSuspensionPeriod('none');
     setCustomSuspension('');
+    setAdminRoleReason('');
     setError(null);
     setSuccessMessage(null);
   };
@@ -101,10 +124,13 @@ export default function AdminUsersPage() {
     verified?: string;
     active?: string;
     staff?: string;
+    preserveMessages?: boolean;
   }) => {
     setLoading(true);
-    setError(null);
-    setSuccessMessage(null);
+    if (!overrides?.preserveMessages) {
+      setError(null);
+      setSuccessMessage(null);
+    }
     const params = new URLSearchParams();
     const nextPage = overrides?.page ?? page;
     const nextQuery = overrides?.query ?? query;
@@ -210,13 +236,22 @@ export default function AdminUsersPage() {
           suspended_until: new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString(),
         };
       }
-      const requestBody: Record<string, string | boolean | null> = {};
+      const requestBody: Record<string, string | boolean | string[] | null> = {};
       if (selected.user_type !== selectedBase.user_type) requestBody.user_type = selected.user_type;
       if (selected.is_verified !== selectedBase.is_verified) requestBody.is_verified = selected.is_verified;
       if (selected.is_active !== selectedBase.is_active) requestBody.is_active = selected.is_active;
       if (selected.is_agent !== selectedBase.is_agent) requestBody.is_agent = selected.is_agent;
-      if (selected.is_staff !== selectedBase.is_staff) requestBody.is_staff = selected.is_staff;
-      if (selected.is_superuser !== selectedBase.is_superuser) requestBody.is_superuser = selected.is_superuser;
+      const selectedAdminGroups = normalizeAdminGroups(selected.admin_groups);
+      const baseAdminGroups = normalizeAdminGroups(selectedBase.admin_groups);
+      const adminGroupsChanged = selectedAdminGroups.join(',') !== baseAdminGroups.join(',');
+      if (adminGroupsChanged) {
+        if (!adminRoleReason.trim()) {
+          setError('Provide a reason when changing admin roles.');
+          return;
+        }
+        requestBody.admin_group_names = selectedAdminGroups;
+        requestBody.admin_group_change_reason = adminRoleReason.trim();
+      }
       Object.assign(requestBody, suspensionPayload);
 
       if (Object.keys(requestBody).length === 0) {
@@ -239,14 +274,21 @@ export default function AdminUsersPage() {
         throw new Error(extractApiError(payload, 'Unable to update user.'));
       }
       const hasUserPayload = payload && typeof payload === 'object' && typeof (payload as AdminUser).id === 'number';
-      const updatedUser = hasUserPayload ? { ...selected, ...(payload as Partial<AdminUser>) } : selected;
+      const updatedUser = hasUserPayload
+        ? {
+            ...selected,
+            ...(payload as Partial<AdminUser>),
+            admin_groups: normalizeAdminGroups((payload as Partial<AdminUser>).admin_groups ?? selected.admin_groups),
+          }
+        : selected;
       setUsers((current) => current.map((user) => (user.id === selected.id ? updatedUser : user)));
       setSelected(updatedUser);
       setSelectedBase(updatedUser);
       setSuspensionPeriod('none');
       setCustomSuspension('');
+      setAdminRoleReason('');
       setSuccessMessage('User updated successfully.');
-      await loadUsers({ page });
+      await loadUsers({ page, preserveMessages: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unable to update user.';
       setError(message);
@@ -401,6 +443,26 @@ export default function AdminUsersPage() {
           </div>
         </CardContent>
       </Card>
+
+      {error ? (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="py-4">
+            <p className="text-sm font-medium text-red-700" aria-live="polite">
+              {error}
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {successMessage ? (
+        <Card className="border-emerald-200 bg-emerald-50">
+          <CardContent className="py-4">
+            <p className="text-sm font-medium text-emerald-700" aria-live="polite">
+              {successMessage}
+            </p>
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'all-users' | 'no-invite')}>
         <TabsList>
@@ -614,8 +676,6 @@ export default function AdminUsersPage() {
                         { key: 'is_verified', label: 'Verified account' },
                         { key: 'is_active', label: 'Active user' },
                         { key: 'is_agent', label: 'Agent portal access' },
-                        { key: 'is_staff', label: 'Staff access' },
-                        { key: 'is_superuser', label: 'Superadmin' },
                       ].map((item) => (
                         <label key={item.key} className="flex items-center gap-3 text-sm">
                           <input
@@ -634,6 +694,48 @@ export default function AdminUsersPage() {
                         </label>
                       ))}
                     </div>
+                    <div className="space-y-2">
+                      <Label>Admin roles</Label>
+                      <div className="grid gap-2">
+                        {ADMIN_ROLE_OPTIONS.map((role) => (
+                          <label key={role.key} className="flex items-center gap-3 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(selected.admin_groups?.includes(role.key))}
+                              onChange={(event) => {
+                                setSuccessMessage(null);
+                                setSelected((prev) => {
+                                  if (!prev) return prev;
+                                  const currentGroups = new Set(prev.admin_groups || []);
+                                  if (event.target.checked) {
+                                    currentGroups.add(role.key);
+                                  } else {
+                                    currentGroups.delete(role.key);
+                                  }
+                                  return {
+                                    ...prev,
+                                    admin_groups: normalizeAdminGroups([...currentGroups]),
+                                  };
+                                });
+                              }}
+                            />
+                            {role.label}
+                          </label>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Staff access is derived from admin roles. Platform admin is treated as full admin authority.
+                      </p>
+                    </div>
+                    <div>
+                      <Label htmlFor="admin-role-reason">Role change reason</Label>
+                      <Input
+                        id="admin-role-reason"
+                        value={adminRoleReason}
+                        onChange={(event) => setAdminRoleReason(event.target.value)}
+                        placeholder="Required when changing admin roles"
+                      />
+                    </div>
                     <Button onClick={updateUser} disabled={updating}>
                       {updating ? 'Saving...' : 'Save changes'}
                     </Button>
@@ -644,8 +746,6 @@ export default function AdminUsersPage() {
                     >
                       Delete user
                     </Button>
-                    {error ? <p className="text-sm text-red-500">{error}</p> : null}
-                    {successMessage ? <p className="text-sm text-emerald-600">{successMessage}</p> : null}
                   </>
                 )}
               </CardContent>
