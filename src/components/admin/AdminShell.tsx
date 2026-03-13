@@ -36,6 +36,36 @@ const navItems: NavItem[] = [
   { label: 'Support', href: '/ops-9xk3/support', description: 'Support tickets & reports' },
 ];
 
+async function copyTextToClipboard(text: string) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  if (typeof document === 'undefined') {
+    throw new Error('Clipboard is not available in this environment.');
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', 'true');
+  textarea.style.position = 'fixed';
+  textarea.style.top = '-9999px';
+  textarea.style.left = '-9999px';
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+
+  try {
+    const copied = document.execCommand('copy');
+    if (!copied) {
+      throw new Error('Browser copy command was rejected.');
+    }
+  } finally {
+    document.body.removeChild(textarea);
+  }
+}
+
 /* Shared nav list — used by both the sidebar and the mobile drawer */
 function NavList({
   pathname,
@@ -136,7 +166,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      await navigator.clipboard.writeText(token);
+      await copyTextToClipboard(token);
       setMcpMessage('MCP bearer token copied.');
       setMcpError(null);
     } catch {
@@ -169,7 +199,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         null,
         2,
       );
-      await navigator.clipboard.writeText(config);
+      await copyTextToClipboard(config);
       setMcpMessage('MCP config copied for Cursor/Codex.');
       setMcpError(null);
     } catch (error) {
