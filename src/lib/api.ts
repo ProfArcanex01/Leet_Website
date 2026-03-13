@@ -6,6 +6,14 @@ export function getApiBase() {
   return url;
 }
 
+export function getMcpBase() {
+  const url = process.env.NEXT_PUBLIC_MCP_URL;
+  if (!url) {
+    throw new Error('NEXT_PUBLIC_MCP_URL environment variable is not set');
+  }
+  return url;
+}
+
 const ADMIN_TOKEN_STORAGE_KEY = 'leet_admin_token';
 const AGENT_TOKEN_STORAGE_KEY = 'leet_agent_token';
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 12;

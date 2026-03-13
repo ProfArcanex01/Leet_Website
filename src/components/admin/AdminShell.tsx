@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu } from 'lucide-react';
+import { Copy, KeyRound, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -13,7 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { clearAdminToken, getAdminToken } from '@/lib/api';
+import { clearAdminToken, getAdminToken, getMcpBase } from '@/lib/api';
 import { cn } from '@/lib/utils';
 
 type NavItem = {
@@ -100,6 +100,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mcpMessage, setMcpMessage] = useState<string | null>(null);
+  const [mcpError, setMcpError] = useState<string | null>(null);
 
   useEffect(() => {
     const token = getAdminToken();
@@ -123,6 +125,61 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   function navigate(href: string) {
     router.push(href);
     setMobileMenuOpen(false);
+  }
+
+  async function copyMcpToken() {
+    const token = getAdminToken();
+    if (!token) {
+      setMcpError('No admin access token is available. Sign in again and retry.');
+      setMcpMessage(null);
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(token);
+      setMcpMessage('MCP bearer token copied.');
+      setMcpError(null);
+    } catch {
+      setMcpError('Unable to copy the MCP token from this browser.');
+      setMcpMessage(null);
+    }
+  }
+
+  async function copyMcpConfig() {
+    const token = getAdminToken();
+    if (!token) {
+      setMcpError('No admin access token is available. Sign in again and retry.');
+      setMcpMessage(null);
+      return;
+    }
+
+    try {
+      const config = JSON.stringify(
+        {
+          mcpServers: {
+            'leet-admin': {
+              name: 'Leet Admin',
+              url: getMcpBase(),
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          },
+        },
+        null,
+        2,
+      );
+      await navigator.clipboard.writeText(config);
+      setMcpMessage('MCP config copied for Cursor/Codex.');
+      setMcpError(null);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Unable to build the MCP config.';
+      setMcpError(message);
+      setMcpMessage(null);
+    }
   }
 
   if (!ready) {
@@ -220,16 +277,36 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                       </Button>
                     </form>
 
-                    <Button
-                      variant="outline"
-                      className="hidden shrink-0 rounded-2xl border-[color:var(--stroke)] lg:inline-flex"
-                      onClick={() => {
-                        clearAdminToken();
-                        router.replace('/ops-9xk3/login');
-                      }}
-                    >
-                      Sign out
-                    </Button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="shrink-0 rounded-2xl border-[color:var(--stroke)]"
+                        onClick={copyMcpToken}
+                      >
+                        <KeyRound className="mr-2 h-4 w-4" />
+                        Copy MCP token
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="shrink-0 rounded-2xl border-[color:var(--stroke)]"
+                        onClick={copyMcpConfig}
+                      >
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy MCP config
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="hidden shrink-0 rounded-2xl border-[color:var(--stroke)] lg:inline-flex"
+                        onClick={() => {
+                          clearAdminToken();
+                          router.replace('/ops-9xk3/login');
+                        }}
+                      >
+                        Sign out
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="hidden lg:block">
@@ -237,6 +314,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   </div>
                 </div>
               </div>
+
+              {mcpMessage || mcpError ? (
+                <div
+                  className={cn(
+                    "mt-4 rounded-2xl border px-3 py-2 text-sm",
+                    mcpError
+                      ? "border-red-200 bg-red-50 text-red-700"
+                      : "border-[color:var(--stroke)] bg-[color:var(--soft)] text-foreground",
+                  )}
+                >
+                  {mcpError ?? mcpMessage}
+                </div>
+              ) : null}
 
               <div className="mt-4 lg:hidden">
                 <div className="rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--soft)] px-3 py-2 text-xs text-muted-foreground">
