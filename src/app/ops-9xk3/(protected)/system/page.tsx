@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -137,6 +137,7 @@ const pricingGuide = {
 };
 
 export default function AdminSystemPage() {
+  const didInitialLoadRef = useRef(false);
   const [tab, setTab] = useState('regions');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -248,6 +249,15 @@ export default function AdminSystemPage() {
     </div>
   );
 
+  const loadPolicies = async () => {
+    const response = await authFetch('/accounts/admin/app-version-policies/');
+    const data = await response.json().catch(() => ([]));
+    if (!response.ok) {
+      throw new Error((data as any)?.detail || (data as any)?.error || 'Unable to load app update policies.');
+    }
+    setAppPolicies(Array.isArray(data) ? data : []);
+  };
+
   const loadAll = async () => {
     setLoading(true);
     setError(null);
@@ -280,6 +290,8 @@ export default function AdminSystemPage() {
   };
 
   useEffect(() => {
+    if (didInitialLoadRef.current) return;
+    didInitialLoadRef.current = true;
     loadAll();
   }, []);
 
@@ -436,7 +448,7 @@ export default function AdminSystemPage() {
         throw new Error((data as any)?.detail || (data as any)?.error || 'Unable to save app update policy.');
       }
       resetPolicyForm();
-      await loadAll();
+      await loadPolicies();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unable to save app update policy.';
       setError(message);
@@ -458,7 +470,7 @@ export default function AdminSystemPage() {
         throw new Error((data as any)?.detail || (data as any)?.error || 'Unable to delete app update policy.');
       }
       resetPolicyForm();
-      await loadAll();
+      await loadPolicies();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unable to delete app update policy.';
       setError(message);
@@ -971,6 +983,7 @@ export default function AdminSystemPage() {
                       <TableHead>Latest</TableHead>
                       <TableHead>Minimum</TableHead>
                       <TableHead>Default mode</TableHead>
+                      <TableHead>Messages</TableHead>
                       <TableHead>Flags</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1011,6 +1024,28 @@ export default function AdminSystemPage() {
                           {policy.minimum_supported_build_number ? ` (${policy.minimum_supported_build_number})` : ''}
                         </TableCell>
                         <TableCell>{policy.update_mode_default}</TableCell>
+                        <TableCell className="max-w-sm">
+                          <div className="space-y-2 text-xs text-muted-foreground">
+                            <div>
+                              <span className="font-semibold text-foreground">Soft:</span>{' '}
+                              {policy.soft_title || policy.soft_message
+                                ? `${policy.soft_title || 'No title'}${policy.soft_message ? ` - ${policy.soft_message}` : ''}`
+                                : 'Not configured'}
+                            </div>
+                            <div>
+                              <span className="font-semibold text-foreground">Hard:</span>{' '}
+                              {policy.hard_title || policy.hard_message
+                                ? `${policy.hard_title || 'No title'}${policy.hard_message ? ` - ${policy.hard_message}` : ''}`
+                                : 'Not configured'}
+                            </div>
+                            {policy.maintenance_enabled && policy.maintenance_message ? (
+                              <div>
+                                <span className="font-semibold text-foreground">Maintenance:</span>{' '}
+                                {policy.maintenance_message}
+                              </div>
+                            ) : null}
+                          </div>
+                        </TableCell>
                         <TableCell>
                           {[policy.ota_enabled ? 'OTA' : null, policy.maintenance_enabled ? 'Maintenance' : null, policy.is_active ? 'Active' : 'Inactive']
                             .filter(Boolean)
@@ -1020,7 +1055,7 @@ export default function AdminSystemPage() {
                     ))}
                     {appPolicies.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-sm text-muted-foreground">
+                        <TableCell colSpan={7} className="text-sm text-muted-foreground">
                           No app update policies configured yet.
                         </TableCell>
                       </TableRow>

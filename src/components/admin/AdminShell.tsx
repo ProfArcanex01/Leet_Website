@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -24,6 +25,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/ops-9xk3', description: 'Overview & quick links' },
   { label: 'Users', href: '/ops-9xk3/users', description: 'Hosts, riders, and staff' },
+  { label: 'Notifications', href: '/ops-9xk3/notifications', description: 'Custom push & scheduled sends' },
   { label: 'Network', href: '/ops-9xk3/network', description: 'Invite relationship graph' },
   { label: 'Transactions', href: '/ops-9xk3/transactions', description: 'Payments & settlements' },
   { label: 'Rides', href: '/ops-9xk3/rides', description: 'Ride history & status' },
@@ -33,28 +35,6 @@ const navItems: NavItem[] = [
   { label: 'Training', href: '/ops-9xk3/training', description: 'Agent learning materials' },
   { label: 'Support', href: '/ops-9xk3/support', description: 'Support tickets & reports' },
 ];
-
-/* Hamburger icon (3-line menu) */
-function MenuIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <line x1="4" x2="20" y1="12" y2="12" />
-      <line x1="4" x2="20" y1="6" y2="6" />
-      <line x1="4" x2="20" y1="18" y2="18" />
-    </svg>
-  );
-}
 
 /* Shared nav list — used by both the sidebar and the mobile drawer */
 function NavList({
@@ -83,6 +63,34 @@ function NavList({
         </button>
       ))}
     </nav>
+  );
+}
+
+function QuickNav({
+  pathname,
+  onNavigate,
+}: {
+  pathname: string;
+  onNavigate: (href: string) => void;
+}) {
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {navItems
+        .filter((item) => item.href !== '/ops-9xk3')
+        .map((item) => (
+          <Button
+            key={item.href}
+            variant="outline"
+            className={cn(
+              'h-10 shrink-0 rounded-2xl border-[color:var(--stroke)] bg-white px-4',
+              pathname === item.href && 'bg-[color:var(--soft)] text-foreground',
+            )}
+            onClick={() => onNavigate(item.href)}
+          >
+            {item.label}
+          </Button>
+        ))}
+    </div>
   );
 }
 
@@ -173,65 +181,66 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
           <main className="flex-1">
             {/* ── Top bar ──────────────────────────────────────── */}
-            <div className="mb-8 flex flex-col gap-4 rounded-3xl border border-[color:var(--stroke)] bg-white px-4 py-4 shadow-[var(--shadow)] sm:px-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex items-center gap-3">
+            <div className="mb-8 rounded-3xl border border-[color:var(--stroke)] bg-white px-4 py-4 shadow-[var(--shadow)] sm:px-6">
+              <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                <div className="flex items-center gap-3">
                 {/* Hamburger — visible below lg */}
-                <button
-                  type="button"
-                  onClick={() => setMobileMenuOpen(true)}
-                  className="inline-flex items-center justify-center rounded-xl border border-[color:var(--stroke)] p-2 text-muted-foreground transition-colors hover:bg-[color:var(--soft)] lg:hidden"
-                  aria-label="Open menu"
-                >
-                  <MenuIcon className="h-5 w-5" />
-                </button>
-                <div>
-                  <h1 className="text-2xl font-semibold">{activeItem.label}</h1>
-                  <p className="text-sm text-muted-foreground">{activeItem.description}</p>
+                  <button
+                    type="button"
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="inline-flex items-center justify-center rounded-xl border border-[color:var(--stroke)] p-2 text-muted-foreground transition-colors hover:bg-[color:var(--soft)] lg:hidden"
+                    aria-label="Open menu"
+                  >
+                    <Menu className="h-5 w-5" />
+                  </button>
+                  <div>
+                    <h1 className="text-2xl font-semibold">{activeItem.label}</h1>
+                    <p className="text-sm text-muted-foreground">{activeItem.description}</p>
+                  </div>
+                </div>
+
+                <div className="flex w-full flex-col gap-3 xl:max-w-3xl">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
+                    <form
+                      className="flex w-full items-center gap-2 md:max-w-md"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        if (!searchTerm.trim()) return;
+                        router.push(`/ops-9xk3/users?q=${encodeURIComponent(searchTerm.trim())}`);
+                      }}
+                    >
+                      <Input
+                        value={searchTerm}
+                        onChange={(event) => setSearchTerm(event.target.value)}
+                        placeholder="Search users by name, phone, or email"
+                        className="bg-[color:var(--paper)]"
+                      />
+                      <Button type="submit" variant="outline" className="shrink-0">
+                        Search
+                      </Button>
+                    </form>
+
+                    <Button
+                      variant="outline"
+                      className="hidden shrink-0 rounded-2xl border-[color:var(--stroke)] lg:inline-flex"
+                      onClick={() => {
+                        clearAdminToken();
+                        router.replace('/ops-9xk3/login');
+                      }}
+                    >
+                      Sign out
+                    </Button>
+                  </div>
+
+                  <div className="hidden lg:block">
+                    <QuickNav pathname={pathname} onNavigate={navigate} />
+                  </div>
                 </div>
               </div>
-              <div className="flex flex-1 flex-col gap-3 lg:flex-row lg:items-center lg:justify-end">
-                <form
-                  className="flex flex-1 items-center gap-2 lg:max-w-md"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    if (!searchTerm.trim()) return;
-                    router.push(`/ops-9xk3/users?q=${encodeURIComponent(searchTerm.trim())}`);
-                  }}
-                >
-                  <Input
-                    value={searchTerm}
-                    onChange={(event) => setSearchTerm(event.target.value)}
-                    placeholder="Search users by name, phone, or email"
-                  />
-                  <Button type="submit" variant="outline">
-                    Search
-                  </Button>
-                </form>
-                <div className="hidden flex-wrap items-center gap-2 lg:flex">
-                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/users')}>
-                    Users
-                  </Button>
-                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/network')}>
-                    Network
-                  </Button>
-                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/transactions')}>
-                    Transactions
-                  </Button>
-                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/rides')}>
-                    Rides
-                  </Button>
-                  <Button variant="outline" onClick={() => router.push('/ops-9xk3/training')}>
-                    Training
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      clearAdminToken();
-                      router.replace('/ops-9xk3/login');
-                    }}
-                  >
-                    Sign out
-                  </Button>
+
+              <div className="mt-4 lg:hidden">
+                <div className="rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--soft)] px-3 py-2 text-xs text-muted-foreground">
+                  Open the menu for full admin navigation.
                 </div>
               </div>
             </div>
