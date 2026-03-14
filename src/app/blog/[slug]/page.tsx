@@ -15,6 +15,8 @@ type BlogPostPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leetgh.com";
+
 const portableTextComponents: PortableTextComponents = {
   types: {
     image: ({ value }) => {
@@ -92,9 +94,15 @@ export async function generateMetadata({
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: {
+      canonical: `${siteUrl}/blog/${post.slug}`,
+    },
     openGraph: {
+      type: "article",
+      url: `${siteUrl}/blog/${post.slug}`,
       title: post.title,
       description: post.excerpt,
+      publishedTime: post.publishedAt,
       images: post.coverImage?.asset?.url
         ? [
             {
@@ -105,11 +113,12 @@ export async function generateMetadata({
         : undefined,
     },
     twitter: {
+      card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
       images: post.coverImage?.asset?.url
         ? [post.coverImage.asset.url]
-        : undefined,
+        : ["/og-image.png"],
     },
   };
 }

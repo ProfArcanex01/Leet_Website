@@ -199,6 +199,7 @@ export default async function Home() {
               <a className="transition hover:text-white" href="#how">How it works</a>
               <a className="transition hover:text-white" href="#trust">Trust & safety</a>
               <a className="transition hover:text-white" href="#faqs">FAQ</a>
+              <Link className="transition hover:text-white" href="/blog">Blog</Link>
               <Link className="transition hover:text-white" href="/agents">Become an agent</Link>
             </div>
             <div className="flex items-center gap-3">
@@ -685,6 +686,7 @@ export default async function Home() {
               </p>
             </div>
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/55 md:justify-start md:pt-1">
+              <Link className="transition hover:text-white" href="/blog">Blog</Link>
               <Link className="transition hover:text-white" href="/terms">Terms</Link>
               <Link className="transition hover:text-white" href="/privacy">Privacy</Link>
               <Link className="transition hover:text-white" href="/support">Support</Link>

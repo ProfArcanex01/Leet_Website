@@ -5,9 +5,37 @@ import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leetgh.com";
+
 export const metadata: Metadata = {
   title: "Blog",
-  description: "Updates, stories, and product news from Leet.",
+  description:
+    "Read Leet updates, commute guides, pricing explainers, and safety stories for passengers and drivers in Ghana.",
+  alternates: {
+    canonical: `${siteUrl}/blog`,
+  },
+  openGraph: {
+    type: "website",
+    url: `${siteUrl}/blog`,
+    title: "Leet Blog",
+    description:
+      "Commute stories, product updates, route insights, and safety explainers for passengers and drivers.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Leet Blog",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Leet Blog",
+    description:
+      "Commute stories, product updates, route insights, and safety explainers for passengers and drivers.",
+    images: ["/og-image.png"],
+  },
 };
 
 function formatDate(value: string) {
