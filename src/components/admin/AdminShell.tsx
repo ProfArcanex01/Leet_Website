@@ -34,6 +34,7 @@ const navItems: NavItem[] = [
   { label: 'Agents', href: '/ops-9xk3/agents', description: 'Recruitment applications' },
   { label: 'Training', href: '/ops-9xk3/training', description: 'Agent learning materials' },
   { label: 'Support', href: '/ops-9xk3/support', description: 'Support tickets & reports' },
+  { label: 'Studio', href: '/studio', description: 'Sanity content studio' },
 ];
 
 async function copyTextToClipboard(text: string) {
