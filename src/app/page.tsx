@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { client } from '@/sanity/client';
+import { HOME_PAGE_FAQS_QUERY } from '@/sanity/lib/queries';
 import Image from 'next/image';
 import Link from 'next/link';
 import { NewsletterForm } from './newsletter-form';
@@ -149,7 +151,29 @@ const testimonials = [
   },
 ];
 
-export default function Home() {
+type HomepageFaq = {
+  _key?: string;
+  title: string;
+  copy: string;
+};
+
+async function getHomepageFaqs() {
+  const data = await client.fetch(
+    HOME_PAGE_FAQS_QUERY,
+    {},
+    {
+      next: {
+        revalidate: 60,
+      },
+    }
+  );
+
+  return (data?.faqs?.length ? data.faqs : faqs) as HomepageFaq[];
+}
+
+export default async function Home() {
+  const homepageFaqs = await getHomepageFaqs();
+
   return (
     <main className="min-h-screen bg-[color:var(--paper)]">
       <DownloadStickyCta />
@@ -523,8 +547,8 @@ export default function Home() {
           <Card className="mx-auto max-w-3xl rounded-3xl border-[color:var(--stroke)] bg-[color:var(--card)] shadow-[var(--shadow)]">
             <CardContent className="p-6 md:p-8">
               <Accordion type="single" collapsible className="w-full">
-                {faqs.map((faq, i) => (
-                  <AccordionItem key={faq.title} value={`faq-${i}`} className="border-[color:var(--stroke)]">
+                {homepageFaqs.map((faq, i) => (
+                  <AccordionItem key={faq._key ?? faq.title} value={`faq-${i}`} className="border-[color:var(--stroke)]">
                     <AccordionTrigger className="text-base font-semibold hover:no-underline">{faq.title}</AccordionTrigger>
                     <AccordionContent className="text-sm text-muted-foreground">{faq.copy}</AccordionContent>
                   </AccordionItem>

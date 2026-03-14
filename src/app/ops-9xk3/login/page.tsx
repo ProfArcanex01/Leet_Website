@@ -19,6 +19,17 @@ export default function AdminLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const isOtpStep = Boolean(challengeToken);
 
+  const getNextPath = () => {
+    if (typeof window === 'undefined') {
+      return '/ops-9xk3';
+    }
+    const requested = new URLSearchParams(window.location.search).get('next');
+    if (!requested || !requested.startsWith('/')) {
+      return '/ops-9xk3';
+    }
+    return requested;
+  };
+
   const handlePasswordLogin = async () => {
     if (!identifier.trim() || !password.trim()) {
       setError('Email or phone number and password are required.');
@@ -47,7 +58,7 @@ export default function AdminLoginPage() {
         const checkPayload = await checkResponse.json().catch(() => ({}));
         throw new Error(checkPayload?.detail || checkPayload?.error || 'Access denied.');
       }
-      router.replace('/ops-9xk3');
+      router.replace(getNextPath());
     } catch (err) {
       clearAdminToken();
       const message = err instanceof Error ? err.message : 'Unable to sign in.';
@@ -79,7 +90,7 @@ export default function AdminLoginPage() {
         const checkPayload = await checkResponse.json().catch(() => ({}));
         throw new Error(checkPayload?.detail || checkPayload?.error || 'Access denied.');
       }
-      router.replace('/ops-9xk3');
+      router.replace(getNextPath());
     } catch (err) {
       clearAdminToken();
       const message = err instanceof Error ? err.message : 'Unable to verify code.';

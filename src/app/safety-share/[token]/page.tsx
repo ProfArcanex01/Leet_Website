@@ -5,7 +5,7 @@ import { SafetyShareViewer } from './safety-share-viewer';
 type Params = { token: string };
 
 type SafetySharePageProps = {
-  params: Promise<Params> | Params;
+  params: Promise<Params>;
 };
 
 export const metadata: Metadata = {
@@ -19,6 +19,6 @@ export const metadata: Metadata = {
 };
 
 export default async function SafetySharePage({ params }: SafetySharePageProps) {
-  const resolved = 'then' in params ? await params : params;
+  const resolved = await params;
   return <SafetyShareViewer token={resolved.token} />;
 }

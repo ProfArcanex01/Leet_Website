@@ -20,6 +20,15 @@ export function proxy(request: NextRequest) {
     }
   }
 
+  if (pathname.startsWith('/studio')) {
+    if (!hasCookie(request, ADMIN_TOKEN_COOKIE)) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/ops-9xk3/login';
+      url.searchParams.set('next', pathname);
+      return NextResponse.redirect(url);
+    }
+  }
+
   if (pathname === '/ops-9xk3/login' && hasCookie(request, ADMIN_TOKEN_COOKIE)) {
     const url = request.nextUrl.clone();
     url.pathname = '/ops-9xk3';
@@ -44,5 +53,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/ops-9xk3/:path*', '/agent-portal/:path*'],
+  matcher: ['/ops-9xk3/:path*', '/agent-portal/:path*', '/studio/:path*'],
 };
