@@ -84,10 +84,6 @@ export default async function BlogPage() {
             <h1 className="mt-3 text-4xl text-white md:text-6xl">
               Commute stories, product updates, and route insights.
             </h1>
-            <p className="mt-5 max-w-2xl text-base text-white/68 md:text-lg">
-              A clean publishing surface for your website today and a reusable
-              content source for your mobile app later.
-            </p>
           </div>
         </div>
       </section>
