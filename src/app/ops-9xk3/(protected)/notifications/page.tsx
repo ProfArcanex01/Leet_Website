@@ -31,6 +31,33 @@ type Paginated<T> = {
 
 type AudienceType = "all_users" | "hosts" | "riders" | "ios_users" | "android_users" | "agents" | "user_ids";
 type NotificationType = "SYSTEM" | "PAYMENT" | "RIDE_REQUEST" | "RIDE_ACCEPTED" | "RIDE_REJECTED" | "RIDE_STARTED" | "RIDE_COMPLETED" | "RIDE_CANCELLED" | "RIDE_CANCELLED_CONFIRMATION" | "RIDE_APPROACHING" | "RIDE_REMINDER";
+type DestinationType =
+  | "none"
+  | "rider_home"
+  | "rider_explore"
+  | "rider_notifications"
+  | "rider_profile"
+  | "rider_rides"
+  | "rider_ride_detail"
+  | "rider_tracking"
+  | "rider_help"
+  | "rider_account_settings"
+  | "rider_preferences"
+  | "host_home"
+  | "host_active"
+  | "host_rides"
+  | "host_requests"
+  | "host_request_detail"
+  | "host_notifications"
+  | "host_profile"
+  | "host_plan"
+  | "host_earnings"
+  | "host_history"
+  | "host_help"
+  | "host_account_settings"
+  | "host_preferences"
+  | "host_vehicle_settings"
+  | "safety_share";
 
 type Counts = {
   allUsers: number;
@@ -53,6 +80,35 @@ const notificationTypes: { value: NotificationType; label: string; tone: string 
   { value: "RIDE_CANCELLED_CONFIRMATION", label: "Cancellation confirmation", tone: "bg-rose-100 text-rose-700 border-rose-200" },
   { value: "RIDE_APPROACHING", label: "Ride approaching", tone: "bg-violet-100 text-violet-700 border-violet-200" },
   { value: "RIDE_REMINDER", label: "Ride reminder", tone: "bg-amber-100 text-amber-700 border-amber-200" },
+];
+
+const destinationOptions: { value: DestinationType; label: string; description: string }[] = [
+  { value: "none", label: "No in-app destination", description: "Use the app's default notification behavior." },
+  { value: "rider_home", label: "Rider home", description: "Open the rider home screen." },
+  { value: "rider_explore", label: "Rider explore", description: "Open rider explore." },
+  { value: "rider_notifications", label: "Rider notifications", description: "Open the rider notification center." },
+  { value: "rider_profile", label: "Rider profile", description: "Open rider profile." },
+  { value: "rider_rides", label: "Rider rides", description: "Open the rider rides list." },
+  { value: "rider_ride_detail", label: "Rider ride detail", description: "Open a specific rider ride." },
+  { value: "rider_tracking", label: "Rider tracking", description: "Open rider live tracking." },
+  { value: "rider_help", label: "Rider help", description: "Open rider help." },
+  { value: "rider_account_settings", label: "Rider account settings", description: "Open rider account settings." },
+  { value: "rider_preferences", label: "Rider preferences", description: "Open rider preferences." },
+  { value: "host_home", label: "Host home", description: "Open the host home screen." },
+  { value: "host_active", label: "Host active rides", description: "Open the host active route screen." },
+  { value: "host_rides", label: "Host rides", description: "Open host rides." },
+  { value: "host_requests", label: "Host requests", description: "Open host requests." },
+  { value: "host_request_detail", label: "Host request detail", description: "Open a specific host request." },
+  { value: "host_notifications", label: "Host notifications", description: "Open the host notification center." },
+  { value: "host_profile", label: "Host profile", description: "Open host profile." },
+  { value: "host_plan", label: "Host plan", description: "Open route planning." },
+  { value: "host_earnings", label: "Host earnings", description: "Open earnings." },
+  { value: "host_history", label: "Host history", description: "Open host history." },
+  { value: "host_help", label: "Host help", description: "Open host help." },
+  { value: "host_account_settings", label: "Host account settings", description: "Open host account settings." },
+  { value: "host_preferences", label: "Host preferences", description: "Open host preferences." },
+  { value: "host_vehicle_settings", label: "Host vehicle settings", description: "Open host vehicle settings." },
+  { value: "safety_share", label: "Safety share", description: "Open a safety-share link." },
 ];
 
 function extractApiError(payload: unknown, fallback: string) {
@@ -110,6 +166,29 @@ function formatDateTimeLocalInput(date: Date) {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
+function destinationLabel(destination: DestinationType) {
+  return destinationOptions.find((option) => option.value === destination)?.label || "No in-app destination";
+}
+
+function destinationNeedsRideId(destination: DestinationType) {
+  return destination === "rider_ride_detail";
+}
+
+function destinationNeedsRequestId(destination: DestinationType) {
+  return destination === "host_request_detail";
+}
+
+function destinationNeedsToken(destination: DestinationType) {
+  return destination === "safety_share";
+}
+
+function destinationFamily(destination: DestinationType) {
+  if (destination === "none" || destination === "safety_share") return "shared";
+  if (destination.startsWith("rider_")) return "rider";
+  if (destination.startsWith("host_")) return "host";
+  return "shared";
+}
+
 export default function AdminNotificationsPage() {
   const [pageTab, setPageTab] = useState("dashboard");
   const [activeTab, setActiveTab] = useState("send");
@@ -124,7 +203,11 @@ export default function AdminNotificationsPage() {
   const [notificationType, setNotificationType] = useState<NotificationType>("SYSTEM");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [metadataText, setMetadataText] = useState('{\n  "screen": "Inbox"\n}');
+  const [destinationType, setDestinationType] = useState<DestinationType>("none");
+  const [destinationRideId, setDestinationRideId] = useState("");
+  const [destinationRequestId, setDestinationRequestId] = useState("");
+  const [destinationToken, setDestinationToken] = useState("");
+  const [metadataText, setMetadataText] = useState("{}");
   const [sendAt, setSendAt] = useState("");
 
   const [sending, setSending] = useState(false);
@@ -145,6 +228,49 @@ export default function AdminNotificationsPage() {
     return selectedUsers.length;
   }, [audienceType, counts, selectedUsers]);
 
+  const audienceDestinationMode = useMemo<"shared" | "host" | "rider" | "all">(() => {
+    if (audienceType === "hosts") return "host";
+    if (audienceType === "riders") return "rider";
+    if (audienceType === "ios_users" || audienceType === "android_users") return "all";
+    if (audienceType === "user_ids") {
+      if (selectedUsers.length === 0) return "shared";
+      const everyHost = selectedUsers.every((user) => user.user_type === "HOST");
+      if (everyHost) return "host";
+      const everyRider = selectedUsers.every((user) => user.user_type === "RIDER");
+      if (everyRider) return "rider";
+      return "shared";
+    }
+    return "shared";
+  }, [audienceType, selectedUsers]);
+
+  const compatibleDestinationOptions = useMemo(() => {
+    if (audienceDestinationMode === "all") {
+      return destinationOptions;
+    }
+    if (audienceDestinationMode === "host") {
+      return destinationOptions.filter((option) => {
+        const family = destinationFamily(option.value);
+        return family === "host" || family === "shared";
+      });
+    }
+    if (audienceDestinationMode === "rider") {
+      return destinationOptions.filter((option) => {
+        const family = destinationFamily(option.value);
+        return family === "rider" || family === "shared";
+      });
+    }
+    return destinationOptions.filter((option) => destinationFamily(option.value) === "shared");
+  }, [audienceDestinationMode]);
+
+  const destinationCompatibleWithAudience = useMemo(() => {
+    const family = destinationFamily(destinationType);
+    if (family === "shared") return true;
+    if (audienceDestinationMode === "all") return true;
+    if (audienceDestinationMode === "host") return family === "host";
+    if (audienceDestinationMode === "rider") return family === "rider";
+    return false;
+  }, [audienceDestinationMode, destinationType]);
+
   const metadataParse = useMemo(() => {
     const trimmed = metadataText.trim();
     if (!trimmed) return { value: {}, error: null as string | null };
@@ -159,17 +285,68 @@ export default function AdminNotificationsPage() {
     }
   }, [metadataText]);
 
-  const canSubmit = Boolean(title.trim() && message.trim() && selectedCount > 0 && !metadataParse.error);
+  const destinationParse = useMemo(() => {
+    if (!destinationCompatibleWithAudience) {
+      return { value: null, error: "Selected destination is not compatible with this audience." };
+    }
+    if (destinationType === "none") {
+      return { value: null as null | { type: Exclude<DestinationType, "none">; params?: Record<string, number | string> }, error: null as string | null };
+    }
+
+    if (destinationNeedsRideId(destinationType)) {
+      const rideId = Number(destinationRideId);
+      if (!destinationRideId.trim()) {
+        return { value: null, error: "Add a ride id for the selected destination." };
+      }
+      if (!Number.isInteger(rideId) || rideId <= 0) {
+        return { value: null, error: "Ride id must be a positive integer." };
+      }
+      return { value: { type: destinationType, params: { ride_id: rideId } }, error: null as string | null };
+    }
+
+    if (destinationNeedsRequestId(destinationType)) {
+      const requestId = Number(destinationRequestId);
+      if (!destinationRequestId.trim()) {
+        return { value: null, error: "Add a request id for the selected destination." };
+      }
+      if (!Number.isInteger(requestId) || requestId <= 0) {
+        return { value: null, error: "Request id must be a positive integer." };
+      }
+      return { value: { type: destinationType, params: { request_id: requestId } }, error: null as string | null };
+    }
+
+    if (destinationNeedsToken(destinationType)) {
+      if (!destinationToken.trim()) {
+        return { value: null, error: "Add a token for the selected destination." };
+      }
+      return { value: { type: destinationType, params: { token: destinationToken.trim() } }, error: null as string | null };
+    }
+
+    return { value: { type: destinationType }, error: null as string | null };
+  }, [destinationCompatibleWithAudience, destinationRequestId, destinationRideId, destinationToken, destinationType]);
+
+  const metadataPayload = useMemo(() => {
+    if (metadataParse.error || destinationParse.error) {
+      return { value: null as Record<string, unknown> | null, error: metadataParse.error || destinationParse.error };
+    }
+    const nextValue = { ...(metadataParse.value || {}) } as Record<string, unknown>;
+    if (destinationParse.value) {
+      nextValue.destination = destinationParse.value;
+    }
+    return { value: nextValue, error: null as string | null };
+  }, [destinationParse, metadataParse]);
+
+  const canSubmit = Boolean(title.trim() && message.trim() && selectedCount > 0 && !metadataPayload.error);
   const scheduledReady = Boolean(canSubmit && sendAt);
   const disabledReason = useMemo(() => {
     if (sending) return activeTab === "send" ? "Sending in progress." : "Scheduling in progress.";
     if (!title.trim()) return "Add a title.";
     if (!message.trim()) return "Add a message.";
     if (selectedCount <= 0) return "Choose an audience with at least one recipient.";
-    if (metadataParse.error) return metadataParse.error;
+    if (metadataPayload.error) return metadataPayload.error;
     if (activeTab === "schedule" && !sendAt) return "Pick a future send time.";
     return null;
-  }, [activeTab, message, metadataParse.error, selectedCount, sendAt, sending, title]);
+  }, [activeTab, message, metadataPayload.error, selectedCount, sendAt, sending, title]);
 
   useEffect(() => {
     let cancelled = false;
@@ -247,6 +424,14 @@ export default function AdminNotificationsPage() {
     };
   }, [audienceType, search, selectedUsers]);
 
+  useEffect(() => {
+    if (destinationCompatibleWithAudience) return;
+    setDestinationType("none");
+    setDestinationRideId("");
+    setDestinationRequestId("");
+    setDestinationToken("");
+  }, [destinationCompatibleWithAudience]);
+
   function addSelectedUser(user: AdminUser) {
     setSelectedUsers((current) => {
       if (current.some((item) => item.id === user.id)) return current;
@@ -263,7 +448,11 @@ export default function AdminNotificationsPage() {
   function resetComposer() {
     setTitle("");
     setMessage("");
-    setMetadataText('{\n  "screen": "Inbox"\n}');
+    setDestinationType("none");
+    setDestinationRideId("");
+    setDestinationRequestId("");
+    setDestinationToken("");
+    setMetadataText("{}");
     setSendAt("");
     setSearch("");
     setSearchResults([]);
@@ -288,7 +477,7 @@ export default function AdminNotificationsPage() {
       title: title.trim(),
       message: message.trim(),
       notification_type: notificationType,
-      metadata: metadataParse.value || {},
+      metadata: metadataPayload.value || {},
       ...(mode === "schedule" ? { send_at: new Date(sendAt).toISOString() } : {}),
     };
 
@@ -418,8 +607,8 @@ export default function AdminNotificationsPage() {
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Payload health</p>
                     <p className="mt-2 text-sm text-muted-foreground">Title: {title.trim().length}/100</p>
                     <p className="text-sm text-muted-foreground">Message: {message.trim().length}/2000</p>
-                    <p className={`text-sm ${metadataParse.error ? "text-rose-600" : "text-muted-foreground"}`}>
-                      Metadata: {metadataParse.error || "Valid JSON object"}
+                    <p className={`text-sm ${metadataPayload.error ? "text-rose-600" : "text-muted-foreground"}`}>
+                      Metadata: {metadataPayload.error || "Valid destination and metadata payload"}
                     </p>
                   </div>
                   <div className="rounded-2xl border border-[color:var(--stroke)] p-4">
@@ -441,17 +630,17 @@ export default function AdminNotificationsPage() {
           </section>
 
           <Card className="border-[color:var(--stroke)] shadow-[var(--shadow)]">
-            <CardHeader>
-              <CardTitle>Playbook</CardTitle>
-              <CardDescription>Use short, action-oriented copy and route users with metadata instead of stuffing context into the body.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-3 md:grid-cols-3 text-sm text-muted-foreground">
-              <div className="rounded-2xl border border-[color:var(--stroke)] p-4">
-                <p className="font-medium text-foreground">Incident update</p>
-                <p className="mt-1">Send to affected users only, use `SYSTEM`, and include metadata like `{`"screen":"Inbox"`}` or an incident id.</p>
-              </div>
-              <div className="rounded-2xl border border-[color:var(--stroke)] p-4">
-                <p className="font-medium text-foreground">Payment nudge</p>
+              <CardHeader>
+                <CardTitle>Playbook</CardTitle>
+                <CardDescription>Use short, action-oriented copy and choose a structured destination instead of free-form screen names.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-3 md:grid-cols-3 text-sm text-muted-foreground">
+                <div className="rounded-2xl border border-[color:var(--stroke)] p-4">
+                  <p className="font-medium text-foreground">Incident update</p>
+                <p className="mt-1">Send to affected users only, use `SYSTEM`, and point them at a verified destination like rider notifications or host help.</p>
+                </div>
+                <div className="rounded-2xl border border-[color:var(--stroke)] p-4">
+                  <p className="font-medium text-foreground">Payment nudge</p>
                 <p className="mt-1">Use `PAYMENT` for billing or payout prompts so mobile clients can style the alert appropriately.</p>
               </div>
               <div className="rounded-2xl border border-[color:var(--stroke)] p-4">
@@ -632,17 +821,85 @@ export default function AdminNotificationsPage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="metadata">Metadata JSON</Label>
+                        <Label>Destination</Label>
+                        <Select value={destinationType} onValueChange={(value: DestinationType) => setDestinationType(value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose destination" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {compatibleDestinationOptions.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          {compatibleDestinationOptions.find((option) => option.value === destinationType)?.description
+                            || destinationOptions.find((option) => option.value === destinationType)?.description}
+                        </p>
+                        {audienceDestinationMode === "shared" ? (
+                          <p className="text-xs text-muted-foreground">
+                            Mixed or broad audiences can only use shared destinations such as safety share or no in-app destination.
+                          </p>
+                        ) : null}
+                        {audienceDestinationMode === "all" ? (
+                          <p className="text-xs text-muted-foreground">
+                            Device-platform audiences can browse all destinations here, but the backend will still reject recipients whose role does not match the destination.
+                          </p>
+                        ) : null}
+                      </div>
+
+                      {destinationNeedsRideId(destinationType) ? (
+                        <div className="space-y-2">
+                          <Label htmlFor="destination-ride-id">Ride id</Label>
+                          <Input
+                            id="destination-ride-id"
+                            value={destinationRideId}
+                            onChange={(event) => setDestinationRideId(event.target.value)}
+                            inputMode="numeric"
+                            placeholder="482"
+                          />
+                        </div>
+                      ) : null}
+
+                      {destinationNeedsRequestId(destinationType) ? (
+                        <div className="space-y-2">
+                          <Label htmlFor="destination-request-id">Request id</Label>
+                          <Input
+                            id="destination-request-id"
+                            value={destinationRequestId}
+                            onChange={(event) => setDestinationRequestId(event.target.value)}
+                            inputMode="numeric"
+                            placeholder="91"
+                          />
+                        </div>
+                      ) : null}
+
+                      {destinationNeedsToken(destinationType) ? (
+                        <div className="space-y-2">
+                          <Label htmlFor="destination-token">Safety-share token</Label>
+                          <Input
+                            id="destination-token"
+                            value={destinationToken}
+                            onChange={(event) => setDestinationToken(event.target.value)}
+                            placeholder="abc123"
+                          />
+                        </div>
+                      ) : null}
+
+                      <div className="space-y-2">
+                        <Label htmlFor="metadata">Extra metadata JSON</Label>
                         <Textarea
                           id="metadata"
                           value={metadataText}
                           onChange={(event) => setMetadataText(event.target.value)}
-                          rows={7}
-                          placeholder='{"screen":"Inbox"}'
-                          className={metadataParse.error ? "border-rose-300 focus-visible:ring-rose-300" : ""}
+                          rows={5}
+                          placeholder='{"campaign_id":"spring-launch"}'
+                          className={metadataPayload.error ? "border-rose-300 focus-visible:ring-rose-300" : ""}
                         />
-                        <p className={`text-xs ${metadataParse.error ? "text-rose-600" : "text-muted-foreground"}`}>
-                          {metadataParse.error || "Use this to pass app routing or campaign context."}
+                        <p className={`text-xs ${metadataPayload.error ? "text-rose-600" : "text-muted-foreground"}`}>
+                          {metadataPayload.error || "Optional JSON object for campaign or analytics context. Destination is added automatically."}
                         </p>
                       </div>
 
@@ -711,8 +968,11 @@ export default function AdminNotificationsPage() {
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Payload health</p>
                       <p className="mt-2 text-sm text-muted-foreground">Title: {title.trim().length}/100</p>
                       <p className="text-sm text-muted-foreground">Message: {message.trim().length}/2000</p>
-                      <p className={`text-sm ${metadataParse.error ? "text-rose-600" : "text-muted-foreground"}`}>
-                        Metadata: {metadataParse.error || "Valid JSON object"}
+                      <p className="text-sm text-muted-foreground">
+                        Destination: {destinationLabel(destinationType)}
+                      </p>
+                      <p className={`text-sm ${metadataPayload.error ? "text-rose-600" : "text-muted-foreground"}`}>
+                        Metadata: {metadataPayload.error || "Valid destination and metadata payload"}
                       </p>
                     </div>
                     <div className="rounded-2xl border border-[color:var(--stroke)] p-4">
