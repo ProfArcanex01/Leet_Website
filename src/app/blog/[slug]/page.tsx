@@ -16,6 +16,29 @@ type BlogPostPageProps = {
 };
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://leetgh.com";
+const routePublishingSlug = "how-drivers-create-and-publish-a-route-on-leet";
+const routePublishingScreenshots = [
+  {
+    src: "/images/blog/plan/IMG_1444.PNG",
+    alt: "Leet driver plan screen showing a published commute template card.",
+    caption: "Drivers start from the Plan screen, where saved commute templates can be published for the day.",
+  },
+  {
+    src: "/images/blog/plan/IMG_1445.PNG",
+    alt: "Leet create commute template form showing route path, schedule, seats, and price fields.",
+    caption: "The template setup captures the route, schedule, available seats, and pricing for a regular commute.",
+  },
+  {
+    src: "/images/blog/plan/IMG_1446.PNG",
+    alt: "Leet create commute template form showing booking mode, publishing mode, payment methods, and return trip.",
+    caption: "Drivers choose booking and publishing behavior, payment methods, and whether to add a return trip.",
+  },
+  {
+    src: "/images/blog/plan/IMG_1447.PNG",
+    alt: "Leet create commute template form showing booking mode and return trip options.",
+    caption: "The final setup controls how the template becomes visible to passengers as a live trip.",
+  },
+] as const;
 
 const portableTextComponents: PortableTextComponents = {
   types: {
@@ -173,6 +196,45 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="blog-prose mx-auto max-w-3xl">
               <PortableText value={post.body} components={portableTextComponents} />
             </div>
+
+            {slug === routePublishingSlug ? (
+              <div className="mx-auto mt-12 max-w-3xl border-t border-[color:var(--stroke)] pt-10">
+                <div className="mb-6">
+                  <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#d46c2f]">
+                    App Screens
+                  </p>
+                  <h2 className="mt-2 text-2xl text-foreground">
+                    Plan Flow Screenshots
+                  </h2>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    These screens show the exact in-app flow for creating a route
+                    template and publishing it when the driver is ready.
+                  </p>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  {routePublishingScreenshots.map((image) => (
+                    <figure
+                      key={image.src}
+                      className="overflow-hidden rounded-[1.5rem] border border-[color:var(--stroke)] bg-[color:var(--paper)]/60"
+                    >
+                      <div className="relative aspect-[9/16] bg-[#f7f1e7]">
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          fill
+                          className="object-contain"
+                          sizes="(max-width: 768px) 100vw, 420px"
+                        />
+                      </div>
+                      <figcaption className="px-4 py-3 text-sm text-muted-foreground">
+                        {image.caption}
+                      </figcaption>
+                    </figure>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
         </section>
       </article>
