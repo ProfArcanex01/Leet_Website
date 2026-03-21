@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Leet Driver Route Flow Infographic</title>
+    <style>
+      :root {
+        --paper: #f5efe5;
+        --card: #fffdf9;
+        --ink: #181410;
+        --muted: #6f6255;
+        --stroke: #d8c6ab;
+        --accent: #e36f2b;
+        --accent-soft: #f6c9a6;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(243, 191, 153, 0.5), transparent 26%),
+          radial-gradient(circle at bottom right, rgba(192, 209, 185, 0.35), transparent 24%),
+          var(--paper);
+        font-family: "Georgia", "Times New Roman", serif;
+      }
+
+      .canvas {
+        width: 1200px;
+        height: 1500px;
+        margin: 0 auto;
+        padding: 68px 64px 56px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .eyebrow {
+        margin: 0;
+        font: 700 22px/1.2 Arial, sans-serif;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #1f7567;
+      }
+
+      h1 {
+        margin: 18px 0 14px;
+        max-width: 860px;
+        font-size: 72px;
+        line-height: 0.97;
+        letter-spacing: -0.05em;
+        color: var(--ink);
+      }
+
+      .subhead {
+        margin: 0;
+        max-width: 820px;
+        font: 500 26px/1.5 Arial, sans-serif;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+        margin-top: 46px;
+      }
+
+      .card {
+        background: rgba(255, 253, 249, 0.92);
+        border: 1px solid var(--stroke);
+        border-radius: 34px;
+        padding: 20px 20px 18px;
+        box-shadow: 0 22px 45px rgba(44, 31, 18, 0.08);
+      }
+
+      .frame {
+        aspect-ratio: 9 / 16;
+        overflow: hidden;
+        border-radius: 28px;
+        background: linear-gradient(180deg, #f7f0e5, #fbf8f1);
+        border: 1px solid rgba(216, 198, 171, 0.8);
+      }
+
+      .frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .step {
+        margin: 16px 0 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .badge {
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font: 700 18px/1 Arial, sans-serif;
+      }
+
+      .step-title {
+        margin: 0;
+        font: 700 28px/1.1 Arial, sans-serif;
+        color: var(--ink);
+      }
+
+      .caption {
+        margin: 12px 0 0;
+        font: 500 20px/1.5 Arial, sans-serif;
+        color: var(--muted);
+      }
+
+      .footer {
+        position: absolute;
+        left: 64px;
+        right: 64px;
+        bottom: 52px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 22px;
+        border-top: 1px solid rgba(216, 198, 171, 0.9);
+      }
+
+      .footer-copy {
+        margin: 0;
+        font: 700 24px/1.4 Arial, sans-serif;
+        color: var(--ink);
+      }
+
+      .footer-note {
+        margin: 6px 0 0;
+        font: 500 18px/1.4 Arial, sans-serif;
+        color: var(--muted);
+      }
+
+      .brand {
+        padding: 16px 22px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: white;
+        font: 700 24px/1 Arial, sans-serif;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="canvas">
+      <p class="eyebrow">Driver Guide</p>
+      <h1>How Drivers Create and Publish a Route on Leet</h1>
+      <p class="subhead">
+        A route-first workflow built for daily commuting. Drivers create a reusable
+        template, choose booking and publishing settings, and only go live when they are
+        ready to take passengers.
+      </p>
+
+      <section class="grid">
+        <article class="card">
+          <div class="frame">
+            <img src="../images/blog/plan/IMG_1445.PNG" alt="Create commute template screen" />
+          </div>
+          <div class="step">
+            <span class="badge">1</span>
+            <p class="step-title">Create the template</p>
+          </div>
+          <p class="caption">
+            Set the route, timing, days, seat count, and route price for a commute you
+            expect to repeat.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="frame">
+            <img src="../images/blog/plan/IMG_1446.PNG" alt="Booking and publishing settings screen" />
+          </div>
+          <div class="step">
+            <span class="badge">2</span>
+            <p class="step-title">Choose trip settings</p>
+          </div>
+          <p class="caption">
+            Decide whether passengers can prebook, how the trip gets published, and which
+            payment methods you accept.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="frame">
+            <img src="../images/blog/plan/IMG_1447.PNG" alt="Return trip setup screen" />
+          </div>
+          <div class="step">
+            <span class="badge">3</span>
+            <p class="step-title">Add a return trip</p>
+          </div>
+          <p class="caption">
+            Mirror the route for the way back so one setup can cover both legs of the
+            commute.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="frame">
+            <img src="../images/blog/plan/IMG_1444.PNG" alt="Published route card on plan screen" />
+          </div>
+          <div class="step">
+            <span class="badge">4</span>
+            <p class="step-title">Publish for the day</p>
+          </div>
+          <p class="caption">
+            Passengers only see live trips after the route is published, which keeps what
+            they browse accurate and current.
+          </p>
+        </article>
+      </section>
+
+      <footer class="footer">
+        <div>
+          <p class="footer-copy">Route-first carpooling for drivers and passengers.</p>
+          <p class="footer-note">leetgh.com/blog</p>
+        </div>
+        <div class="brand">LEET</div>
+      </footer>
+    </main>
+  </body>
+</html>

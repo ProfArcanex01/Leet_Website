@@ -5,14 +5,17 @@ import {
   ArrowUpRight,
   BadgeCheck,
   BookOpen,
+  CircleDollarSign,
   CircleAlert,
   Clock3,
   Film,
   FileText,
   ImageIcon,
   LoaderCircle,
+  MapPinned,
   PlayCircle,
   Rocket,
+  Smartphone,
   Users,
 } from "lucide-react";
 
@@ -105,6 +108,27 @@ const statCards = [
     label: "One-time invites used",
     accent: "from-[#F8D66D]/18 via-white/0 to-white/0",
     icon: PlayCircle,
+  },
+] as const;
+
+const workflowSteps = [
+  {
+    step: "01",
+    title: "Find drivers in the right places.",
+    copy: "Washing bays, fuel stations, mechanics. Meet drivers where they already wait and start the conversation there.",
+    icon: MapPinned,
+  },
+  {
+    step: "02",
+    title: "Get them set up in minutes.",
+    copy: "Help them download Leet, complete their profile, and get to their first route without dropping off halfway.",
+    icon: Smartphone,
+  },
+  {
+    step: "03",
+    title: "Earn when they qualify.",
+    copy: "Your credit comes from qualified recruits under Leet's current commission terms, not downloads or empty profiles.",
+    icon: CircleDollarSign,
   },
 ] as const;
 
@@ -271,8 +295,71 @@ export function AgentPortalState({
 }
 
 export function DashboardSection({ dashboard }: { dashboard: DashboardResponse }) {
+  const primaryInviteCode =
+    dashboard.invite_codes.find((code) => code.is_active)?.code ??
+    dashboard.invite_codes[0]?.code ??
+    null;
+
   return (
     <div className="space-y-6 pb-10">
+      <section className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-5 shadow-[0_30px_80px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-6">
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="text-[11px] uppercase tracking-[0.2em] text-[#96FFD5]">
+              Workflow
+            </div>
+            <h3 className="mt-2 text-2xl font-semibold text-white">How agent recruiting works</h3>
+          </div>
+          <p className="max-w-xl text-sm leading-6 text-white/56">
+            Follow this sequence in the field so invites are attributed correctly and count toward commissions.
+          </p>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-3">
+          {workflowSteps.map((step) => {
+            const Icon = step.icon;
+            return (
+              <Card
+                key={step.step}
+                className="rounded-[1.9rem] border border-[#D7B892]/30 bg-[linear-gradient(180deg,rgba(250,245,236,0.98),rgba(242,232,216,0.94))] text-[#221A12] shadow-[0_24px_60px_rgba(0,0,0,0.16)]"
+              >
+                <CardContent className="p-5 sm:p-6">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-[1.4rem] bg-[#F2E9DB] text-[#E86E24]">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <div className="font-mono text-2xl font-bold leading-none text-[#6E6E73]">
+                      {step.step}
+                    </div>
+                  </div>
+                  <div className="mt-8">
+                    <h4 className="text-[clamp(1.6rem,2vw,2rem)] font-semibold leading-tight tracking-[-0.02em] text-[#1F1A15]">
+                      {step.title}
+                    </h4>
+                    {step.step === "02" ? (
+                      <div className="mt-4 space-y-3 text-base leading-8 text-[#6A6257]">
+                        <p>{step.copy}</p>
+                        <p>
+                          Use your agent code{" "}
+                          <span className="rounded-full bg-[#F2E9DB] px-3 py-1 font-mono text-sm font-semibold tracking-[0.12em] text-[#1F1A15]">
+                            {primaryInviteCode ?? "your assigned code"}
+                          </span>{" "}
+                          as the invitation code so we can track your progress.
+                        </p>
+                      </div>
+                    ) : (
+                      <p className="mt-4 text-base leading-8 text-[#6A6257]">
+                        {step.copy}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </section>
+
       <section className="grid gap-4 lg:grid-cols-[1.45fr_1fr]">
         <Card className="overflow-hidden rounded-[2rem] border-white/10 bg-[linear-gradient(135deg,rgba(9,24,37,0.94),rgba(11,30,46,0.86))] text-white shadow-[0_38px_90px_rgba(0,0,0,0.32)] backdrop-blur-xl">
           <CardContent className="relative p-6 sm:p-8">
