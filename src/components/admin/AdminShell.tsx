@@ -224,10 +224,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <TooltipProvider delayDuration={100} skipDelayDuration={0}>
       <div className="min-h-screen bg-[color:var(--paper)]">
-        <div className="mx-auto flex max-w-7xl gap-8 px-4 py-6 sm:px-6 lg:py-10">
+        <div className="mx-auto flex w-full max-w-[1840px] gap-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-10 2xl:px-10">
 
           {/* ── Desktop sidebar (lg+) ──────────────────────────── */}
-          <aside className="hidden w-64 flex-shrink-0 lg:block">
+          <aside className="hidden w-72 flex-shrink-0 lg:block">
             <div className="rounded-3xl border border-[color:var(--stroke)] bg-[color:var(--card)] p-6 shadow-[var(--shadow)]">
               <div className="mb-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
@@ -267,7 +267,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </SheetContent>
           </Sheet>
 
-          <main className="flex-1">
+          <main className="min-w-0 flex-1">
             {/* ── Top bar ──────────────────────────────────────── */}
             <div className="mb-8 rounded-3xl border border-[color:var(--stroke)] bg-white px-4 py-4 shadow-[var(--shadow)] sm:px-6">
               <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">

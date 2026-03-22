@@ -31,6 +31,8 @@ type Paginated<T> = {
 
 type AudienceType = "all_users" | "hosts" | "riders" | "ios_users" | "android_users" | "agents" | "user_ids";
 type NotificationType = "SYSTEM" | "PAYMENT" | "RIDE_REQUEST" | "RIDE_ACCEPTED" | "RIDE_REJECTED" | "RIDE_STARTED" | "RIDE_COMPLETED" | "RIDE_CANCELLED" | "RIDE_CANCELLED_CONFIRMATION" | "RIDE_APPROACHING" | "RIDE_REMINDER";
+type PresentationMode = "standard" | "modal";
+type ModalActionType = "none" | "destination" | "external_url";
 type DestinationType =
   | "none"
   | "rider_home"
@@ -66,6 +68,42 @@ type Counts = {
   agents: number;
   iosUsers: number;
   androidUsers: number;
+};
+
+type CampaignDestination = { type: Exclude<DestinationType, "none">; params?: Record<string, number | string> };
+
+type AdminNotificationCampaign = {
+  id: number;
+  delivery_mode: "IMMEDIATE" | "SCHEDULED";
+  notification_type: NotificationType | string;
+  title: string;
+  message: string;
+  audience: {
+    type: AudienceType;
+    user_ids?: number[];
+  };
+  metadata: StructuredMetadata & Record<string, unknown>;
+  recipient_count: number;
+  scheduled_for: string | null;
+  sent_at: string | null;
+  created_at: string;
+  created_by: number | null;
+  created_by_name: string | null;
+};
+
+type StructuredMetadata = {
+  presentation?: "modal";
+  campaign_id?: string;
+  version?: number;
+  eyebrow?: string;
+  title?: string;
+  body?: string;
+  cta_label?: string;
+  secondary_cta_label?: string;
+  dismissible?: boolean;
+  show_once?: boolean;
+  action_url?: string;
+  destination?: CampaignDestination;
 };
 
 const notificationTypes: { value: NotificationType; label: string; tone: string }[] = [
@@ -189,6 +227,10 @@ function destinationFamily(destination: DestinationType) {
   return "shared";
 }
 
+function notificationLabel(type: string) {
+  return notificationTypes.find((item) => item.value === type)?.label || type;
+}
+
 export default function AdminNotificationsPage() {
   const [pageTab, setPageTab] = useState("dashboard");
   const [activeTab, setActiveTab] = useState("send");
@@ -198,15 +240,32 @@ export default function AdminNotificationsPage() {
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<AdminUser[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<AdminUser[]>([]);
+  const [manualAudienceUserIds, setManualAudienceUserIds] = useState<number[]>([]);
+  const [campaignHistory, setCampaignHistory] = useState<AdminNotificationCampaign[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+  const [reusingCampaignId, setReusingCampaignId] = useState<number | null>(null);
 
   const [audienceType, setAudienceType] = useState<AudienceType>("all_users");
   const [notificationType, setNotificationType] = useState<NotificationType>("SYSTEM");
+  const [presentationMode, setPresentationMode] = useState<PresentationMode>("standard");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [destinationType, setDestinationType] = useState<DestinationType>("none");
   const [destinationRideId, setDestinationRideId] = useState("");
   const [destinationRequestId, setDestinationRequestId] = useState("");
   const [destinationToken, setDestinationToken] = useState("");
+  const [modalEyebrow, setModalEyebrow] = useState("");
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalBody, setModalBody] = useState("");
+  const [modalPrimaryLabel, setModalPrimaryLabel] = useState("");
+  const [modalSecondaryLabel, setModalSecondaryLabel] = useState("Maybe later");
+  const [modalDismissible, setModalDismissible] = useState("true");
+  const [modalShowOnce, setModalShowOnce] = useState("true");
+  const [modalCampaignId, setModalCampaignId] = useState("");
+  const [modalVersion, setModalVersion] = useState("1");
+  const [modalActionType, setModalActionType] = useState<ModalActionType>("destination");
+  const [modalActionUrl, setModalActionUrl] = useState("");
   const [metadataText, setMetadataText] = useState("{}");
   const [sendAt, setSendAt] = useState("");
 
@@ -225,8 +284,8 @@ export default function AdminNotificationsPage() {
     if (audienceType === "agents") return counts.agents;
     if (audienceType === "ios_users") return counts.iosUsers;
     if (audienceType === "android_users") return counts.androidUsers;
-    return selectedUsers.length;
-  }, [audienceType, counts, selectedUsers]);
+    return manualAudienceUserIds.length;
+  }, [audienceType, counts, manualAudienceUserIds]);
 
   const audienceDestinationMode = useMemo<"shared" | "host" | "rider" | "all">(() => {
     if (audienceType === "hosts") return "host";
@@ -271,6 +330,11 @@ export default function AdminNotificationsPage() {
     return false;
   }, [audienceDestinationMode, destinationType]);
 
+  const isModalCampaign = presentationMode === "modal";
+  const modalDismissibleValue = modalDismissible === "true";
+  const modalShowOnceValue = modalShowOnce === "true";
+  const usesDestinationCta = !isModalCampaign || modalActionType === "destination";
+
   const metadataParse = useMemo(() => {
     const trimmed = metadataText.trim();
     if (!trimmed) return { value: {}, error: null as string | null };
@@ -286,6 +350,9 @@ export default function AdminNotificationsPage() {
   }, [metadataText]);
 
   const destinationParse = useMemo(() => {
+    if (!usesDestinationCta) {
+      return { value: null as null | { type: Exclude<DestinationType, "none">; params?: Record<string, number | string> }, error: null as string | null };
+    }
     if (!destinationCompatibleWithAudience) {
       return { value: null, error: "Selected destination is not compatible with this audience." };
     }
@@ -323,18 +390,81 @@ export default function AdminNotificationsPage() {
     }
 
     return { value: { type: destinationType }, error: null as string | null };
-  }, [destinationCompatibleWithAudience, destinationRequestId, destinationRideId, destinationToken, destinationType]);
+  }, [destinationCompatibleWithAudience, destinationRequestId, destinationRideId, destinationToken, destinationType, usesDestinationCta]);
+
+  const modalPayload = useMemo(() => {
+    if (!isModalCampaign) {
+      return { value: {} as StructuredMetadata, error: null as string | null };
+    }
+
+    const versionNumber = Number(modalVersion);
+    if (!Number.isInteger(versionNumber) || versionNumber <= 0) {
+      return { value: null as StructuredMetadata | null, error: "Modal version must be a positive integer." };
+    }
+
+    if (modalShowOnceValue && !modalCampaignId.trim()) {
+      return { value: null as StructuredMetadata | null, error: "Campaign id is required when show once is enabled." };
+    }
+
+    if (modalActionType === "external_url") {
+      const trimmedUrl = modalActionUrl.trim();
+      if (!trimmedUrl) {
+        return { value: null as StructuredMetadata | null, error: "Add an HTTPS URL for the primary action." };
+      }
+      if (!/^https:\/\//i.test(trimmedUrl)) {
+        return { value: null as StructuredMetadata | null, error: "External URLs must begin with https:// ." };
+      }
+    }
+
+    const nextValue: StructuredMetadata = {
+      presentation: "modal",
+      dismissible: modalDismissibleValue,
+      show_once: modalShowOnceValue,
+      version: versionNumber,
+    };
+
+    if (modalCampaignId.trim()) nextValue.campaign_id = modalCampaignId.trim();
+    if (modalEyebrow.trim()) nextValue.eyebrow = modalEyebrow.trim();
+    if (modalTitle.trim()) nextValue.title = modalTitle.trim();
+    if (modalBody.trim()) nextValue.body = modalBody.trim();
+    if (modalPrimaryLabel.trim()) nextValue.cta_label = modalPrimaryLabel.trim();
+    if (modalSecondaryLabel.trim()) nextValue.secondary_cta_label = modalSecondaryLabel.trim();
+    if (modalActionType === "external_url") {
+      nextValue.action_url = modalActionUrl.trim();
+    }
+
+    return { value: nextValue, error: null as string | null };
+  }, [
+    isModalCampaign,
+    modalActionType,
+    modalActionUrl,
+    modalBody,
+    modalCampaignId,
+    modalDismissibleValue,
+    modalEyebrow,
+    modalPrimaryLabel,
+    modalSecondaryLabel,
+    modalShowOnceValue,
+    modalTitle,
+    modalVersion,
+  ]);
 
   const metadataPayload = useMemo(() => {
-    if (metadataParse.error || destinationParse.error) {
-      return { value: null as Record<string, unknown> | null, error: metadataParse.error || destinationParse.error };
+    if (metadataParse.error || destinationParse.error || modalPayload.error) {
+      return {
+        value: null as Record<string, unknown> | null,
+        error: metadataParse.error || destinationParse.error || modalPayload.error,
+      };
     }
-    const nextValue = { ...(metadataParse.value || {}) } as Record<string, unknown>;
+    const nextValue = {
+      ...(metadataParse.value || {}),
+      ...(modalPayload.value || {}),
+    } as Record<string, unknown>;
     if (destinationParse.value) {
       nextValue.destination = destinationParse.value;
     }
     return { value: nextValue, error: null as string | null };
-  }, [destinationParse, metadataParse]);
+  }, [destinationParse, metadataParse, modalPayload]);
 
   const canSubmit = Boolean(title.trim() && message.trim() && selectedCount > 0 && !metadataPayload.error);
   const scheduledReady = Boolean(canSubmit && sendAt);
@@ -385,6 +515,39 @@ export default function AdminNotificationsPage() {
 
   useEffect(() => {
     let cancelled = false;
+    if (pageTab !== "history" || historyLoaded) {
+      return;
+    }
+
+    async function loadCampaignHistory() {
+      setHistoryLoading(true);
+      try {
+        const response = await authFetch('/notifications/admin/campaigns/?limit=40');
+        const payload = (await response.json().catch(() => null)) as AdminNotificationCampaign[] | null;
+        if (!response.ok || !payload) {
+          throw new Error(extractApiError(payload, "Unable to load notification history."));
+        }
+        if (!cancelled) {
+          setCampaignHistory(payload);
+          setHistoryLoaded(true);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Unable to load notification history.");
+        }
+      } finally {
+        if (!cancelled) setHistoryLoading(false);
+      }
+    }
+
+    loadCampaignHistory();
+    return () => {
+      cancelled = true;
+    };
+  }, [historyLoaded, pageTab]);
+
+  useEffect(() => {
+    let cancelled = false;
 
     async function searchUsers() {
       if (!search.trim() || audienceType !== "user_ids") {
@@ -405,7 +568,7 @@ export default function AdminNotificationsPage() {
           throw new Error(extractApiError(payload, "Unable to search users."));
         }
         if (!cancelled) {
-          const selectedIds = new Set(selectedUsers.map((user) => user.id));
+          const selectedIds = new Set(manualAudienceUserIds);
           setSearchResults((payload?.results || []).filter((user) => !selectedIds.has(user.id)));
         }
       } catch (err) {
@@ -422,7 +585,7 @@ export default function AdminNotificationsPage() {
       cancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [audienceType, search, selectedUsers]);
+  }, [audienceType, manualAudienceUserIds, search]);
 
   useEffect(() => {
     if (destinationCompatibleWithAudience) return;
@@ -437,28 +600,106 @@ export default function AdminNotificationsPage() {
       if (current.some((item) => item.id === user.id)) return current;
       return [...current, user];
     });
+    setManualAudienceUserIds((current) => (current.includes(user.id) ? current : [...current, user.id]));
     setSearch("");
     setSearchResults([]);
   }
 
   function removeSelectedUser(userId: number) {
     setSelectedUsers((current) => current.filter((user) => user.id !== userId));
+    setManualAudienceUserIds((current) => current.filter((id) => id !== userId));
   }
 
   function resetComposer() {
+    setPresentationMode("standard");
     setTitle("");
     setMessage("");
     setDestinationType("none");
     setDestinationRideId("");
     setDestinationRequestId("");
     setDestinationToken("");
+    setModalEyebrow("");
+    setModalTitle("");
+    setModalBody("");
+    setModalPrimaryLabel("");
+    setModalSecondaryLabel("Maybe later");
+    setModalDismissible("true");
+    setModalShowOnce("true");
+    setModalCampaignId("");
+    setModalVersion("1");
+    setModalActionType("destination");
+    setModalActionUrl("");
     setMetadataText("{}");
     setSendAt("");
     setSearch("");
     setSearchResults([]);
     setSelectedUsers([]);
+    setManualAudienceUserIds([]);
     setAudienceType("all_users");
     setNotificationType("SYSTEM");
+  }
+
+  function applyCampaignToComposer(campaign: AdminNotificationCampaign) {
+    setReusingCampaignId(campaign.id);
+    setError(null);
+    setSuccess(null);
+
+    const metadata = campaign.metadata || {};
+    const destination = (metadata.destination || null) as CampaignDestination | null;
+    const destinationTypeFromCampaign = destination?.type ?? "none";
+
+    setAudienceType(campaign.audience?.type || "all_users");
+    setManualAudienceUserIds(campaign.audience?.user_ids || []);
+    setTitle(campaign.title || "");
+    setMessage(campaign.message || "");
+    setNotificationType((campaign.notification_type as NotificationType) || "SYSTEM");
+    setPresentationMode(metadata.presentation === "modal" ? "modal" : "standard");
+    setDestinationType(destinationTypeFromCampaign);
+    setDestinationRideId(typeof destination?.params?.ride_id === "number" ? String(destination.params.ride_id) : "");
+    setDestinationRequestId(typeof destination?.params?.request_id === "number" ? String(destination.params.request_id) : "");
+    setDestinationToken(typeof destination?.params?.token === "string" ? destination.params.token : "");
+
+    setModalEyebrow(typeof metadata.eyebrow === "string" ? metadata.eyebrow : "");
+    setModalTitle(typeof metadata.title === "string" ? metadata.title : "");
+    setModalBody(typeof metadata.body === "string" ? metadata.body : "");
+    setModalPrimaryLabel(typeof metadata.cta_label === "string" ? metadata.cta_label : "");
+    setModalSecondaryLabel(typeof metadata.secondary_cta_label === "string" ? metadata.secondary_cta_label : "Maybe later");
+    setModalDismissible(metadata.dismissible === false ? "false" : "true");
+    setModalShowOnce(metadata.show_once === false ? "false" : "true");
+    setModalCampaignId(typeof metadata.campaign_id === "string" ? metadata.campaign_id : "");
+    setModalVersion(typeof metadata.version === "number" ? String(metadata.version) : "1");
+    setModalActionType(
+      typeof metadata.action_url === "string" && metadata.action_url
+        ? "external_url"
+        : metadata.presentation === "modal" && !destination
+          ? "none"
+          : "destination"
+    );
+    setModalActionUrl(typeof metadata.action_url === "string" ? metadata.action_url : "");
+
+    const advancedMetadata = { ...metadata } as Record<string, unknown>;
+    delete advancedMetadata.presentation;
+    delete advancedMetadata.campaign_id;
+    delete advancedMetadata.version;
+    delete advancedMetadata.eyebrow;
+    delete advancedMetadata.title;
+    delete advancedMetadata.body;
+    delete advancedMetadata.cta_label;
+    delete advancedMetadata.secondary_cta_label;
+    delete advancedMetadata.dismissible;
+    delete advancedMetadata.show_once;
+    delete advancedMetadata.action_url;
+    delete advancedMetadata.destination;
+    setMetadataText(JSON.stringify(advancedMetadata, null, 2));
+
+    setSelectedUsers([]);
+    setSearch("");
+    setSearchResults([]);
+    setSendAt(campaign.delivery_mode === "SCHEDULED" && campaign.scheduled_for
+      ? formatDateTimeLocalInput(new Date(campaign.scheduled_for))
+      : "");
+    setActiveTab(campaign.delivery_mode === "SCHEDULED" ? "schedule" : "send");
+    setPageTab("composer");
   }
 
   async function submit(mode: "send" | "schedule") {
@@ -472,7 +713,7 @@ export default function AdminNotificationsPage() {
     const payload = {
       audience:
         audienceType === "user_ids"
-          ? { type: audienceType, user_ids: selectedUsers.map((user) => user.id) }
+          ? { type: audienceType, user_ids: manualAudienceUserIds }
           : { type: audienceType },
       title: title.trim(),
       message: message.trim(),
@@ -500,6 +741,7 @@ export default function AdminNotificationsPage() {
           ? `Notification queued for ${recipientCount} recipient${recipientCount === 1 ? "" : "s"}.`
           : `Scheduled notification created for ${recipientCount} recipient${recipientCount === 1 ? "" : "s"}.`,
       );
+      setHistoryLoaded(false);
       resetComposer();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to submit notification.");
@@ -518,10 +760,11 @@ export default function AdminNotificationsPage() {
               Review channel reach on the dashboard, then switch to composer when you are ready to send.
             </p>
           </div>
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-            <TabsTrigger value="composer">Composer</TabsTrigger>
-          </TabsList>
+          <TabsList className="grid w-full max-w-xl grid-cols-3">
+                        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                        <TabsTrigger value="composer">Composer</TabsTrigger>
+                        <TabsTrigger value="history">History</TabsTrigger>
+                      </TabsList>
         </div>
 
         <TabsContent value="dashboard" className="space-y-6">
@@ -794,112 +1037,270 @@ export default function AdminNotificationsPage() {
                           </SelectContent>
                         </Select>
                       </div>
+
+                      <div className="space-y-2">
+                        <Label>Presentation</Label>
+                        <Select value={presentationMode} onValueChange={(value: PresentationMode) => setPresentationMode(value)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose presentation" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="standard">Standard notification</SelectItem>
+                            <SelectItem value="modal">Modal campaign</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          Standard notifications rely on the usual push and inbox flow. Modal campaigns open as an in-app prompt when the mobile client sees `presentation: modal`.
+                        </p>
+                      </div>
                     </div>
 
                     <div className="space-y-5">
                       <div className="space-y-2">
-                        <Label htmlFor="title">Title</Label>
+                        <Label htmlFor="title">{isModalCampaign ? "Notification title" : "Title"}</Label>
                         <Input
                           id="title"
                           value={title}
                           onChange={(event) => setTitle(event.target.value)}
                           maxLength={100}
-                          placeholder="Headline shown in the push notification"
+                          placeholder={isModalCampaign ? "Fallback title for inbox and push delivery" : "Headline shown in the push notification"}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
+                        <Label htmlFor="message">{isModalCampaign ? "Notification message" : "Message"}</Label>
                         <Textarea
                           id="message"
                           value={message}
                           onChange={(event) => setMessage(event.target.value)}
                           maxLength={2000}
                           rows={6}
-                          placeholder="Explain what changed and where the user should go next."
+                          placeholder={isModalCampaign ? "Fallback message stored in the notification inbox." : "Explain what changed and where the user should go next."}
                         />
                       </div>
 
+                      {isModalCampaign ? (
+                        <div className="space-y-5 rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--soft)] p-4">
+                          <div>
+                            <p className="text-sm font-semibold text-foreground">Modal content</p>
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              These fields generate the modal payload automatically so ops does not have to remember metadata keys.
+                            </p>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="modal-eyebrow">Eyebrow</Label>
+                            <Input
+                              id="modal-eyebrow"
+                              value={modalEyebrow}
+                              onChange={(event) => setModalEyebrow(event.target.value)}
+                              placeholder="Opportunity"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="modal-title">Modal title</Label>
+                            <Input
+                              id="modal-title"
+                              value={modalTitle}
+                              onChange={(event) => setModalTitle(event.target.value)}
+                              placeholder="Leave blank to reuse notification title"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="modal-body">Modal body</Label>
+                            <Textarea
+                              id="modal-body"
+                              value={modalBody}
+                              onChange={(event) => setModalBody(event.target.value)}
+                              rows={4}
+                              placeholder="Leave blank to reuse notification message"
+                            />
+                          </div>
+
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                              <Label htmlFor="modal-primary-label">Primary button label</Label>
+                              <Input
+                                id="modal-primary-label"
+                                value={modalPrimaryLabel}
+                                onChange={(event) => setModalPrimaryLabel(event.target.value)}
+                                placeholder="Learn more"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="modal-secondary-label">Secondary button label</Label>
+                              <Input
+                                id="modal-secondary-label"
+                                value={modalSecondaryLabel}
+                                onChange={(event) => setModalSecondaryLabel(event.target.value)}
+                                placeholder="Maybe later"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                              <Label>Dismissible</Label>
+                              <Select value={modalDismissible} onValueChange={setModalDismissible}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Choose dismissibility" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="true">Yes</SelectItem>
+                                  <SelectItem value="false">No</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Show once</Label>
+                              <Select value={modalShowOnce} onValueChange={setModalShowOnce}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Choose repeat behavior" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="true">Yes</SelectItem>
+                                  <SelectItem value="false">No</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          <div className="grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                              <Label htmlFor="modal-campaign-id">Campaign id</Label>
+                              <Input
+                                id="modal-campaign-id"
+                                value={modalCampaignId}
+                                onChange={(event) => setModalCampaignId(event.target.value)}
+                                placeholder="agent-programme-mar-2026"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="modal-version">Version</Label>
+                              <Input
+                                id="modal-version"
+                                value={modalVersion}
+                                onChange={(event) => setModalVersion(event.target.value)}
+                                inputMode="numeric"
+                                placeholder="1"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Primary action target</Label>
+                            <Select value={modalActionType} onValueChange={(value: ModalActionType) => setModalActionType(value)}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Choose action target" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="destination">Open in-app screen</SelectItem>
+                                <SelectItem value="external_url">Open external HTTPS URL</SelectItem>
+                                <SelectItem value="none">No navigation action</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {modalActionType === "external_url" ? (
+                            <div className="space-y-2">
+                              <Label htmlFor="modal-action-url">HTTPS URL</Label>
+                              <Input
+                                id="modal-action-url"
+                                value={modalActionUrl}
+                                onChange={(event) => setModalActionUrl(event.target.value)}
+                                placeholder="https://leetapp.co/agents"
+                              />
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
+
+                      {usesDestinationCta ? (
+                        <>
+                          <div className="space-y-2">
+                            <Label>{isModalCampaign ? "In-app action destination" : "Destination"}</Label>
+                            <Select value={destinationType} onValueChange={(value: DestinationType) => setDestinationType(value)}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Choose destination" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {compatibleDestinationOptions.map((option) => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <p className="text-xs text-muted-foreground">
+                              {compatibleDestinationOptions.find((option) => option.value === destinationType)?.description
+                                || destinationOptions.find((option) => option.value === destinationType)?.description}
+                            </p>
+                            {audienceDestinationMode === "shared" ? (
+                              <p className="text-xs text-muted-foreground">
+                                Mixed or broad audiences can only use shared destinations such as safety share or no in-app destination.
+                              </p>
+                            ) : null}
+                            {audienceDestinationMode === "all" ? (
+                              <p className="text-xs text-muted-foreground">
+                                Device-platform audiences can browse all destinations here, but the backend will still reject recipients whose role does not match the destination.
+                              </p>
+                            ) : null}
+                          </div>
+
+                          {destinationNeedsRideId(destinationType) ? (
+                            <div className="space-y-2">
+                              <Label htmlFor="destination-ride-id">Ride id</Label>
+                              <Input
+                                id="destination-ride-id"
+                                value={destinationRideId}
+                                onChange={(event) => setDestinationRideId(event.target.value)}
+                                inputMode="numeric"
+                                placeholder="482"
+                              />
+                            </div>
+                          ) : null}
+
+                          {destinationNeedsRequestId(destinationType) ? (
+                            <div className="space-y-2">
+                              <Label htmlFor="destination-request-id">Request id</Label>
+                              <Input
+                                id="destination-request-id"
+                                value={destinationRequestId}
+                                onChange={(event) => setDestinationRequestId(event.target.value)}
+                                inputMode="numeric"
+                                placeholder="91"
+                              />
+                            </div>
+                          ) : null}
+
+                          {destinationNeedsToken(destinationType) ? (
+                            <div className="space-y-2">
+                              <Label htmlFor="destination-token">Safety-share token</Label>
+                              <Input
+                                id="destination-token"
+                                value={destinationToken}
+                                onChange={(event) => setDestinationToken(event.target.value)}
+                                placeholder="abc123"
+                              />
+                            </div>
+                          ) : null}
+                        </>
+                      ) : null}
+
                       <div className="space-y-2">
-                        <Label>Destination</Label>
-                        <Select value={destinationType} onValueChange={(value: DestinationType) => setDestinationType(value)}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Choose destination" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {compatibleDestinationOptions.map((option) => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <p className="text-xs text-muted-foreground">
-                          {compatibleDestinationOptions.find((option) => option.value === destinationType)?.description
-                            || destinationOptions.find((option) => option.value === destinationType)?.description}
-                        </p>
-                        {audienceDestinationMode === "shared" ? (
-                          <p className="text-xs text-muted-foreground">
-                            Mixed or broad audiences can only use shared destinations such as safety share or no in-app destination.
-                          </p>
-                        ) : null}
-                        {audienceDestinationMode === "all" ? (
-                          <p className="text-xs text-muted-foreground">
-                            Device-platform audiences can browse all destinations here, but the backend will still reject recipients whose role does not match the destination.
-                          </p>
-                        ) : null}
-                      </div>
-
-                      {destinationNeedsRideId(destinationType) ? (
-                        <div className="space-y-2">
-                          <Label htmlFor="destination-ride-id">Ride id</Label>
-                          <Input
-                            id="destination-ride-id"
-                            value={destinationRideId}
-                            onChange={(event) => setDestinationRideId(event.target.value)}
-                            inputMode="numeric"
-                            placeholder="482"
-                          />
-                        </div>
-                      ) : null}
-
-                      {destinationNeedsRequestId(destinationType) ? (
-                        <div className="space-y-2">
-                          <Label htmlFor="destination-request-id">Request id</Label>
-                          <Input
-                            id="destination-request-id"
-                            value={destinationRequestId}
-                            onChange={(event) => setDestinationRequestId(event.target.value)}
-                            inputMode="numeric"
-                            placeholder="91"
-                          />
-                        </div>
-                      ) : null}
-
-                      {destinationNeedsToken(destinationType) ? (
-                        <div className="space-y-2">
-                          <Label htmlFor="destination-token">Safety-share token</Label>
-                          <Input
-                            id="destination-token"
-                            value={destinationToken}
-                            onChange={(event) => setDestinationToken(event.target.value)}
-                            placeholder="abc123"
-                          />
-                        </div>
-                      ) : null}
-
-                      <div className="space-y-2">
-                        <Label htmlFor="metadata">Extra metadata JSON</Label>
+                        <Label htmlFor="metadata">Advanced metadata JSON</Label>
                         <Textarea
                           id="metadata"
                           value={metadataText}
                           onChange={(event) => setMetadataText(event.target.value)}
                           rows={5}
-                          placeholder='{"campaign_id":"spring-launch"}'
+                          placeholder='{"campaign_tag":"growth-q2"}'
                           className={metadataPayload.error ? "border-rose-300 focus-visible:ring-rose-300" : ""}
                         />
                         <p className={`text-xs ${metadataPayload.error ? "text-rose-600" : "text-muted-foreground"}`}>
-                          {metadataPayload.error || "Optional JSON object for campaign or analytics context. Destination is added automatically."}
+                          {metadataPayload.error || "Optional advanced JSON merged into the structured payload. Structured fields override conflicting keys."}
                         </p>
                       </div>
 
@@ -957,19 +1358,48 @@ export default function AdminNotificationsPage() {
                     </p>
                   </div>
                   <div className="rounded-2xl border border-[color:var(--stroke)] p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Message preview</p>
-                    <p className="mt-2 line-clamp-2 text-base font-semibold text-foreground">{title.trim() || "Title preview"}</p>
-                    <p className="mt-2 line-clamp-4 text-sm leading-6 text-muted-foreground">
-                      {message.trim() || "Body preview will appear here once you start writing."}
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      {isModalCampaign ? "Modal preview" : "Message preview"}
                     </p>
+                    {isModalCampaign && modalEyebrow.trim() ? (
+                      <p className="mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-orange-600">{modalEyebrow.trim()}</p>
+                    ) : null}
+                    <p className="mt-2 line-clamp-2 text-base font-semibold text-foreground">
+                      {(isModalCampaign ? modalTitle.trim() : "") || title.trim() || "Title preview"}
+                    </p>
+                    <p className="mt-2 line-clamp-4 text-sm leading-6 text-muted-foreground">
+                      {(isModalCampaign ? modalBody.trim() : "") || message.trim() || "Body preview will appear here once you start writing."}
+                    </p>
+                    {isModalCampaign ? (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <Badge className="border-stone-200 bg-stone-100 text-stone-700">
+                          {modalPrimaryLabel.trim() || "Open"}
+                        </Badge>
+                        {modalDismissibleValue ? (
+                          <Badge className="border-stone-200 bg-white text-stone-700">
+                            {modalSecondaryLabel.trim() || "Maybe later"}
+                          </Badge>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                     <div className="rounded-2xl border border-[color:var(--stroke)] p-4">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Payload health</p>
                       <p className="mt-2 text-sm text-muted-foreground">Title: {title.trim().length}/100</p>
                       <p className="text-sm text-muted-foreground">Message: {message.trim().length}/2000</p>
+                      {isModalCampaign ? (
+                        <>
+                          <p className="text-sm text-muted-foreground">
+                            Modal mode: {modalActionType === "external_url" ? "External CTA" : modalActionType === "destination" ? "In-app CTA" : "No CTA navigation"}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Campaign key: {modalCampaignId.trim() ? `${modalCampaignId.trim()} v${modalVersion || "1"}` : "Not set"}
+                          </p>
+                        </>
+                      ) : null}
                       <p className="text-sm text-muted-foreground">
-                        Destination: {destinationLabel(destinationType)}
+                        Destination: {usesDestinationCta ? destinationLabel(destinationType) : "External URL"}
                       </p>
                       <p className={`text-sm ${metadataPayload.error ? "text-rose-600" : "text-muted-foreground"}`}>
                         Metadata: {metadataPayload.error || "Valid destination and metadata payload"}
@@ -995,32 +1425,112 @@ export default function AdminNotificationsPage() {
                   <CardDescription>Manual targeting is best for VIP riders, staff, or incident-specific updates.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  {selectedUsers.length === 0 ? (
+                  {manualAudienceUserIds.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-[color:var(--stroke)] p-6 text-sm text-muted-foreground">
                       No individual recipients selected.
                     </div>
                   ) : (
-                    selectedUsers.map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--soft)] px-4 py-3"
-                      >
-                        <div>
-                          <p className="font-medium">{resolveUserLabel(user)}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {user.phone_number} {user.user_type ? `• ${user.user_type}` : ""}
-                          </p>
+                    manualAudienceUserIds.map((userId) => {
+                      const user = selectedUsers.find((entry) => entry.id === userId);
+                      return (
+                        <div
+                          key={userId}
+                          className="flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--soft)] px-4 py-3"
+                        >
+                          <div>
+                            <p className="font-medium">{user ? resolveUserLabel(user) : `User #${userId}`}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {user ? `${user.phone_number} ${user.user_type ? `• ${user.user_type}` : ""}` : "Loaded from a previous campaign. Search to view full details."}
+                            </p>
+                          </div>
+                          <Button type="button" variant="outline" size="sm" onClick={() => removeSelectedUser(userId)}>
+                            Remove
+                          </Button>
                         </div>
-                        <Button type="button" variant="outline" size="sm" onClick={() => removeSelectedUser(user.id)}>
-                          Remove
-                        </Button>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </CardContent>
               </Card>
             </div>
           </section>
+        </TabsContent>
+
+        <TabsContent value="history" className="space-y-6">
+          <Card className="border-[color:var(--stroke)] shadow-[var(--shadow)]">
+            <CardHeader>
+              <CardTitle>Notification history</CardTitle>
+              <CardDescription>Review recent admin sends and load any previous campaign back into the composer.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {historyLoading ? (
+                <div className="rounded-2xl border border-dashed border-[color:var(--stroke)] p-6 text-sm text-muted-foreground">
+                  Loading notification history...
+                </div>
+              ) : campaignHistory.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-[color:var(--stroke)] p-6 text-sm text-muted-foreground">
+                  No admin notification campaigns yet.
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-[color:var(--stroke)] bg-white">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Campaign</TableHead>
+                        <TableHead>Audience</TableHead>
+                        <TableHead>Delivery</TableHead>
+                        <TableHead>When</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {campaignHistory.map((campaign) => (
+                        <TableRow key={campaign.id}>
+                          <TableCell className="align-top">
+                            <div className="space-y-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="font-medium">{campaign.title}</p>
+                                <Badge className={toneForNotification(campaign.notification_type)}>
+                                  {notificationLabel(campaign.notification_type)}
+                                </Badge>
+                                {campaign.metadata?.presentation === "modal" ? (
+                                  <Badge className="border-stone-200 bg-stone-100 text-stone-700">Modal</Badge>
+                                ) : null}
+                              </div>
+                              <p className="line-clamp-2 text-sm text-muted-foreground">{campaign.message}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {campaign.recipient_count} recipient{campaign.recipient_count === 1 ? "" : "s"}
+                                {campaign.created_by_name ? ` • by ${campaign.created_by_name}` : ""}
+                              </p>
+                            </div>
+                          </TableCell>
+                          <TableCell className="align-top text-sm text-muted-foreground">
+                            {humanizeAudience(campaign.audience?.type || "all_users")}
+                          </TableCell>
+                          <TableCell className="align-top text-sm text-muted-foreground">
+                            {campaign.delivery_mode === "SCHEDULED" ? "Scheduled" : "Immediate"}
+                          </TableCell>
+                          <TableCell className="align-top text-sm text-muted-foreground">
+                            {new Date(campaign.scheduled_for || campaign.sent_at || campaign.created_at).toLocaleString()}
+                          </TableCell>
+                          <TableCell className="text-right align-top">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => applyCampaignToComposer(campaign)}
+                            >
+                              {reusingCampaignId === campaign.id ? "Loaded" : "Reuse"}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
