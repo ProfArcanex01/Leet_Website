@@ -77,12 +77,36 @@ type AppVersionPolicy = {
   hard_message: string;
   store_url: string;
   ota_enabled: boolean;
+  ota_prompt_on_current_version: boolean;
   maintenance_enabled: boolean;
   maintenance_message: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
 };
+
+const normalizePolicy = (policy: Partial<AppVersionPolicy> & { id: number }): AppVersionPolicy => ({
+  id: policy.id,
+  platform: policy.platform ?? 'IOS',
+  channel: policy.channel ?? 'production',
+  latest_version: policy.latest_version ?? '',
+  minimum_supported_version: policy.minimum_supported_version ?? '',
+  latest_build_number: policy.latest_build_number ?? null,
+  minimum_supported_build_number: policy.minimum_supported_build_number ?? null,
+  update_mode_default: policy.update_mode_default ?? 'NONE',
+  soft_title: policy.soft_title ?? '',
+  soft_message: policy.soft_message ?? '',
+  hard_title: policy.hard_title ?? '',
+  hard_message: policy.hard_message ?? '',
+  store_url: policy.store_url ?? '',
+  ota_enabled: policy.ota_enabled ?? false,
+  ota_prompt_on_current_version: policy.ota_prompt_on_current_version ?? false,
+  maintenance_enabled: policy.maintenance_enabled ?? false,
+  maintenance_message: policy.maintenance_message ?? '',
+  is_active: policy.is_active ?? true,
+  created_at: policy.created_at ?? '',
+  updated_at: policy.updated_at ?? '',
+});
 
 const days = [
   { value: 0, label: 'Monday' },
@@ -135,6 +159,27 @@ const pricingGuide = {
   effective_from: 'When these pricing rules become active.',
   effective_to: 'Optional end time for these pricing rules.',
 };
+
+const policyFieldHelp = {
+  platform: 'Choose the mobile platform this policy applies to.',
+  channel: 'Match the Expo or release channel used by that app build.',
+  latest_version: 'Latest native app version that should be treated as current.',
+  latest_build_number: 'Optional latest native build number for stricter version matching.',
+  minimum_supported_version: 'Oldest native app version that can continue to use the app.',
+  minimum_supported_build_number: 'Optional minimum native build number allowed to continue.',
+  update_mode_default: 'Fallback action when the client is behind the configured latest version.',
+  store_url: 'App Store or Play Store link used when an in-app OTA update is unavailable.',
+  soft_title: 'Headline shown for dismissible update prompts.',
+  soft_message: 'Body copy shown for soft update prompts.',
+  hard_title: 'Headline shown for blocking required-update prompts.',
+  hard_message: 'Body copy shown when the app version is no longer supported.',
+  ota_enabled: 'Allow the app to fetch an Expo OTA update before falling back to the store link.',
+  ota_prompt_on_current_version:
+    'Use this when the installed native version is already current, but you may have a newer Expo OTA bundle for it.',
+  maintenance_enabled: 'Show a blocking maintenance message even if no version update is required.',
+  maintenance_message: 'Custom message displayed while maintenance mode is active.',
+  is_active: 'Inactive policies remain saved but are ignored by the app.',
+} as const;
 
 export default function AdminSystemPage() {
   const didInitialLoadRef = useRef(false);
@@ -200,6 +245,7 @@ export default function AdminSystemPage() {
     hard_message: '',
     store_url: '',
     ota_enabled: 'false',
+    ota_prompt_on_current_version: 'false',
     maintenance_enabled: 'false',
     maintenance_message: '',
     is_active: 'true',
@@ -223,6 +269,7 @@ export default function AdminSystemPage() {
       hard_message: '',
       store_url: '',
       ota_enabled: 'false',
+      ota_prompt_on_current_version: 'false',
       maintenance_enabled: 'false',
       maintenance_message: '',
       is_active: 'true',
@@ -255,7 +302,7 @@ export default function AdminSystemPage() {
     if (!response.ok) {
       throw new Error((data as any)?.detail || (data as any)?.error || 'Unable to load app update policies.');
     }
-    setAppPolicies(Array.isArray(data) ? data : []);
+    setAppPolicies(Array.isArray(data) ? data.map((policy) => normalizePolicy(policy)) : []);
   };
 
   const loadAll = async () => {
@@ -280,7 +327,7 @@ export default function AdminSystemPage() {
       setPricing(pricingRes.ok ? pricingData : []);
       setDemand(demandRes.ok ? demandData : []);
       setVehicleRates(vehicleRes.ok ? vehicleData : []);
-      setAppPolicies(Array.isArray(policiesData) ? policiesData : []);
+      setAppPolicies(Array.isArray(policiesData) ? policiesData.map((policy) => normalizePolicy(policy)) : []);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unable to load configuration.';
       setError(message);
@@ -430,6 +477,7 @@ export default function AdminSystemPage() {
           ? Number(policyForm.minimum_supported_build_number)
           : null,
         ota_enabled: policyForm.ota_enabled === 'true',
+        ota_prompt_on_current_version: policyForm.ota_prompt_on_current_version === 'true',
         maintenance_enabled: policyForm.maintenance_enabled === 'true',
         is_active: policyForm.is_active === 'true',
       };
@@ -1007,6 +1055,7 @@ export default function AdminSystemPage() {
                             hard_message: policy.hard_message || '',
                             store_url: policy.store_url || '',
                             ota_enabled: String(policy.ota_enabled),
+                            ota_prompt_on_current_version: String(policy.ota_prompt_on_current_version),
                             maintenance_enabled: String(policy.maintenance_enabled),
                             maintenance_message: policy.maintenance_message || '',
                             is_active: String(policy.is_active),
@@ -1047,7 +1096,12 @@ export default function AdminSystemPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {[policy.ota_enabled ? 'OTA' : null, policy.maintenance_enabled ? 'Maintenance' : null, policy.is_active ? 'Active' : 'Inactive']
+                          {[
+                            policy.ota_enabled ? 'OTA' : null,
+                            policy.ota_prompt_on_current_version ? 'OTA on current version' : null,
+                            policy.maintenance_enabled ? 'Maintenance' : null,
+                            policy.is_active ? 'Active' : 'Inactive',
+                          ]
                             .filter(Boolean)
                             .join(' • ')}
                         </TableCell>
@@ -1071,7 +1125,7 @@ export default function AdminSystemPage() {
                 <CardDescription>One row per platform and release channel.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
+                <div className="space-y-2">
                   <Label>Platform</Label>
                   <Select value={policyForm.platform} onValueChange={(value) => setPolicyForm((p) => ({ ...p, platform: value }))}>
                     <SelectTrigger>
@@ -1085,8 +1139,9 @@ export default function AdminSystemPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.platform}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Channel</Label>
                   <Select value={policyForm.channel} onValueChange={(value) => setPolicyForm((p) => ({ ...p, channel: value }))}>
                     <SelectTrigger>
@@ -1100,24 +1155,29 @@ export default function AdminSystemPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.channel}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Latest version</Label>
                   <Input value={policyForm.latest_version} onChange={(e) => setPolicyForm((p) => ({ ...p, latest_version: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.latest_version}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Latest build number</Label>
                   <Input value={policyForm.latest_build_number} onChange={(e) => setPolicyForm((p) => ({ ...p, latest_build_number: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.latest_build_number}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Minimum supported version</Label>
                   <Input value={policyForm.minimum_supported_version} onChange={(e) => setPolicyForm((p) => ({ ...p, minimum_supported_version: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.minimum_supported_version}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Minimum supported build number</Label>
                   <Input value={policyForm.minimum_supported_build_number} onChange={(e) => setPolicyForm((p) => ({ ...p, minimum_supported_build_number: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.minimum_supported_build_number}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Default update mode</Label>
                   <Select value={policyForm.update_mode_default} onValueChange={(value) => setPolicyForm((p) => ({ ...p, update_mode_default: value }))}>
                     <SelectTrigger>
@@ -1131,28 +1191,34 @@ export default function AdminSystemPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.update_mode_default}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Store URL</Label>
                   <Input value={policyForm.store_url} onChange={(e) => setPolicyForm((p) => ({ ...p, store_url: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.store_url}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Soft update title</Label>
                   <Input value={policyForm.soft_title} onChange={(e) => setPolicyForm((p) => ({ ...p, soft_title: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.soft_title}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Soft update message</Label>
                   <Textarea value={policyForm.soft_message} onChange={(e) => setPolicyForm((p) => ({ ...p, soft_message: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.soft_message}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Hard update title</Label>
                   <Input value={policyForm.hard_title} onChange={(e) => setPolicyForm((p) => ({ ...p, hard_title: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.hard_title}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Hard update message</Label>
                   <Textarea value={policyForm.hard_message} onChange={(e) => setPolicyForm((p) => ({ ...p, hard_message: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.hard_message}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>OTA enabled</Label>
                   <Select value={policyForm.ota_enabled} onValueChange={(value) => setPolicyForm((p) => ({ ...p, ota_enabled: value }))}>
                     <SelectTrigger>
@@ -1163,8 +1229,25 @@ export default function AdminSystemPage() {
                       <SelectItem value="false">Disabled</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.ota_enabled}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
+                  <Label>Prompt same-version OTA updates</Label>
+                  <Select
+                    value={policyForm.ota_prompt_on_current_version}
+                    onValueChange={(value) => setPolicyForm((p) => ({ ...p, ota_prompt_on_current_version: value }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select same-version OTA behavior" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="true">Enabled</SelectItem>
+                      <SelectItem value="false">Disabled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.ota_prompt_on_current_version}</p>
+                </div>
+                <div className="space-y-2">
                   <Label>Maintenance enabled</Label>
                   <Select value={policyForm.maintenance_enabled} onValueChange={(value) => setPolicyForm((p) => ({ ...p, maintenance_enabled: value }))}>
                     <SelectTrigger>
@@ -1175,12 +1258,14 @@ export default function AdminSystemPage() {
                       <SelectItem value="false">Disabled</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.maintenance_enabled}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Maintenance message</Label>
                   <Textarea value={policyForm.maintenance_message} onChange={(e) => setPolicyForm((p) => ({ ...p, maintenance_message: e.target.value }))} />
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.maintenance_message}</p>
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label>Record state</Label>
                   <Select value={policyForm.is_active} onValueChange={(value) => setPolicyForm((p) => ({ ...p, is_active: value }))}>
                     <SelectTrigger>
@@ -1191,6 +1276,7 @@ export default function AdminSystemPage() {
                       <SelectItem value="false">Inactive</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">{policyFieldHelp.is_active}</p>
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Button onClick={savePolicy} disabled={loading}>
