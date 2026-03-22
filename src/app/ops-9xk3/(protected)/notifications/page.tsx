@@ -30,7 +30,7 @@ type Paginated<T> = {
 };
 
 type AudienceType = "all_users" | "hosts" | "riders" | "ios_users" | "android_users" | "agents" | "user_ids";
-type NotificationType = "SYSTEM" | "PAYMENT" | "RIDE_REQUEST" | "RIDE_ACCEPTED" | "RIDE_REJECTED" | "RIDE_STARTED" | "RIDE_COMPLETED" | "RIDE_CANCELLED" | "RIDE_CANCELLED_CONFIRMATION" | "RIDE_APPROACHING" | "RIDE_REMINDER";
+type NotificationType = "SYSTEM" | "PAYMENT" | "PROMOTION" | "RIDE_REQUEST" | "RIDE_ACCEPTED" | "RIDE_REJECTED" | "RIDE_STARTED" | "RIDE_COMPLETED" | "RIDE_CANCELLED" | "RIDE_CANCELLED_CONFIRMATION" | "RIDE_APPROACHING" | "RIDE_REMINDER";
 type PresentationMode = "standard" | "modal";
 type ModalActionType = "none" | "destination" | "external_url";
 type DestinationType =
@@ -75,7 +75,7 @@ type CampaignDestination = { type: Exclude<DestinationType, "none">; params?: Re
 type AdminNotificationCampaign = {
   id: number;
   delivery_mode: "IMMEDIATE" | "SCHEDULED";
-  notification_type: NotificationType | string;
+  notification_type: string;
   title: string;
   message: string;
   audience: {
@@ -109,6 +109,7 @@ type StructuredMetadata = {
 const notificationTypes: { value: NotificationType; label: string; tone: string }[] = [
   { value: "SYSTEM", label: "System", tone: "bg-stone-100 text-stone-700 border-stone-200" },
   { value: "PAYMENT", label: "Payment", tone: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+  { value: "PROMOTION", label: "Promotion", tone: "bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200" },
   { value: "RIDE_REQUEST", label: "Ride request", tone: "bg-sky-100 text-sky-700 border-sky-200" },
   { value: "RIDE_ACCEPTED", label: "Ride accepted", tone: "bg-indigo-100 text-indigo-700 border-indigo-200" },
   { value: "RIDE_REJECTED", label: "Ride rejected", tone: "bg-rose-100 text-rose-700 border-rose-200" },
@@ -170,7 +171,11 @@ function resolveUserLabel(user: AdminUser) {
   return fullName || user.email || user.phone_number;
 }
 
-function toneForNotification(type: NotificationType) {
+function isNotificationType(value: string): value is NotificationType {
+  return notificationTypes.some((item) => item.value === value);
+}
+
+function toneForNotification(type: string) {
   return notificationTypes.find((item) => item.value === type)?.tone || "bg-stone-100 text-stone-700 border-stone-200";
 }
 
@@ -652,7 +657,7 @@ export default function AdminNotificationsPage() {
     setManualAudienceUserIds(campaign.audience?.user_ids || []);
     setTitle(campaign.title || "");
     setMessage(campaign.message || "");
-    setNotificationType((campaign.notification_type as NotificationType) || "SYSTEM");
+    setNotificationType(isNotificationType(campaign.notification_type) ? campaign.notification_type : "SYSTEM");
     setPresentationMode(metadata.presentation === "modal" ? "modal" : "standard");
     setDestinationType(destinationTypeFromCampaign);
     setDestinationRideId(typeof destination?.params?.ride_id === "number" ? String(destination.params.ride_id) : "");
