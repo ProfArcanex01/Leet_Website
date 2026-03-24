@@ -99,6 +99,7 @@ export default function AdminUsersPage() {
   const [suspensionPeriod, setSuspensionPeriod] = useState<'none' | 'clear' | 'day' | 'week' | 'month' | 'custom'>('none');
   const [customSuspension, setCustomSuspension] = useState('');
   const [adminRoleReason, setAdminRoleReason] = useState('');
+  const [changeReason, setChangeReason] = useState('');
   const [noInviteUsers, setNoInviteUsers] = useState<AdminUser[]>([]);
   const [noInviteLoading, setNoInviteLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'all-users' | 'no-invite'>('all-users');
@@ -113,6 +114,7 @@ export default function AdminUsersPage() {
     setSuspensionPeriod('none');
     setCustomSuspension('');
     setAdminRoleReason('');
+    setChangeReason('');
     setError(null);
     setSuccessMessage(null);
   };
@@ -258,6 +260,11 @@ export default function AdminUsersPage() {
         setError('No changes to save.');
         return;
       }
+      if (!changeReason.trim()) {
+        setError('Provide a reason for this admin change.');
+        return;
+      }
+      requestBody.reason = changeReason.trim();
       let response = await authFetch(`/accounts/admin/users/${selected.id}/`, {
         method: 'PATCH',
         body: JSON.stringify(requestBody),
@@ -287,6 +294,7 @@ export default function AdminUsersPage() {
       setSuspensionPeriod('none');
       setCustomSuspension('');
       setAdminRoleReason('');
+      setChangeReason('');
       setSuccessMessage('User updated successfully.');
       await loadUsers({ page, preserveMessages: true });
     } catch (err) {
@@ -310,8 +318,12 @@ export default function AdminUsersPage() {
     setDeleting(true);
     setError(null);
     try {
+      if (!changeReason.trim()) {
+        throw new Error('Provide a reason for this admin change.');
+      }
       const response = await authFetch(`/accounts/admin/users/${selected.id}/`, {
         method: 'DELETE',
+        body: JSON.stringify({ reason: changeReason.trim() }),
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
@@ -726,6 +738,15 @@ export default function AdminUsersPage() {
                       <p className="text-xs text-muted-foreground">
                         Staff access is derived from admin roles. Platform admin is treated as full admin authority.
                       </p>
+                    </div>
+                    <div>
+                      <Label htmlFor="change-reason">Audit reason</Label>
+                      <Input
+                        id="change-reason"
+                        value={changeReason}
+                        onChange={(event) => setChangeReason(event.target.value)}
+                        placeholder="Required for any admin update or delete"
+                      />
                     </div>
                     <div>
                       <Label htmlFor="admin-role-reason">Role change reason</Label>

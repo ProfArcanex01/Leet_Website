@@ -250,11 +250,13 @@ export default function AdminSystemPage() {
     maintenance_message: '',
     is_active: 'true',
   });
+  const [policyReason, setPolicyReason] = useState('');
 
   const regionOptions = useMemo(() => regions.map((region) => ({ value: String(region.id), label: region.name })), [regions]);
 
   const resetPolicyForm = () => {
     setEditingPolicy(null);
+    setPolicyReason('');
     setPolicyForm({
       platform: 'IOS',
       channel: 'production',
@@ -470,8 +472,12 @@ export default function AdminSystemPage() {
     setLoading(true);
     setError(null);
     try {
+      if (!policyReason.trim()) {
+        throw new Error('Provide a reason for this admin change.');
+      }
       const payload = {
         ...policyForm,
+        reason: policyReason.trim(),
         latest_build_number: policyForm.latest_build_number ? Number(policyForm.latest_build_number) : null,
         minimum_supported_build_number: policyForm.minimum_supported_build_number
           ? Number(policyForm.minimum_supported_build_number)
@@ -510,8 +516,12 @@ export default function AdminSystemPage() {
     setLoading(true);
     setError(null);
     try {
+      if (!policyReason.trim()) {
+        throw new Error('Provide a reason for this admin change.');
+      }
       const response = await authFetch(`/accounts/admin/app-version-policies/${editingPolicy.id}/`, {
         method: 'DELETE',
+        body: JSON.stringify({ reason: policyReason.trim() }),
       });
       if (!response.ok && response.status !== 204) {
         const data = await response.json().catch(() => ({}));
@@ -1041,6 +1051,7 @@ export default function AdminSystemPage() {
                         key={policy.id}
                         onClick={() => {
                           setEditingPolicy(policy);
+                          setPolicyReason('');
                           setPolicyForm({
                             platform: policy.platform,
                             channel: policy.channel,
@@ -1125,6 +1136,16 @@ export default function AdminSystemPage() {
                 <CardDescription>One row per platform and release channel.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="policy-reason">Audit reason</Label>
+                  <Textarea
+                    id="policy-reason"
+                    value={policyReason}
+                    onChange={(e) => setPolicyReason(e.target.value)}
+                    placeholder="Required for creating, updating, or deleting app update policies"
+                    rows={3}
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label>Platform</Label>
                   <Select value={policyForm.platform} onValueChange={(value) => setPolicyForm((p) => ({ ...p, platform: value }))}>

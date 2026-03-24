@@ -109,6 +109,7 @@ export default function AdminTrainingPage() {
   const [materials, setMaterials] = useState<LearningMaterial[]>([]);
   const [selectedId, setSelectedId] = useState<number | 'new'>('new');
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [reason, setReason] = useState('');
   const [query, setQuery] = useState('');
   const [publishedFilter, setPublishedFilter] = useState<'all' | 'true' | 'false'>('all');
   const [loading, setLoading] = useState(true);
@@ -161,6 +162,7 @@ export default function AdminTrainingPage() {
   function startNewMaterial() {
     setSelectedId('new');
     setForm(emptyForm);
+    setReason('');
     setError(null);
     setSuccessMessage(null);
   }
@@ -168,6 +170,7 @@ export default function AdminTrainingPage() {
   function selectMaterial(material: LearningMaterial) {
     setSelectedId(material.id);
     setForm(toFormState(material));
+    setReason('');
     setError(null);
     setSuccessMessage(null);
   }
@@ -176,6 +179,11 @@ export default function AdminTrainingPage() {
     setSaving(true);
     setError(null);
     setSuccessMessage(null);
+    if (!reason.trim()) {
+      setError('Provide a reason for this admin change.');
+      setSaving(false);
+      return;
+    }
 
     const payload = {
       title: form.title.trim(),
@@ -187,6 +195,7 @@ export default function AdminTrainingPage() {
       duration_seconds: form.duration_seconds.trim() ? Number(form.duration_seconds) : null,
       is_published: form.is_published,
       sort_order: Number(form.sort_order || '0'),
+      reason: reason.trim(),
     };
 
     try {
@@ -356,6 +365,17 @@ export default function AdminTrainingPage() {
                   onChange={(event) => setForm((current) => ({ ...current, slug: slugify(event.target.value) }))}
                 />
               </div>
+            </div>
+
+            <div>
+              <Label htmlFor="material-reason">Audit reason</Label>
+              <Textarea
+                id="material-reason"
+                value={reason}
+                onChange={(event) => setReason(event.target.value)}
+                placeholder="Required for creating or updating training materials"
+                rows={3}
+              />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">

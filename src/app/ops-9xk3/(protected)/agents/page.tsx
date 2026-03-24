@@ -184,6 +184,7 @@ export default function AgentsOpsPage() {
   const [agentCodeQuery, setAgentCodeQuery] = useState('');
   const [agentCodeActiveFilter, setAgentCodeActiveFilter] = useState<'all' | 'true' | 'false'>('all');
   const [selectedCodeId, setSelectedCodeId] = useState<number | null>(null);
+  const [selectedCodeReason, setSelectedCodeReason] = useState('');
   const [codeSaving, setCodeSaving] = useState(false);
 
   const [agentSearch, setAgentSearch] = useState('');
@@ -193,6 +194,7 @@ export default function AgentsOpsPage() {
   const [newCode, setNewCode] = useState('');
   const [newMaxRedemptions, setNewMaxRedemptions] = useState('');
   const [newExpiresAt, setNewExpiresAt] = useState('');
+  const [createCodeReason, setCreateCodeReason] = useState('');
   const [creatingCode, setCreatingCode] = useState(false);
   const [createMessage, setCreateMessage] = useState<string | null>(null);
 
@@ -376,6 +378,10 @@ export default function AgentsOpsPage() {
       setAgentCodesError('Select an agent and enter a code.');
       return;
     }
+    if (!createCodeReason.trim()) {
+      setAgentCodesError('Provide a reason for this admin change.');
+      return;
+    }
 
     setCreatingCode(true);
     setAgentCodesError(null);
@@ -389,6 +395,7 @@ export default function AgentsOpsPage() {
           is_active: true,
           max_redemptions: newMaxRedemptions.trim() ? Number(newMaxRedemptions) : null,
           expires_at: newExpiresAt ? new Date(newExpiresAt).toISOString() : null,
+          reason: createCodeReason.trim(),
         }),
       });
       const payload = (await response.json().catch(() => null)) as AgentInviteCode | { detail?: string; code?: string[] } | null;
@@ -402,6 +409,7 @@ export default function AgentsOpsPage() {
       setNewCode('');
       setNewMaxRedemptions('');
       setNewExpiresAt('');
+      setCreateCodeReason('');
       setSelectedAgent(null);
       setAgentSearch('');
       setAgentOptions([]);
@@ -434,12 +442,16 @@ export default function AgentsOpsPage() {
 
   async function handleCodeUpdate(updates: Partial<Pick<AgentInviteCode, 'is_active'>> & { revoked_at?: string | null }) {
     if (!selectedCode) return;
+    if (!selectedCodeReason.trim()) {
+      setAgentCodesError('Provide a reason for this admin change.');
+      return;
+    }
     setCodeSaving(true);
     setAgentCodesError(null);
     try {
       const response = await authFetch(`/invites/admin/agent-codes/${selectedCode.id}/`, {
         method: 'PATCH',
-        body: JSON.stringify(updates),
+        body: JSON.stringify({ ...updates, reason: selectedCodeReason.trim() }),
       });
       const payload = (await response.json().catch(() => null)) as AgentInviteCode | { error?: string; detail?: string } | null;
       if (!response.ok) {
@@ -581,6 +593,15 @@ export default function AgentsOpsPage() {
                   onChange={(event) => setNewExpiresAt(event.target.value)}
                 />
               </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">Audit reason</label>
+                <Textarea
+                  value={createCodeReason}
+                  onChange={(event) => setCreateCodeReason(event.target.value)}
+                  placeholder="Required for creating a reusable agent code"
+                  rows={3}
+                />
+              </div>
               {createMessage ? <p className="text-sm text-emerald-600">{createMessage}</p> : null}
               <div className="flex gap-2">
                 <Button type="submit" disabled={creatingCode}>
@@ -719,6 +740,15 @@ export default function AgentsOpsPage() {
                     <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Remaining</p>
                     <p className="mt-2 text-sm">{selectedCode.redemptions_remaining ?? 'Unlimited'}</p>
                   </div>
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-muted-foreground">Audit reason</label>
+                  <Textarea
+                    value={selectedCodeReason}
+                    onChange={(event) => setSelectedCodeReason(event.target.value)}
+                    placeholder="Required for activating, deactivating, or revoking a code"
+                    rows={3}
+                  />
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button

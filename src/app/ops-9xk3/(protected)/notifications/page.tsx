@@ -256,6 +256,7 @@ export default function AdminNotificationsPage() {
   const [presentationMode, setPresentationMode] = useState<PresentationMode>("standard");
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
+  const [reason, setReason] = useState("");
   const [destinationType, setDestinationType] = useState<DestinationType>("none");
   const [destinationRideId, setDestinationRideId] = useState("");
   const [destinationRequestId, setDestinationRequestId] = useState("");
@@ -619,6 +620,7 @@ export default function AdminNotificationsPage() {
     setPresentationMode("standard");
     setTitle("");
     setMessage("");
+    setReason("");
     setDestinationType("none");
     setDestinationRideId("");
     setDestinationRequestId("");
@@ -710,6 +712,10 @@ export default function AdminNotificationsPage() {
   async function submit(mode: "send" | "schedule") {
     if (mode === "send" && !canSubmit) return;
     if (mode === "schedule" && !scheduledReady) return;
+    if (!reason.trim()) {
+      setError("Provide a reason for this admin change.");
+      return;
+    }
 
     setSending(true);
     setError(null);
@@ -722,6 +728,7 @@ export default function AdminNotificationsPage() {
           : { type: audienceType },
       title: title.trim(),
       message: message.trim(),
+      reason: reason.trim(),
       notification_type: notificationType,
       metadata: metadataPayload.value || {},
       ...(mode === "schedule" ? { send_at: new Date(sendAt).toISOString() } : {}),
@@ -941,6 +948,16 @@ export default function AdminNotificationsPage() {
 
                   <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1fr]">
                     <div className="space-y-5">
+                      <div className="space-y-2">
+                        <Label htmlFor="notification-reason">Audit reason</Label>
+                        <Textarea
+                          id="notification-reason"
+                          value={reason}
+                          onChange={(event) => setReason(event.target.value)}
+                          placeholder="Required for sending or scheduling notifications"
+                          rows={3}
+                        />
+                      </div>
                       <div className="space-y-2">
                         <Label>Audience</Label>
                         <Select value={audienceType} onValueChange={(value: AudienceType) => setAudienceType(value)}>
