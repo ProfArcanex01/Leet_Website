@@ -1,0 +1,2 @@
+export const WHATSAPP_SUPPORT_NUMBER = '+233 59 370 9240';
+export const WHATSAPP_SUPPORT_DEEP_LINK = 'https://wa.me/233593709240';

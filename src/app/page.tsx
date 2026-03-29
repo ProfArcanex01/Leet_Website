@@ -10,6 +10,7 @@ import { DownloadStickyCta } from './download-sticky-cta';
 import { MobileNav } from './mobile-nav';
 import { Reveal } from '@/components/reveal';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { WHATSAPP_SUPPORT_DEEP_LINK, WHATSAPP_SUPPORT_NUMBER } from '@/lib/contact';
 import { DollarSign, Navigation, Route, CheckCircle2, Star, UserRound, Car, MapPin, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -680,6 +681,17 @@ export default async function Home() {
                 >
                   <Image src="/play-store.svg" alt="Get it on Google Play" width={110} height={32} className="h-8 w-auto" />
                 </a>
+                <a
+                  href={WHATSAPP_SUPPORT_DEEP_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Contact Leet on WhatsApp at ${WHATSAPP_SUPPORT_NUMBER}`}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/75 transition hover:border-[#25D366]/60 hover:bg-[#25D366]/12 hover:text-[#25D366]"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4.5 w-4.5 fill-current">
+                    <path d="M19.05 4.91A9.82 9.82 0 0 0 12.03 2a9.9 9.9 0 0 0-8.58 14.85L2 22l5.3-1.39A9.9 9.9 0 0 0 12.02 22h.01a9.99 9.99 0 0 0 7.02-17.09Zm-7.02 15.42h-.01a8.23 8.23 0 0 1-4.19-1.14l-.3-.18-3.14.82.84-3.06-.2-.31a8.25 8.25 0 1 1 7 3.87Zm4.53-6.18c-.25-.12-1.47-.72-1.7-.8-.22-.08-.39-.12-.55.12-.17.25-.64.8-.79.97-.15.16-.3.19-.56.06-.25-.12-1.06-.39-2.02-1.24-.74-.66-1.24-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.12-.15.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.43.06-.65.31-.22.25-.86.84-.86 2.05 0 1.2.88 2.36 1 2.52.12.16 1.73 2.64 4.18 3.7.58.25 1.04.4 1.39.51.58.18 1.11.15 1.53.09.47-.07 1.47-.6 1.67-1.19.21-.59.21-1.09.15-1.19-.06-.1-.22-.16-.47-.28Z" />
+                  </svg>
+                </a>
               </div>
               <p className="text-xs text-white/45">
                 Search: <span className="font-semibold text-white/70">Leet-carpooling</span>
@@ -690,6 +702,14 @@ export default async function Home() {
               <Link className="transition hover:text-white" href="/terms">Terms</Link>
               <Link className="transition hover:text-white" href="/privacy">Privacy</Link>
               <Link className="transition hover:text-white" href="/support">Support</Link>
+              <a
+                href={WHATSAPP_SUPPORT_DEEP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-white"
+              >
+                WhatsApp: {WHATSAPP_SUPPORT_NUMBER}
+              </a>
               <Link className="transition hover:text-[#E06C2C]" href="/agents">Become an agent</Link>
               <Link className="transition hover:text-white" href="/agent-portal/login">Agent login</Link>
               <a

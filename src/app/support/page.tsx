@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { WHATSAPP_SUPPORT_DEEP_LINK, WHATSAPP_SUPPORT_NUMBER } from '@/lib/contact';
 import { SupportForm } from './support-form';
 
 export default function SupportPage() {
@@ -53,6 +54,18 @@ export default function SupportPage() {
               <span className="font-semibold text-[color:var(--ink)]">Leet-carpooling</span>. Include your phone number
               and ride details for faster help.
             </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              You can also message us on WhatsApp at{' '}
+              <a
+                href={WHATSAPP_SUPPORT_DEEP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[color:var(--accent)] underline-offset-2 hover:underline"
+              >
+                {WHATSAPP_SUPPORT_NUMBER}
+              </a>
+              .
+            </p>
           </section>
 
           <section className="rounded-3xl border border-[color:var(--stroke)] bg-white p-6 shadow-[0_8px_32px_rgba(21,19,15,0.06)] md:p-8">
@@ -99,9 +112,19 @@ export default function SupportPage() {
 
       {/* Dark footer */}
       <footer className="border-t border-[color:var(--stroke)]/60 bg-[#0A0907] px-6 py-6">
-        <div className="mx-auto flex max-w-4xl items-center justify-between">
+        <div className="mx-auto flex max-w-4xl flex-col items-center justify-between gap-3 text-center md:flex-row md:text-left">
           <span className="text-lg font-bold tracking-tight text-white">Leet</span>
-          <p className="text-xs text-white/40">© {new Date().getFullYear()} Leet · Ghana</p>
+          <div className="flex flex-col items-center gap-1 md:items-start">
+            <p className="text-xs text-white/40">© {new Date().getFullYear()} Leet · Ghana</p>
+            <a
+              href={WHATSAPP_SUPPORT_DEEP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-white/60 transition hover:text-[#E06C2C]"
+            >
+              WhatsApp: {WHATSAPP_SUPPORT_NUMBER}
+            </a>
+          </div>
           <Link href="/" className="text-sm font-medium text-white/60 transition hover:text-[#E06C2C]">
             Home
           </Link>
