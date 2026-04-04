@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { clearAdminToken, setAdminToken, adminLogin, adminVerifyLoginOtp, authFetch } from '@/lib/api';
+import { clearAdminToken, setAdminToken, adminLogin, adminVerifyLoginOtp, fetchAdminSession } from '@/lib/api';
+import { canAccessAdminPath, getDefaultAdminPath, type AdminSession } from '@/lib/admin-access';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -19,16 +20,24 @@ export default function AdminLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const isOtpStep = Boolean(challengeToken);
 
-  const getNextPath = () => {
+  const getRequestedPath = () => {
     if (typeof window === 'undefined') {
-      return '/ops-9xk3';
+      return null;
     }
     const requested = new URLSearchParams(window.location.search).get('next');
     if (!requested || !requested.startsWith('/')) {
-      return '/ops-9xk3';
+      return null;
     }
     return requested;
   };
+
+  function resolveNextPath(session: AdminSession) {
+    const requested = getRequestedPath();
+    if (requested && canAccessAdminPath(session, requested)) {
+      return requested;
+    }
+    return getDefaultAdminPath(session);
+  }
 
   const handlePasswordLogin = async () => {
     if (!identifier.trim() || !password.trim()) {
@@ -53,12 +62,13 @@ export default function AdminLoginPage() {
         throw new Error('No access token returned.');
       }
       setAdminToken(payload.access);
-      const checkResponse = await authFetch('/accounts/admin/users/?page_size=1');
+      const checkResponse = await fetchAdminSession();
       if (!checkResponse.ok) {
         const checkPayload = await checkResponse.json().catch(() => ({}));
         throw new Error(checkPayload?.detail || checkPayload?.error || 'Access denied.');
       }
-      router.replace(getNextPath());
+      const sessionPayload = (await checkResponse.json().catch(() => ({}))) as AdminSession;
+      router.replace(resolveNextPath(sessionPayload));
     } catch (err) {
       clearAdminToken();
       const message = err instanceof Error ? err.message : 'Unable to sign in.';
@@ -85,12 +95,13 @@ export default function AdminLoginPage() {
         throw new Error('No access token returned.');
       }
       setAdminToken(payload.access);
-      const checkResponse = await authFetch('/accounts/admin/users/?page_size=1');
+      const checkResponse = await fetchAdminSession();
       if (!checkResponse.ok) {
         const checkPayload = await checkResponse.json().catch(() => ({}));
         throw new Error(checkPayload?.detail || checkPayload?.error || 'Access denied.');
       }
-      router.replace(getNextPath());
+      const sessionPayload = (await checkResponse.json().catch(() => ({}))) as AdminSession;
+      router.replace(resolveNextPath(sessionPayload));
     } catch (err) {
       clearAdminToken();
       const message = err instanceof Error ? err.message : 'Unable to verify code.';

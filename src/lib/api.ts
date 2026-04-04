@@ -110,6 +110,10 @@ export async function adminVerifyLoginOtp(challengeToken: string, verificationCo
   return response;
 }
 
+export async function fetchAdminSession() {
+  return authFetch('/accounts/admin/session/');
+}
+
 export async function initAgentLogin(email: string) {
   const response = await fetch(`${getApiBase()}/accounts/auth/init/`, {
     method: 'POST',

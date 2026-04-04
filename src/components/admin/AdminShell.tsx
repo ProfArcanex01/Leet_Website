@@ -13,31 +13,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { clearAdminToken, getAdminToken, getMcpBase } from '@/lib/api';
+import { clearAdminToken, fetchAdminSession, getAdminToken, getMcpBase } from '@/lib/api';
+import {
+  ADMIN_NAV_ITEMS,
+  canAccessAdminPath,
+  getAllowedAdminNavItems,
+  getDefaultAdminPath,
+  type AdminNavItem,
+  type AdminSession,
+} from '@/lib/admin-access';
 import { cn } from '@/lib/utils';
-
-type NavItem = {
-  label: string;
-  href: string;
-  description: string;
-};
-
-const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/ops-9xk3', description: 'Overview & quick links' },
-  { label: 'Users', href: '/ops-9xk3/users', description: 'Hosts, riders, and staff' },
-  { label: 'Notifications', href: '/ops-9xk3/notifications', description: 'Custom push & scheduled sends' },
-  { label: 'Network', href: '/ops-9xk3/network', description: 'Invite relationship graph' },
-  { label: 'Transactions', href: '/ops-9xk3/transactions', description: 'Payments & settlements' },
-  { label: 'Rides', href: '/ops-9xk3/rides', description: 'Ride history & status' },
-  { label: 'Demand', href: '/ops-9xk3/demand', description: 'Search hotspots & unmet rider demand' },
-  { label: 'Template Outreach', href: '/ops-9xk3/template-outreach', description: 'Hosts needing route template setup help' },
-  { label: 'System', href: '/ops-9xk3/system', description: 'Pricing & configuration' },
-  { label: 'Waitlist', href: '/ops-9xk3/waitlist', description: 'Launch waitlist signups' },
-  { label: 'Agents', href: '/ops-9xk3/agents', description: 'Recruitment applications' },
-  { label: 'Training', href: '/ops-9xk3/training', description: 'Agent learning materials' },
-  { label: 'Support', href: '/ops-9xk3/support', description: 'Support tickets & reports' },
-  { label: 'Studio', href: '/studio', description: 'Sanity content studio' },
-];
 
 async function copyTextToClipboard(text: string) {
   if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
@@ -72,14 +57,16 @@ async function copyTextToClipboard(text: string) {
 /* Shared nav list — used by both the sidebar and the mobile drawer */
 function NavList({
   pathname,
+  items,
   onNavigate,
 }: {
   pathname: string;
+  items: AdminNavItem[];
   onNavigate: (href: string) => void;
 }) {
   return (
     <nav className="flex flex-col gap-2">
-      {navItems.map((item) => (
+      {items.map((item) => (
         <button
           key={item.href}
           type="button"
@@ -101,14 +88,16 @@ function NavList({
 
 function QuickNav({
   pathname,
+  items,
   onNavigate,
 }: {
   pathname: string;
+  items: AdminNavItem[];
   onNavigate: (href: string) => void;
 }) {
   return (
     <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {navItems
+      {items
         .filter((item) => item.href !== '/ops-9xk3')
         .map((item) => (
           <Button
@@ -135,6 +124,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mcpMessage, setMcpMessage] = useState<string | null>(null);
   const [mcpError, setMcpError] = useState<string | null>(null);
+  const [session, setSession] = useState<AdminSession | null>(null);
 
   useEffect(() => {
     const token = getAdminToken();
@@ -142,7 +132,29 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       router.replace('/ops-9xk3/login');
       return;
     }
-    setReady(true);
+    let cancelled = false;
+
+    async function loadSession() {
+      try {
+        const response = await fetchAdminSession();
+        const payload = (await response.json().catch(() => ({}))) as AdminSession & { detail?: string; error?: string };
+        if (!response.ok) {
+          throw new Error(payload?.detail || payload?.error || 'Access denied.');
+        }
+        if (cancelled) return;
+        setSession(payload);
+        setReady(true);
+      } catch {
+        if (cancelled) return;
+        clearAdminToken();
+        router.replace('/ops-9xk3/login');
+      }
+    }
+
+    loadSession();
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   // Close mobile menu when route changes
@@ -150,9 +162,27 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
   }, [pathname]);
 
+  const allowedNavItems = useMemo(
+    () => getAllowedAdminNavItems(session),
+    [session],
+  );
+  const canSearchUsers = useMemo(
+    () => allowedNavItems.some((item) => item.href === '/ops-9xk3/users'),
+    [allowedNavItems],
+  );
+
+  useEffect(() => {
+    if (!ready || !session) return;
+    if (canAccessAdminPath(session, pathname)) return;
+    const fallbackPath = getDefaultAdminPath(session);
+    if (fallbackPath && fallbackPath !== pathname) {
+      router.replace(fallbackPath);
+    }
+  }, [pathname, ready, router, session]);
+
   const activeItem = useMemo(
-    () => navItems.find((item) => pathname === item.href) ?? navItems[0],
-    [pathname],
+    () => allowedNavItems.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`)) ?? allowedNavItems[0] ?? ADMIN_NAV_ITEMS[0],
+    [allowedNavItems, pathname],
   );
 
   function navigate(href: string) {
@@ -235,9 +265,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                   Leet Admin
                 </p>
-                <h2 className="mt-2 text-xl font-semibold">Superadmin</h2>
+                <h2 className="mt-2 text-xl font-semibold">{session?.user?.first_name || 'Admin'}</h2>
               </div>
-              <NavList pathname={pathname} onNavigate={navigate} />
+              <NavList pathname={pathname} items={allowedNavItems} onNavigate={navigate} />
             </div>
           </aside>
 
@@ -249,10 +279,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                     Leet Admin
                   </p>
-                  <span className="mt-1 block text-xl font-semibold">Superadmin</span>
+                  <span className="mt-1 block text-xl font-semibold">{session?.user?.first_name || 'Admin'}</span>
                 </SheetTitle>
               </SheetHeader>
-              <NavList pathname={pathname} onNavigate={navigate} />
+              <NavList pathname={pathname} items={allowedNavItems} onNavigate={navigate} />
               <div className="mt-6 border-t border-[color:var(--stroke)] pt-4">
                 <Button
                   variant="outline"
@@ -291,24 +321,28 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
                 <div className="flex w-full flex-col gap-3 xl:max-w-3xl">
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
-                    <form
-                      className="flex w-full items-center gap-2 md:max-w-md"
-                      onSubmit={(event) => {
-                        event.preventDefault();
-                        if (!searchTerm.trim()) return;
-                        router.push(`/ops-9xk3/users?q=${encodeURIComponent(searchTerm.trim())}`);
-                      }}
-                    >
-                      <Input
-                        value={searchTerm}
-                        onChange={(event) => setSearchTerm(event.target.value)}
-                        placeholder="Search users by name, phone, or email"
-                        className="bg-[color:var(--paper)]"
-                      />
-                      <Button type="submit" variant="outline" className="shrink-0">
-                        Search
-                      </Button>
-                    </form>
+                    {canSearchUsers ? (
+                      <form
+                        className="flex w-full items-center gap-2 md:max-w-md"
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          if (!searchTerm.trim()) return;
+                          router.push(`/ops-9xk3/users?q=${encodeURIComponent(searchTerm.trim())}`);
+                        }}
+                      >
+                        <Input
+                          value={searchTerm}
+                          onChange={(event) => setSearchTerm(event.target.value)}
+                          placeholder="Search users by name, phone, or email"
+                          className="bg-[color:var(--paper)]"
+                        />
+                        <Button type="submit" variant="outline" className="shrink-0">
+                          Search
+                        </Button>
+                      </form>
+                    ) : (
+                      <div className="w-full md:max-w-md" />
+                    )}
 
                     <div className="flex flex-wrap items-center gap-2">
                       <Button
@@ -343,7 +377,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   </div>
 
                   <div className="hidden lg:block">
-                    <QuickNav pathname={pathname} onNavigate={navigate} />
+                    <QuickNav pathname={pathname} items={allowedNavItems} onNavigate={navigate} />
                   </div>
                 </div>
               </div>
