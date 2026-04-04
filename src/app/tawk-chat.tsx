@@ -20,10 +20,13 @@ declare global {
 export function TawkChat() {
   const pathname = usePathname();
   const isSafetySharePage = pathname?.startsWith('/safety-share/');
+  const isAdminPage = pathname?.startsWith('/admin') || pathname?.startsWith('/ops-9xk3');
+  const shouldHideWidget = isSafetySharePage || isAdminPage;
 
   useEffect(() => {
-    if (isSafetySharePage) {
-      // Defense-in-depth: hide widget during in-app navigation if script was loaded elsewhere.
+    if (shouldHideWidget) {
+      // Defense-in-depth: hide the chat widget on internal/admin flows even if the script
+      // was already loaded during a previous public-page navigation.
       window.Tawk_API?.hideWidget?.();
       return;
     }
@@ -44,8 +47,7 @@ export function TawkChat() {
     window.Tawk_LoadStart = new Date();
 
     document.body.appendChild(script);
-  }, [isSafetySharePage]);
+  }, [shouldHideWidget]);
 
   return null;
 }
-
