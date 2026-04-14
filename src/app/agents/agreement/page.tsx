@@ -56,7 +56,7 @@ export default function AgentAgreementPage() {
             },
             {
               title: '5. Commission structure',
-              body: 'Qualified Driver: GHS 1 when a credited driver completes at least 1 trip within 30 days of registration. Qualified Passenger: GHS 1 when a credited passenger completes at least 3 trips within 30 days of registration. Bonus programs, if any, are discretionary unless confirmed by Leet in writing.',
+              body: 'Qualified Driver: GHS 5 when a credited driver completes at least 1 trip within 30 days of registration. Passenger referrals are not commissionable under this agreement. Bonus programs, if any, are discretionary unless confirmed by Leet in writing.',
             },
             {
               title: '6. Payment',

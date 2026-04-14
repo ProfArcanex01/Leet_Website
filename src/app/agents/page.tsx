@@ -69,8 +69,8 @@ const whoFits = [
 ];
 
 const earningsRules = [
-  'GHS 1 per qualified driver after 1 completed trip within 30 days',
-  'GHS 1 per qualified passenger after 3 completed trips within 30 days',
+  'GHS 5 per qualified driver after 1 completed trip within 30 days',
+  'Passenger referrals are not commissionable',
   'Only recruits attributed to your Leet agent code count',
 ];
 
@@ -145,11 +145,11 @@ export default function AgentsPage() {
             </h1>
 
             <p className="mt-6 text-base leading-relaxed text-white/90 md:text-lg" style={{ textShadow: '0 1px 12px rgba(0,0,0,0.45)' }}>
-              You meet drivers where they already are — washing bays, fuel stations, mechanics. Help drivers and passengers join Leet and earn when they qualify under the current commission terms.
+              You meet drivers where they already are — washing bays, fuel stations, mechanics. Help qualified hosts join Leet and earn when they activate under the current commission terms.
             </p>
 
             <p className="mt-2.5 text-sm font-semibold text-white/80" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
-              Current public rates: GHS 1 per qualified driver, GHS 1 per qualified passenger. Full terms apply.
+              Current public rates: GHS 5 per qualified driver. Passenger referrals are not commissionable. Full terms apply.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -277,7 +277,7 @@ export default function AgentsPage() {
 
               <div className="mt-8 rounded-2xl border border-white/8 bg-white/5 px-5 py-4">
                 <p className="text-xs leading-relaxed text-white/45">
-                  No CV. No pitch deck. No prior experience. Just show up and talk to drivers the way you'd talk to a friend.
+                  No CV. No pitch deck. No prior experience. Just show up and talk to drivers the way you&apos;d talk to a friend.
                 </p>
               </div>
             </div>
@@ -392,7 +392,7 @@ export default function AgentsPage() {
               Your city needs you.
             </h2>
             <p className="mx-auto mt-4 max-w-md text-base text-white/55">
-              Fill the form in under 2 minutes. We'll follow up on WhatsApp if you're a fit.
+              Fill the form in under 2 minutes. We&apos;ll follow up on WhatsApp if you&apos;re a fit.
             </p>
           </div>
 

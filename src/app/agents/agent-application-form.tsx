@@ -421,8 +421,8 @@ export function AgentApplicationForm() {
         <div className="rounded-2xl border border-[color:var(--stroke)] bg-[color:var(--paper)]/35 px-4 py-4">
           <p className="text-sm font-semibold text-[color:var(--ink)]">Current public commission terms</p>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-            <li>Drivers: GHS 1 after 1 completed trip within 30 days of registration.</li>
-            <li>Passengers: GHS 1 after 3 completed trips within 30 days of registration.</li>
+            <li>Drivers: GHS 5 after 1 completed trip within 30 days of registration.</li>
+            <li>Passenger referrals are not commissionable under the current agreement.</li>
             <li>Full payout, conduct, privacy, and fraud rules are in the Agent Agreement.</li>
           </ul>
           <p className="mt-3 text-xs text-muted-foreground">
