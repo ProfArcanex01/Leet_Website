@@ -18,8 +18,8 @@ import {
 
 type LoginState = {
   email: string;
-  phoneNumber: string;
   phoneNumberDisplay: string;
+  loginChallenge: string;
 };
 
 export default function AgentPortalLoginPage() {
@@ -48,14 +48,14 @@ export default function AgentPortalLoginPage() {
         throw new Error(payload?.detail || payload?.error || "Unable to start login.");
       }
 
-      if (!payload?.user_exists || !payload?.phone_number) {
+      if (!payload?.user_exists || !payload?.login_challenge) {
         throw new Error("We could not find an agent account with that email.");
       }
 
       setLoginState({
         email: String(payload.email),
-        phoneNumber: String(payload.phone_number),
         phoneNumberDisplay: String(payload.phone_number_display || "****"),
+        loginChallenge: String(payload.login_challenge),
       });
       setVerificationCode("");
     } catch (err) {
@@ -78,8 +78,8 @@ export default function AgentPortalLoginPage() {
     try {
       const response = await verifyAgentLogin(
         loginState.email,
-        loginState.phoneNumber,
         verificationCode.trim(),
+        loginState.loginChallenge,
       );
       const payload = await response.json().catch(() => ({}));
 
@@ -148,7 +148,7 @@ export default function AgentPortalLoginPage() {
                 </div>
                 <p className="mt-4 text-sm leading-6 text-white/60">
                   {isVerificationStep
-                    ? `Enter the code sent to ${loginState?.email}.`
+                    ? `Enter the code sent to ${loginState?.email}. We also confirmed the account with ${loginState?.phoneNumberDisplay}.`
                     : "We will send a one-time verification code."}
                 </p>
               </div>

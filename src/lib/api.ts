@@ -123,15 +123,18 @@ export async function initAgentLogin(email: string) {
   return response;
 }
 
-export async function verifyAgentLogin(email: string, phoneNumber: string, verificationCode: string) {
+export async function verifyAgentLogin(email: string, verificationCode: string, loginChallenge?: string) {
+  const payload: Record<string, string> = {
+    email,
+    verification_code: verificationCode,
+  };
+  if (loginChallenge) {
+    payload.login_challenge = loginChallenge;
+  }
   const response = await fetch(`${getApiBase()}/accounts/auth/verify-login/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      email,
-      phone_number: phoneNumber,
-      verification_code: verificationCode,
-    }),
+    body: JSON.stringify(payload),
   });
   return response;
 }
