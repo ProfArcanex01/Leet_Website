@@ -19,12 +19,6 @@ export function Reveal({ children, className, delayMs = 0 }: RevealProps) {
       return;
     }
 
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (mediaQuery.matches) {
-      setIsVisible(true);
-      return;
-    }
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

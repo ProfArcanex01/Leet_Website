@@ -2,15 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { Download } from 'lucide-react';
-import { detectPlatform, APP_STORE_URL, GOOGLE_PLAY_URL } from '@/lib/device';
+import { APP_STORE_URL, GOOGLE_PLAY_URL } from '@/lib/device';
+import { useDevicePlatform } from '@/lib/use-device-platform';
 
 export function DownloadStickyCta() {
   const [visible, setVisible] = useState(false);
-  const [platform, setPlatform] = useState<'ios' | 'android' | 'unknown'>('unknown');
+  const platform = useDevicePlatform();
 
   useEffect(() => {
-    setPlatform(detectPlatform());
-
     const onScroll = () => {
       const pastHero = window.scrollY > 220;
       const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 240;

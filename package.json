@@ -8,6 +8,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint .",
+    "test:session": "node --test tests/portal-session.test.cjs",
     "sanity:typegen": "sanity schema extract --enforce-required-fields && sanity typegen generate"
   },
   "dependencies": {

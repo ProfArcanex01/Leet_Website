@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useEffectEvent, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -163,8 +163,11 @@ export default function AdminUsersPage() {
     }
   };
 
+  // Pagination reads the latest filters without fetching on every input edit.
+  const loadPage = useEffectEvent((nextPage: number) => loadUsers({ page: nextPage }));
+
   useEffect(() => {
-    loadUsers();
+    void loadPage(page);
   }, [page]);
 
   useEffect(() => {
@@ -205,14 +208,18 @@ export default function AdminUsersPage() {
     };
   }, []);
 
-  useEffect(() => {
-    const q = searchParams.get('q') || '';
+  const applyUrlQuery = useEffectEvent((q: string) => {
     if (q && q !== query) {
       setQuery(q);
       setPage(1);
-      loadUsers({ page: 1, query: q });
+      void loadUsers({ page: 1, query: q });
     }
-  }, [searchParams, query]);
+  });
+
+  const urlQuery = searchParams.get('q') || '';
+  useEffect(() => {
+    applyUrlQuery(urlQuery);
+  }, [urlQuery]);
 
   const applyFilters = () => {
     setPage(1);

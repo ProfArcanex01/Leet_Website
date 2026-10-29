@@ -178,8 +178,8 @@ export default function AdminNetworkPage() {
 
         if (cancelled) return;
         setUsers(aggregated);
-        if (!selectedUserId && aggregated.length > 0) {
-          setSelectedUserId(aggregated[0].id);
+        if (aggregated.length > 0) {
+          setSelectedUserId((current) => current ?? aggregated[0].id);
         }
       } catch (err) {
         if (cancelled) return;

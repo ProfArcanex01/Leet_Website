@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useEffectEvent, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -157,8 +157,11 @@ export default function AdminTransactionsPage() {
     }
   };
 
+  // Pagination reads the latest filters without fetching on every input edit.
+  const loadPage = useEffectEvent((nextPage: number) => loadTransactions({ page: nextPage }));
+
   useEffect(() => {
-    loadTransactions();
+    void loadPage(page);
   }, [page]);
 
   return (

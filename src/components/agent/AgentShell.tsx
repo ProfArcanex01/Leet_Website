@@ -16,7 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { clearAgentToken, getAgentToken } from "@/lib/api";
+import { clearAgentToken, fetchAgentSession } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 type NavItem = {
@@ -102,20 +102,19 @@ export function AgentShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [ready, setReady] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuPath, setMenuPath] = useState<string | null>(null);
+  const mobileMenuOpen = menuPath === pathname;
+  const setMobileMenuOpen = (open: boolean) => setMenuPath(open ? pathname : null);
 
   useEffect(() => {
-    const token = getAgentToken();
-    if (!token) {
-      router.replace("/agent-portal/login");
-      return;
-    }
-    setReady(true);
+    let cancelled = false;
+    fetchAgentSession().then(response => {
+      if (cancelled) return;
+      if (response.ok) setReady(true);
+      else router.replace("/agent-portal/login");
+    }).catch(() => { if (!cancelled) router.replace("/agent-portal/login"); });
+    return () => { cancelled = true; };
   }, [router]);
-
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [pathname]);
 
   const activeItem = useMemo(
     () => navItems.find((item) => pathname === item.href) ?? navItems[0],
@@ -127,8 +126,8 @@ export function AgentShell({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
   }
 
-  function signOut() {
-    clearAgentToken();
+  async function signOut() {
+    await clearAgentToken();
     router.replace("/agent-portal/login");
   }
 

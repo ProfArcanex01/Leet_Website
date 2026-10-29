@@ -14,127 +14,28 @@ export function getMcpBase() {
   return url;
 }
 
-const ADMIN_TOKEN_STORAGE_KEY = 'leet_admin_token';
-const AGENT_TOKEN_STORAGE_KEY = 'leet_agent_token';
-const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 12;
 
-function readCookie(name: string) {
-  if (typeof document === 'undefined') return null;
-  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = document.cookie.match(new RegExp(`(?:^|; )${escapedName}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : null;
+function portalFetch(portal: string, path: string, options: RequestInit = {}) {
+  return fetch('/api/portal/' + portal + path, { ...options, credentials: 'same-origin', cache: 'no-store' });
 }
-
-function writeCookie(name: string, value: string, maxAgeSeconds = COOKIE_MAX_AGE_SECONDS) {
-  if (typeof document === 'undefined') return;
-  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-  document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax${secure}`;
+export async function clearAdminToken() { await portalFetch('admin', '/logout', { method: 'POST' }); }
+export async function clearAgentToken() { await portalFetch('agent', '/logout', { method: 'POST' }); }
+export function authFetch(path: string, options: RequestInit = {}) {
+  return portalFetch('admin', '/proxy' + path, { ...options, headers: { 'Content-Type': 'application/json', ...options.headers } });
 }
-
-function clearCookie(name: string) {
-  if (typeof document === 'undefined') return;
-  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-  document.cookie = `${name}=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
+export function agentAuthFetch(path: string, options: RequestInit = {}) {
+  return portalFetch('agent', '/proxy' + path, { ...options, headers: { 'Content-Type': 'application/json', ...options.headers } });
 }
-
-export function getAdminToken() {
-  return readCookie(ADMIN_TOKEN_STORAGE_KEY);
+function login(portal: string, action: string, body: object) {
+  return portalFetch(portal, '/' + action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 }
-
-export function setAdminToken(token: string) {
-  writeCookie(ADMIN_TOKEN_STORAGE_KEY, token);
+export function adminLogin(identifier: string, password: string) { return login('admin', 'login', { identifier, password }); }
+export function adminVerifyLoginOtp(challengeToken: string, verificationCode: string) {
+  return login('admin', 'verify', { challenge_token: challengeToken, verification_code: verificationCode });
 }
-
-export function clearAdminToken() {
-  clearCookie(ADMIN_TOKEN_STORAGE_KEY);
-}
-
-export function getAgentToken() {
-  return readCookie(AGENT_TOKEN_STORAGE_KEY);
-}
-
-export function setAgentToken(token: string) {
-  writeCookie(AGENT_TOKEN_STORAGE_KEY, token);
-}
-
-export function clearAgentToken() {
-  clearCookie(AGENT_TOKEN_STORAGE_KEY);
-}
-
-export async function authFetch(path: string, options: RequestInit = {}) {
-  const token = getAdminToken();
-  const headers = new Headers(options.headers || {});
-  headers.set('Content-Type', 'application/json');
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
-  const response = await fetch(`${getApiBase()}${path}`, {
-    ...options,
-    headers,
-  });
-  return response;
-}
-
-export async function agentAuthFetch(path: string, options: RequestInit = {}) {
-  const token = getAgentToken();
-  const headers = new Headers(options.headers || {});
-  headers.set('Content-Type', 'application/json');
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
-  const response = await fetch(`${getApiBase()}${path}`, {
-    ...options,
-    headers,
-  });
-  return response;
-}
-
-export async function adminLogin(identifier: string, password: string) {
-  const response = await fetch(`${getApiBase()}/accounts/admin/login/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ identifier, password }),
-  });
-  return response;
-}
-
-export async function adminVerifyLoginOtp(challengeToken: string, verificationCode: string) {
-  const response = await fetch(`${getApiBase()}/accounts/admin/login/verify-otp/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      challenge_token: challengeToken,
-      verification_code: verificationCode,
-    }),
-  });
-  return response;
-}
-
-export async function fetchAdminSession() {
-  return authFetch('/accounts/admin/session/');
-}
-
-export async function initAgentLogin(email: string) {
-  const response = await fetch(`${getApiBase()}/accounts/auth/init/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email }),
-  });
-  return response;
-}
-
-export async function verifyAgentLogin(email: string, verificationCode: string, loginChallenge?: string) {
-  const payload: Record<string, string> = {
-    email,
-    verification_code: verificationCode,
-  };
-  if (loginChallenge) {
-    payload.login_challenge = loginChallenge;
-  }
-  const response = await fetch(`${getApiBase()}/accounts/auth/verify-login/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  return response;
+export function fetchAdminSession() { return portalFetch('admin', '/session'); }
+export function fetchAgentSession() { return portalFetch('agent', '/session'); }
+export function initAgentLogin(email: string) { return login('agent', 'login', { email }); }
+export function verifyAgentLogin(email: string, verificationCode: string, loginChallenge?: string) {
+  return login('agent', 'verify', { email, verification_code: verificationCode, login_challenge: loginChallenge });
 }

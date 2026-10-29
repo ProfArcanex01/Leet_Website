@@ -10,8 +10,9 @@ import {
 import { Menu, ArrowRight, Download } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
-import { detectPlatform, APP_STORE_URL, GOOGLE_PLAY_URL } from '@/lib/device';
+import { useState } from 'react';
+import { APP_STORE_URL, GOOGLE_PLAY_URL } from '@/lib/device';
+import { useDevicePlatform } from '@/lib/use-device-platform';
 
 const links = [
   { href: '#how', label: 'How it works' },
@@ -24,11 +25,7 @@ const links = [
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
-  const [platform, setPlatform] = useState<'ios' | 'android' | 'unknown'>('unknown');
-
-  useEffect(() => {
-    setPlatform(detectPlatform());
-  }, []);
+  const platform = useDevicePlatform();
 
   const storeHref =
     platform === 'ios' ? APP_STORE_URL :

@@ -1,28 +1,50 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 
 const COOKIE_CONSENT_KEY = "leet-cookie-consent";
+const CONSENT_CHANGED = "leet-consent-changed";
+
+function subscribe(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener(CONSENT_CHANGED, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(CONSENT_CHANGED, onChange);
+  };
+}
+
+function needsConsent() {
+  try {
+    return !localStorage.getItem(COOKIE_CONSENT_KEY);
+  } catch {
+    return true;
+  }
+}
+
+const serverSnapshot = () => false;
 
 export function CookieConsent() {
-  const [visible, setVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const visible = useSyncExternalStore(subscribe, needsConsent, serverSnapshot) && !dismissed;
 
-  useEffect(() => {
-    const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
-    if (!consent) {
-      setVisible(true);
+  function saveConsent(value: "accepted" | "declined") {
+    try {
+      localStorage.setItem(COOKIE_CONSENT_KEY, value);
+      window.dispatchEvent(new Event(CONSENT_CHANGED));
+    } catch {
+      // Storage may be blocked; still dismiss the banner for this page visit.
     }
-  }, []);
+    setDismissed(true);
+  }
 
   function accept() {
-    localStorage.setItem(COOKIE_CONSENT_KEY, "accepted");
-    setVisible(false);
+    saveConsent("accepted");
   }
 
   function decline() {
-    localStorage.setItem(COOKIE_CONSENT_KEY, "declined");
-    setVisible(false);
+    saveConsent("declined");
   }
 
   if (!visible) return null;

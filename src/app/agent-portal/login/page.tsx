@@ -12,7 +12,6 @@ import {
   agentAuthFetch,
   clearAgentToken,
   initAgentLogin,
-  setAgentToken,
   verifyAgentLogin,
 } from "@/lib/api";
 
@@ -59,7 +58,7 @@ export default function AgentPortalLoginPage() {
       });
       setVerificationCode("");
     } catch (err) {
-      clearAgentToken();
+      await clearAgentToken();
       setError(err instanceof Error ? err.message : "Unable to start login.");
     } finally {
       setLoading(false);
@@ -86,16 +85,15 @@ export default function AgentPortalLoginPage() {
       if (!response.ok) {
         throw new Error(payload?.detail || payload?.error || "Verification failed.");
       }
-      if (!payload?.access) {
-        throw new Error("No access token returned.");
+      if (!payload?.authenticated) {
+        throw new Error("Session was not established.");
       }
 
-      setAgentToken(String(payload.access));
 
       const checkResponse = await agentAuthFetch("/agents/me/dashboard/");
       const checkPayload = await checkResponse.json().catch(() => ({}));
       if (!checkResponse.ok) {
-        clearAgentToken();
+        await clearAgentToken();
         throw new Error(
           checkPayload?.detail ||
             checkPayload?.error ||
@@ -105,7 +103,7 @@ export default function AgentPortalLoginPage() {
 
       router.replace("/agent-portal");
     } catch (err) {
-      clearAgentToken();
+      await clearAgentToken();
       setError(
         err instanceof Error ? err.message : "Unable to verify this agent session.",
       );

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { clearAdminToken, setAdminToken, adminLogin, adminVerifyLoginOtp, fetchAdminSession } from '@/lib/api';
+import { clearAdminToken, adminLogin, adminVerifyLoginOtp, fetchAdminSession } from '@/lib/api';
 import { canAccessAdminPath, getDefaultAdminPath, type AdminSession } from '@/lib/admin-access';
 
 export default function AdminLoginPage() {
@@ -58,10 +58,10 @@ export default function AdminLoginPage() {
         setOtpCode('');
         return;
       }
-      if (!payload?.access) {
-        throw new Error('No access token returned.');
+      if (!payload?.authenticated) {
+        throw new Error('Session was not established.');
       }
-      setAdminToken(payload.access);
+
       const checkResponse = await fetchAdminSession();
       if (!checkResponse.ok) {
         const checkPayload = await checkResponse.json().catch(() => ({}));
@@ -70,7 +70,7 @@ export default function AdminLoginPage() {
       const sessionPayload = (await checkResponse.json().catch(() => ({}))) as AdminSession;
       router.replace(resolveNextPath(sessionPayload));
     } catch (err) {
-      clearAdminToken();
+      await clearAdminToken();
       const message = err instanceof Error ? err.message : 'Unable to sign in.';
       setError(message);
     } finally {
@@ -91,10 +91,10 @@ export default function AdminLoginPage() {
       if (!verifyResponse.ok) {
         throw new Error(payload?.detail || payload?.error || 'Verification failed.');
       }
-      if (!payload?.access) {
-        throw new Error('No access token returned.');
+      if (!payload?.authenticated) {
+        throw new Error('Session was not established.');
       }
-      setAdminToken(payload.access);
+
       const checkResponse = await fetchAdminSession();
       if (!checkResponse.ok) {
         const checkPayload = await checkResponse.json().catch(() => ({}));
@@ -103,7 +103,7 @@ export default function AdminLoginPage() {
       const sessionPayload = (await checkResponse.json().catch(() => ({}))) as AdminSession;
       router.replace(resolveNextPath(sessionPayload));
     } catch (err) {
-      clearAdminToken();
+      await clearAdminToken();
       const message = err instanceof Error ? err.message : 'Unable to verify code.';
       setError(message);
     } finally {
